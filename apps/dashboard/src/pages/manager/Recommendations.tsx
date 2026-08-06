@@ -32,21 +32,24 @@ export default function Recommendations() {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', bgcolor: '#FAFAFA' }}>
-        <CircularProgress sx={{ color: '#0066CC' }} />
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', bgcolor: '#F4F6FA' }}>
+        <CircularProgress sx={{ color: '#1F5AA6' }} />
       </Box>
     );
   }
 
   const recommendationsList = data?.recommendations || mockRecommendations;
 
+  const cardSx = { borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' } };
+  const sectionTitleSx = { fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em' };
+
   return (
-    <Box className="page-enter" sx={{ p: { xs: 2, md: 3 }, maxWidth: 1400, mx: 'auto', bgcolor: '#FAFAFA', minHeight: '100vh' }}>
+    <Box className="page-enter page-content" sx={{ p: { xs: 1, md: 1.5 }, width: '100%', bgcolor: '#F4F6FA', minHeight: '100vh' }}>
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1D1D1F' }}>
+        <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
           Efficiency Recommendations
         </Typography>
-        <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>
+        <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
           AI-driven insights to improve adoption, reduce costs, and maximize productivity across your teams.
         </Typography>
       </Box>
@@ -55,38 +58,33 @@ export default function Recommendations() {
         {recommendationsList.map((rec: any, index: number) => (
           <Grid item xs={12} key={rec.id}>
             <Card sx={{ 
-              borderRadius: 3.5, 
-              border: '1px solid rgba(0,0,0,0.08)', 
-              boxShadow: 'none', 
-              bgcolor: '#FFFFFF', 
+              ...cardSx,
               display: 'flex', 
               overflow: 'hidden',
               animation: 'fadeUp 0.4s ease both',
-              animationDelay: `${index * 0.1}s`,
-              transition: 'box-shadow 0.25s ease, border-color 0.25s ease', 
-              '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } 
+              animationDelay: `${index * 0.1}s`
             }}>
-              <Box sx={{ width: 4, bgcolor: rec.impact === 'High Impact' ? '#FF3B30' : '#FF9500' }} />
+              <Box sx={{ width: 4, bgcolor: rec.impact === 'High Impact' ? '#DC2626' : '#D97706' }} />
               <CardContent sx={{ flex: 1, p: 2.5, '&:last-child': { pb: 2.5 } }}>
                 <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
                   <Box>
-                    <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>{rec.title}</Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5, maxWidth: '80%' }}>
+                    <Typography sx={sectionTitleSx}>{rec.title}</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5, maxWidth: '80%' }}>
                       {rec.description}
                     </Typography>
                   </Box>
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <Chip label={rec.team} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: '#F5F5F7', color: '#6E6E73' }} />
+                    <Chip label={rec.team} size="small" sx={{ height: 22, fontSize: '10px', fontWeight: 700, borderRadius: '5px', bgcolor: '#F0F4F8', color: '#4B5563' }} />
                     <Chip 
                       label={rec.impact} 
                       size="small" 
                       sx={{ 
                         height: 22, 
-                        fontSize: '0.67rem', 
-                        fontWeight: 600, 
-                        borderRadius: 1.5, 
-                        bgcolor: rec.impact === 'High Impact' ? 'rgba(255,59,48,0.1)' : 'rgba(255,149,0,0.1)', 
-                        color: rec.impact === 'High Impact' ? '#C41C13' : '#9E5B00'
+                        fontSize: '10px', 
+                        fontWeight: 700, 
+                        borderRadius: '5px', 
+                        bgcolor: rec.impact === 'High Impact' ? 'rgba(220,38,38,0.1)' : 'rgba(217,119,6,0.1)', 
+                        color: rec.impact === 'High Impact' ? '#DC2626' : '#D97706'
                       }} 
                     />
                   </Stack>
@@ -98,7 +96,7 @@ export default function Recommendations() {
                     size="small"
                     disableElevation
                     startIcon={<CheckCircleIcon fontSize="small" />} 
-                    sx={{ textTransform: 'none', fontWeight: 500, borderRadius: 1.5 }}
+                    sx={{ textTransform: 'none', fontWeight: 500, borderRadius: '6px', bgcolor: '#1F5AA6', '&:hover': { bgcolor: '#15417A' } }}
                   >
                     Apply Recommendation
                   </Button>

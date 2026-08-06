@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { useAdminDashboard } from '../../api/hooks';
 
-const ACCENT_BLUE = '#0066CC';
+const ACCENT_BLUE = '#1F5AA6';
 
 const MOCK_ORGS = [
   { id: 'org_1', name: 'Acme Corp', plan: 'Enterprise', users: 145, status: 'Active', created: '2025-01-15' },
@@ -20,22 +20,22 @@ export default function Organizations() {
 
   if (isPending) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', bgcolor: '#FAFAFA' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', bgcolor: '#F4F6FA' }}>
         <CircularProgress sx={{ color: ACCENT_BLUE }} />
       </Box>
     );
   }
 
   return (
-    <Box className="page-enter" sx={{ bgcolor: '#FAFAFA', minHeight: '100vh', p: { xs: 2, md: 3 } }}>
-      <Box sx={{ maxWidth: 1400, mx: 'auto', animation: 'fadeUp 0.4s ease both' }}>
+    <Box className="page-enter page-content" sx={{ bgcolor: '#F4F6FA', minHeight: '100vh', p: { xs: 1, md: 1.5 } }}>
+      <Box sx={{ width: '100%', animation: 'fadeUp 0.4s ease both' }}>
         
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Box>
-            <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1D1D1F' }}>
+            <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
               Organizations
             </Typography>
-            <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>
+            <Typography sx={{ fontSize: '0.8125rem', color: '#9CA3AF', mt: 0.5 }}>
               Manage enterprise tenants and allocations
             </Typography>
           </Box>
@@ -45,7 +45,7 @@ export default function Organizations() {
             startIcon={<AddIcon fontSize="small" />}
             sx={{ 
               bgcolor: ACCENT_BLUE, 
-              '&:hover': { bgcolor: '#0055AA' },
+              '&:hover': { bgcolor: '#1a4b8c' },
               textTransform: 'none',
               borderRadius: 2,
               px: 3,
@@ -56,36 +56,36 @@ export default function Organizations() {
           </Button>
         </Box>
 
-        <TableContainer component={Card} sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none' }}>
+        <TableContainer component={Card} sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' } }}>
           <Table>
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F5F5F7' }}>
-                <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5, px: 3 }}>Organization</TableCell>
-                <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Plan</TableCell>
-                <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Users</TableCell>
-                <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Created Date</TableCell>
-                <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Status</TableCell>
-                <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5, px: 3 }}>Actions</TableCell>
+              <TableRow sx={{ bgcolor: '#F0F4F8' }}>
+                <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5, px: 3 }}>Organization</TableCell>
+                <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5 }}>Plan</TableCell>
+                <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5 }}>Users</TableCell>
+                <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5 }}>Created Date</TableCell>
+                <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5 }}>Status</TableCell>
+                <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5, px: 3 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {MOCK_ORGS.map((org) => (
-                <TableRow key={org.id} sx={{ '&:hover': { bgcolor: '#F5F5F7' }, '&:last-child td': { border: 0 } }}>
-                  <TableCell sx={{ py: 1.5, px: 3, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                    <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>{org.name}</Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{org.id}</Typography>
+                <TableRow key={org.id} sx={{ '&:hover': { bgcolor: '#F0F4F8' }, '&:last-child td': { border: 0 } }}>
+                  <TableCell sx={{ py: 1.5, px: 3, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
+                    <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E' }}>{org.name}</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#4B5563' }}>{org.id}</Typography>
                   </TableCell>
-                  <TableCell sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                    <Chip label={org.plan} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: '#F5F5F7', color: '#1D1D1F' }} />
+                  <TableCell sx={{ py: 1.5, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
+                    <Chip label={org.plan} size="small" sx={{ height: 22, fontSize: '10px', fontWeight: 700, borderRadius: '6px', bgcolor: '#F0F4F8', color: '#1A1D2E' }} />
                   </TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{org.users}</TableCell>
-                  <TableCell sx={{ fontSize: '0.8125rem', color: '#6E6E73', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{org.created}</TableCell>
-                  <TableCell sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                    <Chip label={org.status} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: org.status === 'Active' ? 'rgba(52,199,89,0.10)' : 'rgba(255,59,48,0.1)', color: org.status === 'Active' ? '#1A7F37' : '#FF3B30' }} />
+                  <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E', py: 1.5, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>{org.users}</TableCell>
+                  <TableCell sx={{ fontSize: '0.8125rem', color: '#4B5563', py: 1.5, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>{org.created}</TableCell>
+                  <TableCell sx={{ py: 1.5, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
+                    <Chip label={org.status} size="small" sx={{ height: 22, fontSize: '10px', fontWeight: 700, borderRadius: '6px', bgcolor: org.status === 'Active' ? 'rgba(5,150,105,0.10)' : 'rgba(220,38,38,0.1)', color: org.status === 'Active' ? '#059669' : '#DC2626' }} />
                   </TableCell>
-                  <TableCell align="center" sx={{ py: 1.5, px: 3, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                    <IconButton size="small" sx={{ color: '#6E6E73' }}><EditIcon fontSize="small" /></IconButton>
-                    <IconButton size="small" sx={{ color: '#FF3B30' }}><DeleteIcon fontSize="small" /></IconButton>
+                  <TableCell align="center" sx={{ py: 1.5, px: 3, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
+                    <IconButton size="small" sx={{ color: '#4B5563' }}><EditIcon fontSize="small" /></IconButton>
+                    <IconButton size="small" sx={{ color: '#DC2626' }}><DeleteIcon fontSize="small" /></IconButton>
                   </TableCell>
                 </TableRow>
               ))}

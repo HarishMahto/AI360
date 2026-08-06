@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Box, Grid, Typography, Chip, Stack, LinearProgress, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, IconButton, Avatar, Divider, Paper, Tabs, Tab, Button, Card, CardContent
+  TableHead, TableRow, IconButton, Avatar, Divider, Paper, Button, Card, CardContent
 } from '@mui/material';
+
+const TAB_NAME_MAP: Record<string, number> = {
+  overview: 0,
+  'roi-spend': 1,
+  rankings: 2,
+  forecast: 3,
+  recommendations: 4,
+  'maturity-score': 5,
+};
 import {
   TrendingUp, Groups, AttachMoney, EmojiEvents, AutoAwesome as AIIcon, MoreVert, Savings,
   Psychology, Speed, Assessment, Lightbulb, WorkspacePremium, ArrowForward, Layers, ChevronRight, ShowChart
@@ -45,7 +55,9 @@ export default function ExecutiveDashboard() {
   const { data: serverData } = useExecutiveDashboard();
   const { data: maturityData } = useMaturityScore();
   const olsForecast = useOLSRegression().data!;
-  const [activeTab, setActiveTab] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTabKey = searchParams.get('tab') || 'overview';
+  const activeTab = TAB_NAME_MAP[currentTabKey] ?? 0;
 
   const maturityLadder: any[] = (maturityData as any)?.ladder || MATURITY_LADDER;
   const maturityIndex: number = (maturityData as any)?.maturity_index || 86;
@@ -61,45 +73,44 @@ export default function ExecutiveDashboard() {
   };
 
   return (
-    <Box className="page-enter" sx={{ bgcolor: '#F5F7FA', minHeight: '100vh', pb: 8, pt: 2, px: { xs: 2, md: 3 } }}>
-      <Box sx={{ width: '100%' }}>
-        
-        {/* EXECUTIVE HEADER */}
-        <Box sx={{ background: 'linear-gradient(135deg, rgba(37,99,235,0.05) 0%, rgba(13,148,136,0.03) 100%)', borderRadius: '12px', p: 2.5, mb: 3, border: '1px solid rgba(37,99,235,0.07)', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 3 }}>
-          <Stack direction="row" spacing={3} alignItems="center">
-            <Avatar sx={{ width: 64, height: 64, bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE, border: '1px solid rgba(0,102,204,0.14)' }}>
-              <AIIcon sx={{ fontSize: 32 }} />
-            </Avatar>
-            <Box>
-              <Stack direction="row" spacing={1.5} alignItems="center" mb={0.5}>
-                <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1D1D1F' }}>
-                  Executive Command Center
-                </Typography>
-                <Chip label="Organization View" size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE }} />
-              </Stack>
-              <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>
-                Org spend, ROI value, enterprise time saved, and department rankings.
+    <Box className="page-enter" sx={{ px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 }, width: '100%', bgcolor: '#F0F5F3', minHeight: '100vh', overflow: 'hidden' }}>
+      
+      {/* HEADER (Square workspace container) */}
+      <Box sx={{ background: 'linear-gradient(135deg, rgba(44,122,123,0.08) 0%, rgba(56,161,105,0.05) 100%)', borderRadius: 0, p: 2.5, mb: 3, border: '1px solid rgba(43,108,93,0.14)', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 3 }}>
+        <Stack direction="row" spacing={3} alignItems="center">
+          <Avatar sx={{ width: 64, height: 64, bgcolor: 'rgba(44,122,123,0.10)', color: '#2C7A7B', border: '1px solid rgba(43,108,93,0.16)' }}>
+            <AIIcon sx={{ fontSize: 32 }} />
+          </Avatar>
+          <Box>
+            <Stack direction="row" spacing={1.5} alignItems="center" mb={0.5}>
+              <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A2F29' }}>
+                Executive Command Center
               </Typography>
-            </Box>
-          </Stack>
+              <Chip label="Organization View" size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(44,122,123,0.10)', color: '#2C7A7B' }} />
+            </Stack>
+            <Typography sx={{ fontSize: '0.8125rem', color: '#4A655D' }}>
+              Org spend, ROI value, enterprise time saved, and department rankings.
+            </Typography>
+          </Box>
+        </Stack>
 
-          <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', minWidth: 200 }}>
-            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 }, textAlign: 'center' }}>
-              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73', mb: 0.5 }}>
-                AI Maturity Index
-              </Typography>
-              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#1D1D1F' }}>
-                {stats.maturity_index} <Typography component="span" sx={{ fontSize: '1rem', color: '#6E6E73', fontWeight: 500 }}>/ 100</Typography>
-              </Typography>
-              <Chip label="Stage 4 (Advanced)" size="small" sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600, borderRadius: 1, bgcolor: 'rgba(52,199,89,0.10)', color: '#1A7F37', mt: 1 }} />
-            </CardContent>
-          </Card>
-        </Box>
+        <Card sx={{ borderRadius: 0, border: '1px solid rgba(43,108,93,0.14)', boxShadow: '0 1px 3px rgba(43,108,93,0.04)', minWidth: 200 }}>
+          <CardContent sx={{ p: 2, '&:last-child': { pb: 2 }, textAlign: 'center' }}>
+            <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4A655D', mb: 0.5 }}>
+              AI Maturity Index
+            </Typography>
+            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#1A2F29' }}>
+              {stats.maturity_index} <Typography component="span" sx={{ fontSize: '1rem', color: '#4A655D', fontWeight: 500 }}>/ 100</Typography>
+            </Typography>
+            <Chip label="Stage 4 (Advanced)" size="small" sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600, borderRadius: 1, bgcolor: 'rgba(56,161,105,0.10)', color: '#276749', mt: 1 }} />
+          </CardContent>
+        </Card>
+      </Box>
 
         {/* KPIs */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid container spacing={2} disableEqualOverflow sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={2.4}>
-            <Card onClick={() => setSelectedDrilldown('spend')} sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+            <Card onClick={() => setSelectedDrilldown('spend')} sx={{ borderRadius: 0, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
               <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                   <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
@@ -194,21 +205,13 @@ export default function ExecutiveDashboard() {
           </Grid>
         </Grid>
 
-        {/* TABS */}
-        <Tabs value={activeTab} onChange={(_, val) => setActiveTab(val)} sx={{ mb: 4, borderBottom: '1px solid rgba(0,0,0,0.08)', '& .MuiTabs-indicator': { height: 2, borderRadius: '2px 2px 0 0', bgcolor: ACCENT_BLUE } }}>
-          <Tab disableRipple label="Overview" sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-          <Tab disableRipple label="ROI & Spend" sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-          <Tab disableRipple label="Rankings" sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-          <Tab disableRipple label="Forecast" sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-          <Tab disableRipple label="Recommendations" sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-          <Tab disableRipple label="Maturity Score" sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-        </Tabs>
+
 
         {/* TAB CONTENT */}
         <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
           
           {activeTab === 0 && (
-            <Grid container spacing={3}>
+            <Grid container spacing={2} disableEqualOverflow>
               <Grid item xs={12} md={7}>
                 <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
@@ -247,7 +250,7 @@ export default function ExecutiveDashboard() {
                   <CardContent sx={{ p: 3 }}>
                     <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
                       <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Department Rankings</Typography>
-                      <Button size="small" variant="text" sx={{ color: ACCENT_BLUE, textTransform: 'none', fontSize: '0.8125rem' }} onClick={() => setActiveTab(2)}>View All</Button>
+                      <Button size="small" variant="text" sx={{ color: ACCENT_BLUE, textTransform: 'none', fontSize: '0.8125rem' }} onClick={() => setSearchParams({ tab: 'rankings' })}>View All</Button>
                     </Stack>
                     <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mb: 3 }}>Ranked by adoption & efficiency</Typography>
 
@@ -329,7 +332,7 @@ export default function ExecutiveDashboard() {
                 <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>Enterprise return on investment calculation and model spend breakdown.</Typography>
               </Box>
 
-              <Grid container spacing={3}>
+              <Grid container spacing={2} disableEqualOverflow>
                 <Grid item xs={12} md={4}>
                   <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
                     <CardContent sx={{ p: 4 }}>
@@ -426,7 +429,7 @@ export default function ExecutiveDashboard() {
                 <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>12-month forward-looking budget projections.</Typography>
               </Box>
 
-              <Grid container spacing={3}>
+              <Grid container spacing={2} disableEqualOverflow>
                 <Grid item xs={12} md={8}>
                   <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: 360 }}>
                     <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -538,7 +541,7 @@ export default function ExecutiveDashboard() {
                     </Box>
                   </Stack>
 
-                  <Grid container spacing={3}>
+                  <Grid container spacing={2} disableEqualOverflow>
                     <Grid item xs={12} sm={3}>
                       <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#FAFAFA', border: '1px solid rgba(0,0,0,0.04)' }}>
                         <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', textTransform: 'uppercase' }}>Hours Saved</Typography>
@@ -571,7 +574,7 @@ export default function ExecutiveDashboard() {
                 <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>AI Maturity Score & Ladder</Typography>
                 <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5, mb: 3 }}>Tracks organizational AI evolution toward autonomous execution.</Typography>
                 
-                <Grid container spacing={3}>
+                <Grid container spacing={2} disableEqualOverflow>
                   {maturityLadder.map((mat: any, idx: number) => {
                     const levelNumber = mat.level_number || mat.levelNumber || idx + 1;
                     const levelName = mat.level_name || mat.levelName;
@@ -603,12 +606,9 @@ export default function ExecutiveDashboard() {
                   })}
                 </Grid>
               </Box>
-
             </Box>
           )}
-
         </Box>
       </Box>
-    </Box>
   );
 }

@@ -1,31 +1,31 @@
-// AI360 Dashboard – Apple-Inspired Premium MUI Theme
+// AI360 Dashboard – Studio Ghibli Art / Anime Inspired Theme
 import { createTheme, alpha } from '@mui/material/styles';
 
 const palette = {
-  accent:     '#2563EB',
-  accentHover:'#1D4ED8',
-  accentSoft: 'rgba(37,99,235,0.08)',
-  teal:       '#0D9488',
-  violet:     '#7C3AED',
-  amber:      '#D97706',
-  success:    '#059669',
-  warning:    '#D97706',
-  danger:     '#DC2626',
-  text1:      '#1A1D23',
-  text2:      '#6B7280',
-  text3:      '#9CA3AF',
-  bg:         '#F5F7FA',
-  surface:    '#FFFFFF',
-  surface2:   '#F0F2F5',
-  surface3:   '#E4E7EC',
-  border:     'rgba(0,0,0,0.07)',
-  borderStrong:'rgba(0,0,0,0.12)',
+  accent:      '#2C7A7B', // Serene Ghibli Teal
+  accentHover: '#234E52', // Deep Forest Teal
+  accentSoft:  'rgba(44, 122, 123, 0.08)',
+  teal:        '#319795', // Meadow Stream Teal
+  violet:      '#6B46C1', // Sky Sunset Violet
+  amber:       '#D69E2E', // Calcifer Gold
+  success:     '#38A169', // Totoro Meadow Green
+  warning:     '#DD6B20', // Terracotta Sun
+  danger:      '#E53E3E', // Crimson Blossom
+  text1:       '#1A2F29', // Deep Forest Charcoal
+  text2:       '#4A655D', // Sage Slate
+  text3:       '#839D95', // Soft Mist Sage
+  bg:          '#F0F5F3', // Ghibli Mist Meadow Haze Background
+  surface:     '#FFFFFF', // Crisp White Workspace Paper
+  surface2:    '#E8F0EC', // Soft Sage Grey
+  surface3:    '#DCE7E1', // Medium Sage Mist
+  border:      'rgba(43, 108, 93, 0.12)',
+  borderStrong:'rgba(43, 108, 93, 0.24)',
 };
 
 export const appTheme = createTheme({
   palette: {
     mode: 'light',
-    primary:    { main: palette.accent, light: '#3385D6', dark: palette.accentHover, contrastText: '#fff' },
+    primary:    { main: palette.accent, light: palette.teal, dark: palette.accentHover, contrastText: '#fff' },
     secondary:  { main: palette.text2, light: palette.text3, dark: palette.text1, contrastText: '#fff' },
     success:    { main: palette.success },
     warning:    { main: palette.warning },
@@ -54,16 +54,16 @@ export const appTheme = createTheme({
     overline: { fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' },
     button: { fontWeight: 600, fontSize: '0.8125rem', textTransform: 'none', letterSpacing: '0.01em' },
   },
-  shape: { borderRadius: 10 },
+  shape: { borderRadius: 0 }, // Square edge workspace default
   shadows: [
     'none',
-    '0 1px 2px rgba(0,0,0,0.04)',
-    '0 2px 8px rgba(0,0,0,0.06)',
-    '0 4px 16px rgba(0,0,0,0.08)',
-    '0 8px 32px rgba(0,0,0,0.10)',
-    '0 12px 40px rgba(0,0,0,0.12)',
-    '0 16px 48px rgba(0,0,0,0.14)',
-    ...Array(18).fill('0 2px 8px rgba(0,0,0,0.06)'),
+    '0 1px 2px rgba(43,108,93,0.04)',
+    '0 2px 8px rgba(43,108,93,0.06)',
+    '0 4px 16px rgba(43,108,93,0.08)',
+    '0 8px 32px rgba(43,108,93,0.10)',
+    '0 12px 40px rgba(43,108,93,0.12)',
+    '0 16px 48px rgba(43,108,93,0.14)',
+    ...Array(18).fill('0 2px 8px rgba(43,108,93,0.06)'),
   ] as any,
   components: {
     MuiCssBaseline: {
@@ -103,18 +103,18 @@ export const appTheme = createTheme({
       },
     },
 
-    // ─── Card ───────────────────────────────────────────────────────────────
+    // ─── Card (Square Edges for Workspace Cards) ──────────────────────────────────
     MuiCard: {
       styleOverrides: {
         root: {
           backgroundImage: 'none',
           backgroundColor: palette.surface,
           border: `1px solid ${palette.border}`,
-          borderRadius: 14,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)',
-          transition: 'box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease',
+          borderRadius: 0, // Square edges for workspace cards
+          boxShadow: '0 1px 3px rgba(43,108,93,0.04), 0 1px 2px rgba(43,108,93,0.02)',
+          transition: 'box-shadow 0.25s ease, border-color 0.25s ease',
           '&:hover': {
-            boxShadow: '0 6px 20px rgba(0,0,0,0.09)',
+            boxShadow: '0 6px 20px rgba(43,108,93,0.09)',
             borderColor: palette.borderStrong,
           },
         },
@@ -129,22 +129,22 @@ export const appTheme = createTheme({
       },
     },
 
-    // ─── Paper ──────────────────────────────────────────────────────────────
+    // ─── Paper (Square Edges for Workspace Boxes) ────────────────────────────────
     MuiPaper: {
       styleOverrides: {
         root: {
           backgroundImage: 'none',
           backgroundColor: palette.surface,
           border: `1px solid ${palette.border}`,
-          borderRadius: 14,
+          borderRadius: 0, // Square edges for workspace boxes/cards
         },
-        elevation1: { boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-        elevation2: { boxShadow: '0 4px 16px rgba(0,0,0,0.08)' },
-        elevation3: { boxShadow: '0 8px 32px rgba(0,0,0,0.10)' },
+        elevation1: { boxShadow: '0 2px 8px rgba(43,108,93,0.06)' },
+        elevation2: { boxShadow: '0 4px 16px rgba(43,108,93,0.08)' },
+        elevation3: { boxShadow: '0 8px 32px rgba(43,108,93,0.10)' },
       },
     },
 
-    // ─── Button ─────────────────────────────────────────────────────────────
+    // ─── Button (Round Edges Allowed Elsewhere) ──────────────────────────────
     MuiButton: {
       styleOverrides: {
         root: {
@@ -157,11 +157,11 @@ export const appTheme = createTheme({
           '&:active': { transform: 'scale(0.98)' },
         },
         contained: {
-          '&:hover': { boxShadow: '0 4px 14px rgba(37,99,235,0.28)' },
+          '&:hover': { boxShadow: '0 4px 14px rgba(44,122,123,0.28)' },
         },
         containedPrimary: {
           background: palette.accent,
-          boxShadow: '0 1px 4px rgba(37,99,235,0.25)',
+          boxShadow: '0 1px 4px rgba(44,122,123,0.25)',
           '&:hover': { background: palette.accentHover },
         },
         outlined: {
@@ -229,9 +229,9 @@ export const appTheme = createTheme({
           border: 'none',
         },
         colorPrimary: { background: palette.accentSoft, color: palette.accent },
-        colorSuccess: { background: 'rgba(5,150,105,0.10)',  color: '#065F46' },
-        colorWarning: { background: 'rgba(217,119,6,0.10)',  color: '#92400E' },
-        colorError:   { background: 'rgba(220,38,38,0.10)',  color: '#991B1B' },
+        colorSuccess: { background: 'rgba(56,161,105,0.10)', color: '#276749' },
+        colorWarning: { background: 'rgba(221,107,32,0.10)', color: '#9C4221' },
+        colorError:   { background: 'rgba(229,62,62,0.10)',   color: '#9B2C2C' },
         colorDefault: { background: palette.surface2, color: palette.text2 },
       },
     },
@@ -246,7 +246,6 @@ export const appTheme = createTheme({
         indicator: {
           backgroundColor: palette.accent,
           height: 2,
-          borderRadius: '2px 2px 0 0',
         },
       },
     },
@@ -266,7 +265,7 @@ export const appTheme = createTheme({
       },
     },
 
-    // ─── Table ──────────────────────────────────────────────────────────────
+    // ─── Table (Square Edge Containers) ─────────────────────────────────────
     MuiTableCell: {
       styleOverrides: {
         head: {
@@ -291,14 +290,14 @@ export const appTheme = createTheme({
       styleOverrides: {
         root: {
           transition: 'background 0.15s ease',
-          '&:hover': { background: 'rgba(37,99,235,0.03)' },
+          '&:hover': { background: 'rgba(44,122,123,0.04)' },
           '&:last-child td': { borderBottom: 0 },
         },
       },
     },
     MuiTableContainer: {
       styleOverrides: {
-        root: { borderRadius: 14, border: `1px solid ${palette.border}`, boxShadow: 'none' },
+        root: { borderRadius: 0, border: `1px solid ${palette.border}`, boxShadow: 'none' },
       },
     },
 
@@ -391,9 +390,9 @@ export const appTheme = createTheme({
     MuiMenu: {
       styleOverrides: {
         paper: {
-          borderRadius: 12,
+          borderRadius: 8,
           border: `1px solid ${palette.border}`,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.10)',
+          boxShadow: '0 8px 32px rgba(43,108,93,0.12)',
           padding: '4px',
         },
       },
@@ -401,7 +400,7 @@ export const appTheme = createTheme({
     MuiMenuItem: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 6,
           fontSize: '0.8125rem',
           padding: '7px 12px',
           transition: 'background 0.15s ease',
@@ -414,9 +413,9 @@ export const appTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 18,
+          borderRadius: 0, // Square edges for dialog popups in workspace
           border: `1px solid ${palette.border}`,
-          boxShadow: '0 24px 80px rgba(0,0,0,0.14)',
+          boxShadow: '0 24px 80px rgba(43,108,93,0.16)',
         },
       },
     },
@@ -434,17 +433,16 @@ export const appTheme = createTheme({
     // ─── Alert ──────────────────────────────────────────────────────────────
     MuiAlert: {
       styleOverrides: {
-        root: { borderRadius: 10, border: `1px solid ${palette.border}`, fontSize: '0.8125rem' },
-        standardSuccess: { background: 'rgba(52,199,89,0.08)',  color: '#1A7F37' },
-        standardWarning: { background: 'rgba(255,149,0,0.08)',  color: '#B45309' },
-        standardError:   { background: 'rgba(255,59,48,0.08)',  color: '#C0392B' },
+        root: { borderRadius: 0, border: `1px solid ${palette.border}`, fontSize: '0.8125rem' },
+        standardSuccess: { background: 'rgba(56,161,105,0.08)',  color: '#22543D' },
+        standardWarning: { background: 'rgba(221,107,32,0.08)',  color: '#7B341E' },
+        standardError:   { background: 'rgba(229,62,62,0.08)',   color: '#742A2A' },
         standardInfo:    { background: palette.accentSoft, color: palette.accent },
       },
     },
   },
 });
 
-// Backwards-compatible exports — pages that import darkTheme or lightTheme continue to work
 export const darkTheme  = appTheme;
 export const lightTheme = appTheme;
 export default appTheme;

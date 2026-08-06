@@ -63,8 +63,8 @@ export default function AdminPanel() {
   if (isLoading) return <DashboardSkeleton />;
 
   return (
-    <Box className="page-enter" sx={{ bgcolor: '#F5F7FA', minHeight: '100vh', p: { xs: 2, md: 3 } }}>
-      <Box sx={{ width: '100%', animation: 'fadeUp 0.4s ease both' }}>
+    <Box className="page-enter" sx={{ bgcolor: '#F5F7FA', minHeight: '100vh', p: 0 }}>
+      <Box sx={{ width: '100%', animation: 'fadeUp 0.4s ease both', px: 1.5, pt: 1.5 }}>
         
         <Box sx={{ background: 'linear-gradient(135deg, rgba(37,99,235,0.05) 0%, rgba(13,148,136,0.03) 100%)', borderRadius: '12px', p: 2.5, mb: 3, border: '1px solid rgba(37,99,235,0.07)', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 3 }}>
           <Box>
@@ -81,9 +81,9 @@ export default function AdminPanel() {
           </Box>
         </Box>
 
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Box sx={{ overflow: 'hidden' }}><Grid container spacing={0} sx={{ mb: 2 }} disableEqualOverflow>
           {SYSTEM_METRICS.map((m) => (
-            <Grid item xs={12} sm={6} md={3} key={m.id}>
+            <Grid item xs={12} sm={6} md={3} key={m.id} sx={{ p: '6px !important' }}>
               <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: `3px solid ${m.color}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04)', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
                 <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
                   <Box sx={{ position: 'absolute', top: 16, right: 16, width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: `${m.color}15`, color: m.color }}>
@@ -102,10 +102,10 @@ export default function AdminPanel() {
               </Card>
             </Grid>
           ))}
-        </Grid>
+        </Grid></Box>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} lg={8}>
+        <Box sx={{ overflow: 'hidden' }}><Grid container spacing={0} disableEqualOverflow>
+          <Grid item xs={12} lg={8} sx={{ p: '6px !important' }}>
             <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
               <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -136,7 +136,7 @@ export default function AdminPanel() {
             </Card>
           </Grid>
 
-          <Grid item xs={12} lg={4}>
+          <Grid item xs={12} lg={4} sx={{ p: '6px !important' }}>
             <Stack spacing={3}>
               <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                 <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
@@ -184,7 +184,7 @@ export default function AdminPanel() {
             </Stack>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ p: '6px !important' }}>
             <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
                 <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -227,7 +227,7 @@ export default function AdminPanel() {
             </Card>
           </Grid>
           
-        </Grid>
+        </Grid></Box>
       </Box>
     </Box>
   );

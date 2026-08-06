@@ -4,7 +4,8 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import DownloadIcon from '@mui/icons-material/Download';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
-const ACCENT_BLUE = '#0066CC';
+const ACCENT_BLUE = '#1F5AA6';
+const DANGER_RED = '#DC2626';
 
 const mockReports = [
   { id: 1, title: 'Q2 2026 Board Summary', date: 'Jul 15, 2026', type: 'PDF' },
@@ -14,16 +15,31 @@ const mockReports = [
 ];
 
 export default function Reports() {
+  const standardCardSx = { 
+    borderRadius: '12px', 
+    border: '1px solid rgba(31,90,166,0.09)', 
+    boxShadow: '0 1px 4px rgba(31,90,166,0.05)', 
+    bgcolor: '#FFFFFF', 
+    transition: 'all 0.22s ease', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    height: '100%',
+    '&:hover': { 
+      boxShadow: '0 6px 24px rgba(31,90,166,0.10)', 
+      borderColor: 'rgba(31,90,166,0.16)' 
+    } 
+  };
+
   return (
-    <Box className="page-enter" sx={{ bgcolor: '#FAFAFA', minHeight: '100vh', p: { xs: 2, md: 3 } }}>
-      <Box sx={{ maxWidth: 1400, mx: 'auto', animation: 'fadeUp 0.4s ease both' }}>
+    <Box className="page-enter page-content" sx={{ bgcolor: '#F4F6FA', minHeight: '100vh', p: { xs: 1, md: 1.5 } }}>
+      <Box sx={{ width: '100%', animation: 'fadeUp 0.4s ease both' }}>
         
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Box>
-            <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1D1D1F' }}>
+            <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
               Board-Ready Reports
             </Typography>
-            <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>
+            <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
               Automatically compiled documents and insights
             </Typography>
           </Box>
@@ -33,9 +49,9 @@ export default function Reports() {
             startIcon={<AutoAwesomeIcon fontSize="small" />}
             sx={{ 
               bgcolor: ACCENT_BLUE, 
-              '&:hover': { bgcolor: '#0055AA' },
+              '&:hover': { bgcolor: '#16437E' },
               textTransform: 'none',
-              borderRadius: 2,
+              borderRadius: '12px',
               px: 3,
               fontWeight: 600
             }}
@@ -44,40 +60,31 @@ export default function Reports() {
           </Button>
         </Box>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {mockReports.map((report) => (
             <Grid item xs={12} md={6} lg={4} key={report.id}>
-              <Card sx={{ 
-                borderRadius: 3.5, 
-                border: '1px solid rgba(0,0,0,0.08)', 
-                boxShadow: 'none', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                height: '100%',
-                transition: 'all 0.2s',
-                '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' }
-              }}>
+              <Card sx={standardCardSx}>
                 <CardContent sx={{ flexGrow: 1, p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                    <Box sx={{ p: 1.5, bgcolor: '#F5F5F7', borderRadius: 2, mr: 2 }}>
-                      <PictureAsPdfIcon sx={{ color: '#FF3B30', fontSize: 24 }} />
+                    <Box sx={{ p: 1.5, bgcolor: '#F0F4F8', borderRadius: '12px', mr: 2 }}>
+                      <PictureAsPdfIcon sx={{ color: DANGER_RED, fontSize: 24 }} />
                     </Box>
                     <Box>
-                      <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', lineHeight: 1.2, mb: 0.5 }}>
+                      <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em', lineHeight: 1.2, mb: 0.5 }}>
                         {report.title}
                       </Typography>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#4B5563' }}>
                         Generated on {report.date}
                       </Typography>
                     </Box>
                   </Box>
-                  <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 2 }}>
+                  <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 2 }}>
                     Automatically compiled summary containing key metrics, department leaderboards, and financial projections.
                   </Typography>
                 </CardContent>
-                <Divider sx={{ borderColor: 'rgba(0,0,0,0.06)' }} />
-                <Box sx={{ px: 3, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: '#FAFAFA' }}>
-                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', color: '#6E6E73' }}>
+                <Divider sx={{ borderColor: 'rgba(31,90,166,0.09)' }} />
+                <Box sx={{ px: 3, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: '#F4F6FA' }}>
+                  <Typography sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF' }}>
                     {report.type} FORMAT
                   </Typography>
                   <IconButton size="small" sx={{ color: ACCENT_BLUE }}>

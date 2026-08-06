@@ -5,7 +5,7 @@ import {
 import { useScorePrompt, useOptimizePrompt, usePromptPrivacy } from '../../api/hooks';
 import { analyzePrompt, type PromptAnalysisResult } from '../../engines/promptEngine';
 
-const BRAND_COLOR = '#0066CC';
+const BRAND_COLOR = '#1F5AA6';
 
 export default function PromptStudio() {
   const [prompt, setPrompt] = useState('Write Java API');
@@ -51,17 +51,17 @@ export default function PromptStudio() {
   const { qualityScore, dimensions, privacyAnalysis, metadataOnly } = analysisResult;
 
   return (
-    <Box className="page-enter" sx={{ p: { xs: 2, md: 3 }, width: '100%', minHeight: '100vh', bgcolor: '#F5F7FA' }}>
-      <Box sx={{ background: 'linear-gradient(135deg, rgba(37,99,235,0.05) 0%, rgba(13,148,136,0.03) 100%)', borderRadius: 3, p: 3, mb: 3, border: '1px solid rgba(37,99,235,0.07)' }}>
-        <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1D1D1F' }}>Prompt Studio</Typography>
-        <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>Powered by 5-dimension rubric scoring</Typography>
+    <Box className="page-enter page-content" sx={{ p: { xs: 1, md: 1.5 }, width: '100%', minHeight: '100vh', bgcolor: '#F4F6FA' }}>
+      <Box sx={{ background: 'linear-gradient(135deg, rgba(31,90,166,0.05) 0%, rgba(5,150,105,0.03) 100%)', borderRadius: 3, p: 3, mb: 3, border: '1px solid rgba(31,90,166,0.09)' }}>
+        <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>Prompt Studio</Typography>
+        <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>Powered by 5-dimension rubric scoring</Typography>
       </Box>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         <Grid item xs={12} md={7}>
-          <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF' }}>
+          <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' } }}>
             <CardContent sx={{ p: 3 }}>
-              <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Draft Editor</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em', mb: 2 }}>Draft Editor</Typography>
               <TextField
                 fullWidth
                 multiline
@@ -71,7 +71,7 @@ export default function PromptStudio() {
                 sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                <Button variant="outlined" sx={{ borderColor: 'rgba(0,0,0,0.12)', color: '#1D1D1F' }} onClick={() => setPrompt('')}>Clear</Button>
+                <Button variant="outlined" sx={{ borderColor: 'rgba(31,90,166,0.09)', color: '#1A1D2E' }} onClick={() => setPrompt('')}>Clear</Button>
                 <Button variant="contained" sx={{ bgcolor: BRAND_COLOR }} onClick={handleScoreAndCoach}>Analyze</Button>
               </Box>
 
@@ -81,13 +81,13 @@ export default function PromptStudio() {
                 </Alert>
               )}
 
-              <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: '#F5F5F7', borderLeft: `3px solid ${BRAND_COLOR}` }}>
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F', mb: 1 }}>Feedback</Typography>
+              <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: '#F0F4F8', borderLeft: `3px solid ${BRAND_COLOR}` }}>
+                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E', mb: 1 }}>Feedback</Typography>
                 {analysisResult.coachingFeedback.map((fb, idx) => (
-                  <Typography key={idx} sx={{ fontSize: '0.8125rem', color: '#6E6E73', mb: 0.5 }}>• {fb}</Typography>
+                  <Typography key={idx} sx={{ fontSize: '0.8125rem', color: '#4B5563', mb: 0.5 }}>• {fb}</Typography>
                 ))}
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F', mt: 2, mb: 1 }}>Optimized</Typography>
-                <Typography sx={{ fontSize: '0.8125rem', p: 1.5, bgcolor: '#FFFFFF', borderRadius: 2, border: '1px solid rgba(0,0,0,0.08)', mb: 2 }}>
+                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E', mt: 2, mb: 1 }}>Optimized</Typography>
+                <Typography sx={{ fontSize: '0.8125rem', p: 1.5, bgcolor: '#FFFFFF', borderRadius: 2, border: '1px solid rgba(31,90,166,0.09)', mb: 2 }}>
                   {analysisResult.optimizedPrompt}
                 </Typography>
                 <Button variant="contained" size="small" onClick={handleApplyOptimization} sx={{ bgcolor: BRAND_COLOR }}>Use Optimized</Button>
@@ -98,25 +98,25 @@ export default function PromptStudio() {
 
         <Grid item xs={12} md={5}>
           <Stack spacing={3}>
-            <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF' }}>
+            <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' } }}>
               <CardContent sx={{ p: 3 }}>
-                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Details</Typography>
-                <TableContainer sx={{ borderRadius: 2, border: '1px solid rgba(0,0,0,0.08)' }}>
+                <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em', mb: 2 }}>Details</Typography>
+                <TableContainer sx={{ borderRadius: 2, border: '1px solid rgba(31,90,166,0.09)' }}>
                   <Table size="small">
                     <TableBody>
                       <TableRow><TableCell sx={{ fontSize: '0.8125rem' }}>Tokens</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600 }}>{metadataOnly.tokenCount}</TableCell></TableRow>
                       <TableRow><TableCell sx={{ fontSize: '0.8125rem' }}>Task</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600 }}>{analysisResult.classification}</TableCell></TableRow>
-                      <TableRow sx={{ bgcolor: '#F5F5F7' }}><TableCell sx={{ fontSize: '0.8125rem' }}>Recommend</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: BRAND_COLOR }}>{metadataOnly.recommendedModel}</TableCell></TableRow>
+                      <TableRow sx={{ bgcolor: '#F0F4F8' }}><TableCell sx={{ fontSize: '0.8125rem' }}>Recommend</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: BRAND_COLOR }}>{metadataOnly.recommendedModel}</TableCell></TableRow>
                     </TableBody>
                   </Table>
                 </TableContainer>
               </CardContent>
             </Card>
 
-            <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF' }}>
+            <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' } }}>
               <CardContent sx={{ p: 3 }}>
                 <Stack direction="row" justifyContent="space-between" mb={2}>
-                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Quality Score</Typography>
+                  <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em' }}>Quality Score</Typography>
                   <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: BRAND_COLOR }}>{qualityScore}</Typography>
                 </Stack>
                 <Stack spacing={1.5}>
@@ -129,10 +129,10 @@ export default function PromptStudio() {
                   ].map((item, idx) => (
                     <Box key={idx}>
                       <Stack direction="row" justifyContent="space-between" mb={0.5}>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{item.label}</Typography>
-                        <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1D1D1F' }}>{item.score}%</Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#4B5563' }}>{item.label}</Typography>
+                        <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1A1D2E' }}>{item.score}%</Typography>
                       </Stack>
-                      <LinearProgress variant="determinate" value={item.score} sx={{ height: 4, borderRadius: 2, bgcolor: '#F5F5F7', '& .MuiLinearProgress-bar': { bgcolor: BRAND_COLOR } }} />
+                      <LinearProgress variant="determinate" value={item.score} sx={{ height: 4, borderRadius: 2, bgcolor: '#F0F4F8', '& .MuiLinearProgress-bar': { bgcolor: BRAND_COLOR } }} />
                     </Box>
                   ))}
                 </Stack>

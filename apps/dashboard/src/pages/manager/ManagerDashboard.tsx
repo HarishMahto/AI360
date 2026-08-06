@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Box, Grid, Typography, Chip, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Avatar, Divider, Stack,
-  Tabs, Tab, Button, LinearProgress, CircularProgress, Card, CardContent
+  Button, LinearProgress, CircularProgress, Card, CardContent
 } from '@mui/material';
+
+const TAB_NAME_MAP: Record<string, number> = {
+  overview: 0,
+  analytics: 1,
+  leaderboard: 2,
+  'prompt-categories': 3,
+  'license-detection': 4,
+  benchmarks: 5,
+};
 import { TrendingUp, Speed, AttachMoney, ShowChart, Groups } from '@mui/icons-material';
 import {
   BarChart, Bar, PieChart, Pie, Cell,
@@ -68,7 +78,9 @@ export default function ManagerDashboard() {
   const { data: costAdvisorData } = useCostAdvisor();
   const { data: benchmarksData } = useTeamBenchmarks();
   const smartSuggestions = useSmartSuggestions('Engineering').data!;
-  const [activeTab, setActiveTab] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTabKey = searchParams.get('tab') || 'overview';
+  const activeTab = TAB_NAME_MAP[currentTabKey] ?? 0;
 
   if (isLoading) {
     return (
@@ -83,92 +95,74 @@ export default function ManagerDashboard() {
   const teamBenchmarks: any[] = Array.isArray(benchmarksData) ? benchmarksData : [];
 
   return (
-    <Box className="page-enter" sx={{ p: { xs: 2, md: 3 }, width: '100%', bgcolor: '#F5F7FA', minHeight: '100vh' }}>
+    <Box className="page-enter" sx={{ px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 }, width: '100%', bgcolor: '#F0F5F3', minHeight: '100vh', overflow: 'hidden' }}>
       
-      {/* HEADER */}
-      <Box sx={{ background: 'linear-gradient(135deg, rgba(37,99,235,0.05) 0%, rgba(13,148,136,0.03) 100%)', borderRadius: '12px', p: 2.5, mb: 3, border: '1px solid rgba(37,99,235,0.07)', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 2 }}>
+      {/* HEADER (Square workspace container) */}
+      <Box sx={{ background: 'linear-gradient(135deg, rgba(44,122,123,0.08) 0%, rgba(56,161,105,0.05) 100%)', borderRadius: 0, p: 2.5, mb: 3, border: '1px solid rgba(43,108,93,0.14)', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 2 }}>
         <Box>
           <Stack direction="row" spacing={1.5} alignItems="center" mb={0.5}>
-            <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1D1D1F' }}>
+            <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A2F29' }}>
               Manager Control Center
             </Typography>
-            <Chip label="Department Leaderboard #1" size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(0,102,204,0.08)', color: '#0066CC' }} />
+            <Chip label="Department Leaderboard #1" size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(44,122,123,0.10)', color: '#2C7A7B' }} />
           </Stack>
-          <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>
+          <Typography sx={{ fontSize: '0.8125rem', color: '#4A655D' }}>
             Department analytics, license detection, ROI tracking & prompt intelligence.
           </Typography>
         </Box>
 
         <Chip
           label={`${stats.unused_licenses_count} Unused Licenses ($${stats.unused_licenses_cost_savings}/mo waste)`}
-          onClick={() => setActiveTab(4)}
-          sx={{ bgcolor: 'rgba(255,149,0,0.10)', color: '#9E5B00', fontWeight: 600, fontSize: '0.8125rem', px: 1, py: 2.5, borderRadius: 2, cursor: 'pointer', '&:hover': { bgcolor: 'rgba(255,149,0,0.20)' } }}
+          onClick={() => setSearchParams({ tab: 'license-detection' })}
+          sx={{ bgcolor: 'rgba(221,107,32,0.10)', color: '#DD6B20', fontWeight: 600, fontSize: '0.8125rem', px: 1, py: 2.5, borderRadius: 2, cursor: 'pointer', '&:hover': { bgcolor: 'rgba(221,107,32,0.20)' } }}
         />
       </Box>
 
-      {/* COST ADVISOR NUDGE */}
-      <Box sx={{ mb: 4, p: 3, borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', bgcolor: '#FFFFFF' }}>
+      {/* COST ADVISOR NUDGE (Square workspace box) */}
+      <Box sx={{ mb: 4, p: 3, borderRadius: 0, border: '1px solid rgba(43,108,93,0.14)', bgcolor: '#FFFFFF' }}>
         <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} spacing={2}>
           <Box>
             <Stack direction="row" spacing={1} alignItems="center" mb={0.5}>
-              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#0066CC' }}>
+              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#2C7A7B' }}>
                 Daily Proactive Cost Advisor
               </Typography>
-              <Chip label="Morning Snapshot" size="small" sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600, borderRadius: 1, bgcolor: '#F5F5F7', color: '#6E6E73' }} />
+              <Chip label="Morning Snapshot" size="small" sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600, borderRadius: 1, bgcolor: '#E8F0EC', color: '#4A655D' }} />
             </Stack>
-            <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>
+            <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A2F29' }}>
               {costAdvisor.recommendation || "Move summarization tasks to Gemini Flash."}
             </Typography>
           </Box>
           <Stack direction="row" spacing={3} alignItems="center" flexWrap="wrap">
             <Box>
-              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>Period</Typography>
-              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{costAdvisor.period || "Yesterday"}</Typography>
+              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4A655D' }}>Period</Typography>
+              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1A2F29' }}>{costAdvisor.period || "Yesterday"}</Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>Dept</Typography>
-              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{costAdvisor.department || "Engineering"}</Typography>
+              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4A655D' }}>Dept</Typography>
+              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1A2F29' }}>{costAdvisor.department || "Engineering"}</Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>Spent</Typography>
-              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#FF3B30' }}>{costAdvisor.spent_formatted || "₹820"}</Typography>
+              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4A655D' }}>Spent</Typography>
+              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#E53E3E' }}>{costAdvisor.spent_formatted || "₹820"}</Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>Potential Saving</Typography>
-              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#34C759' }}>{costAdvisor.potential_saving_formatted || "₹210"}</Typography>
+              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4A655D' }}>Potential Saving</Typography>
+              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#38A169' }}>{costAdvisor.potential_saving_formatted || "₹210"}</Typography>
             </Box>
-            <Button variant="contained" size="small" disableElevation sx={{ bgcolor: '#0066CC', borderRadius: 1.5, textTransform: 'none', fontWeight: 500 }}>
+            <Button variant="contained" size="small" disableElevation sx={{ bgcolor: '#2C7A7B', borderRadius: 1.5, textTransform: 'none', fontWeight: 500 }}>
               Apply Suggestion
             </Button>
           </Stack>
         </Stack>
       </Box>
 
-      {/* TABS */}
-      <Tabs 
-        value={activeTab} 
-        onChange={(_, v) => setActiveTab(v)} 
-        variant="scrollable"
-        scrollButtons="auto"
-        sx={{ 
-          mb: 3, 
-          borderBottom: '1px solid rgba(0,0,0,0.08)', 
-          '& .MuiTabs-indicator': { height: 2, borderRadius: '2px 2px 0 0', bgcolor: '#0066CC' } 
-        }}
-      >
-        <Tab label="Overview" disableRipple sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-        <Tab label="Department Analytics" disableRipple sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-        <Tab label="Leaderboard" disableRipple sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-        <Tab label="Prompt Categories" disableRipple sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-        <Tab label="License Detection" disableRipple sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-        <Tab label="Benchmarks" disableRipple sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem', color: '#6E6E73', minHeight: 40, '&.Mui-selected': { color: '#1D1D1F', fontWeight: 600 } }} />
-      </Tabs>
+
 
       {/* TAB 0: OVERVIEW */}
       {activeTab === 0 && (
         <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
           {/* KPI GRID */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid container spacing={2} disableEqualOverflow sx={{ mb: 4 }}>
             <Grid item xs={12} sm={6} md={2.4}>
               <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                 <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
@@ -251,7 +245,7 @@ export default function ManagerDashboard() {
             </Grid>
           </Grid>
 
-          <Grid container spacing={3}>
+          <Grid container spacing={2} disableEqualOverflow>
             <Grid item xs={12} md={7}>
               <Box mb={2}>
                 <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Token Trends & Consumption</Typography>
@@ -378,10 +372,151 @@ export default function ManagerDashboard() {
         </Box>
       )}
 
-      {/* TAB 3,4,5 would follow similarly, keeping it concise */}
-      {(activeTab === 3 || activeTab === 4 || activeTab === 5) && (
-        <Box sx={{ animation: 'fadeUp 0.4s ease both', textAlign: 'center', py: 8 }}>
-          <Typography sx={{ fontSize: '0.9375rem', color: '#6E6E73' }}>Content available in full version.</Typography>
+      {/* TAB 3: PROMPT CATEGORIES */}
+      {activeTab === 3 && (
+        <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
+          <Grid container spacing={2} disableEqualOverflow>
+            <Grid item xs={12} md={7}>
+              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3 }}>
+                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Top Department Prompt Templates</Typography>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow sx={{ bgcolor: '#F5F5F7' }}>
+                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Template Title</TableCell>
+                        <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Uses</TableCell>
+                        <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Saved</TableCell>
+                        <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Author</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {stats.top_prompt_templates.map((tpl, i) => (
+                        <TableRow key={i} sx={{ '&:hover': { bgcolor: '#F5F5F7' } }}>
+                          <TableCell sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{tpl.title}</TableCell>
+                          <TableCell align="center" sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>{tpl.uses}</TableCell>
+                          <TableCell align="center" sx={{ fontSize: '0.8125rem', color: '#34C759', fontWeight: 600 }}>{tpl.hoursSaved}h</TableCell>
+                          <TableCell align="right" sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>{tpl.author}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={5}>
+              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
+                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Category Distribution</Typography>
+                <Stack spacing={2}>
+                  {stats.category_breakdown.map((cat, i) => (
+                    <Box key={i}>
+                      <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{cat.name}</Typography>
+                        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: cat.color }}>{cat.value}%</Typography>
+                      </Stack>
+                      <LinearProgress variant="determinate" value={cat.value} sx={{ height: 6, borderRadius: 3, bgcolor: '#F5F5F7', '& .MuiLinearProgress-bar': { bgcolor: cat.color } }} />
+                    </Box>
+                  ))}
+                </Stack>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
+      )}
+
+      {/* TAB 4: LICENSE DETECTION */}
+      {activeTab === 4 && (
+        <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
+          <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Box>
+                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Unused License Detection</Typography>
+                <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>Seats inactive for 30+ days costing ${stats.unused_licenses_cost_savings}/month</Typography>
+              </Box>
+              <Button variant="contained" size="small" sx={{ bgcolor: '#FF3B30', textTransform: 'none', borderRadius: 2 }}>Reallocate All Inactive Seats</Button>
+            </Box>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: '#F5F5F7' }}>
+                    <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>User Name</TableCell>
+                    <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Email</TableCell>
+                    <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Department</TableCell>
+                    <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Last Active</TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Seat Cost</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {stats.unused_licenses.map((lic) => (
+                    <TableRow key={lic.id} sx={{ '&:hover': { bgcolor: '#F5F5F7' } }}>
+                      <TableCell sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{lic.name}</TableCell>
+                      <TableCell sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>{lic.email}</TableCell>
+                      <TableCell sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>{lic.dept}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.8125rem', color: '#FF3B30', fontWeight: 600 }}>{lic.lastActive}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>{lic.seatCost}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Card>
+        </Box>
+      )}
+
+      {/* TAB 5: BENCHMARKS */}
+      {activeTab === 5 && (
+        <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
+          <Grid container spacing={2} disableEqualOverflow>
+            <Grid item xs={12} md={6}>
+              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3 }}>
+                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Department Velocity Benchmarks</Typography>
+                <Stack spacing={2.5}>
+                  {[
+                    { label: 'Engineering Adoption', val: 92, target: '90%' },
+                    { label: 'Prompt Quality Score', val: 87, target: '85%' },
+                    { label: 'Token Efficiency Ratio', val: 95, target: '90%' },
+                    { label: 'Cost Optimization Score', val: 88, target: '80%' }
+                  ].map((b, idx) => (
+                    <Box key={idx}>
+                      <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{b.label}</Typography>
+                        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#0066CC' }}>{b.val}% (Target: {b.target})</Typography>
+                      </Stack>
+                      <LinearProgress variant="determinate" value={b.val} sx={{ height: 6, borderRadius: 3, bgcolor: '#F5F5F7', '& .MuiLinearProgress-bar': { bgcolor: '#0066CC' } }} />
+                    </Box>
+                  ))}
+                </Stack>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
+                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Industry Peer Comparisons</Typography>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow sx={{ bgcolor: '#F5F5F7' }}>
+                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Metric</TableCell>
+                        <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Your Team</TableCell>
+                        <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Peer Avg</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {[
+                        { metric: 'Avg ROI', team: '380%', peer: '240%' },
+                        { metric: 'Time Saved/Dev', team: '4.2 hrs/wk', peer: '2.8 hrs/wk' },
+                        { metric: 'Active Adoption', team: '88%', peer: '64%' }
+                      ].map((m, i) => (
+                        <TableRow key={i}>
+                          <TableCell sx={{ fontSize: '0.8125rem', color: '#1D1D1F', fontWeight: 500 }}>{m.metric}</TableCell>
+                          <TableCell align="center" sx={{ fontSize: '0.8125rem', color: '#34C759', fontWeight: 600 }}>{m.team}</TableCell>
+                          <TableCell align="right" sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>{m.peer}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Card>
+            </Grid>
+          </Grid>
         </Box>
       )}
 

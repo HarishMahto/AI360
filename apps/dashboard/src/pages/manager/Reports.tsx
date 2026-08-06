@@ -30,23 +30,26 @@ export default function Reports() {
     }
   };
 
+  const cardSx = { borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' } };
+  const sectionTitleSx = { fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em' };
+
   return (
-    <Box className="page-enter" sx={{ p: { xs: 2, md: 3 }, maxWidth: 1400, mx: 'auto', bgcolor: '#FAFAFA', minHeight: '100vh' }}>
+    <Box className="page-enter page-content" sx={{ p: { xs: 1, md: 1.5 }, width: '100%', bgcolor: '#F4F6FA', minHeight: '100vh' }}>
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1D1D1F' }}>
+        <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
           Reports & Exports
         </Typography>
-        <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>
+        <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
           Generate and download custom compliance, cost, and usage reports.
         </Typography>
       </Box>
       
       <Grid container spacing={2}>
         <Grid item xs={12} md={5}>
-          <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none', bgcolor: '#FFFFFF', transition: 'box-shadow 0.25s ease, border-color 0.25s ease', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' }, mb: 3 }}>
+          <Card sx={{ ...cardSx, mb: 3 }}>
             <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-              <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>Generate New Report</Typography>
-              <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mb: 3 }}>
+              <Typography sx={{ ...sectionTitleSx, mb: 0.5 }}>Generate New Report</Typography>
+              <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mb: 3 }}>
                 Create a customized report based on current data.
               </Typography>
               
@@ -56,7 +59,7 @@ export default function Reports() {
                   fullWidth 
                   color="primary"
                   disableElevation
-                  sx={{ py: 1, borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
+                  sx={{ py: 1, borderRadius: '8px', textTransform: 'none', fontWeight: 500, bgcolor: '#1F5AA6', '&:hover': { bgcolor: '#15417A' } }}
                   startIcon={<PictureAsPdfIcon fontSize="small" />}
                   onClick={() => handleDownload('executive', 'pdf')}
                 >
@@ -65,7 +68,7 @@ export default function Reports() {
                 <Button 
                   variant="outlined" 
                   fullWidth 
-                  sx={{ py: 1, borderRadius: 2, textTransform: 'none', fontWeight: 500, borderColor: 'rgba(0,0,0,0.12)', color: '#1D1D1F', '&:hover': { borderColor: 'rgba(0,0,0,0.2)', bgcolor: '#F5F5F7' } }} 
+                  sx={{ py: 1, borderRadius: '8px', textTransform: 'none', fontWeight: 500, borderColor: 'rgba(31,90,166,0.16)', color: '#1A1D2E', '&:hover': { borderColor: 'rgba(31,90,166,0.25)', bgcolor: '#F0F4F8' } }} 
                   startIcon={<AssessmentIcon fontSize="small" />}
                   onClick={() => handleDownload('raw-data', 'csv')}
                 >
@@ -77,39 +80,39 @@ export default function Reports() {
         </Grid>
 
         <Grid item xs={12} md={7}>
-          <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.08)', boxShadow: 'none', bgcolor: '#FFFFFF', transition: 'box-shadow 0.25s ease, border-color 0.25s ease', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+          <Card sx={cardSx}>
             <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
-              <Box sx={{ p: 2.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Recent Reports</Typography>
+              <Box sx={{ p: 2.5, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
+                <Typography sx={sectionTitleSx}>Recent Reports</Typography>
               </Box>
               <List disablePadding>
                 {reportsList.map((report, index) => (
                   <React.Fragment key={report.id}>
-                    <ListItem sx={{ py: 2, px: 2.5, '&:hover': { bgcolor: '#F5F5F7' } }}>
+                    <ListItem sx={{ py: 2, px: 2.5, '&:hover': { bgcolor: '#F0F4F8' } }}>
                       <ListItemIcon>
-                        <Box sx={{ width: 36, height: 36, borderRadius: 2, bgcolor: '#F5F5F7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          {report.type === 'PDF' ? <PictureAsPdfIcon sx={{ fontSize: 20, color: '#FF3B30' }} /> : <AssessmentIcon sx={{ fontSize: 20, color: '#34C759' }} />}
+                        <Box sx={{ width: 36, height: 36, borderRadius: '8px', bgcolor: '#F0F4F8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {report.type === 'PDF' ? <PictureAsPdfIcon sx={{ fontSize: 20, color: '#DC2626' }} /> : <AssessmentIcon sx={{ fontSize: 20, color: '#059669' }} />}
                         </Box>
                       </ListItemIcon>
                       <ListItemText 
                         primary={report.title} 
                         secondary={`Generated on ${report.date}`} 
-                        primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 500, color: '#1D1D1F' }}
-                        secondaryTypographyProps={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.25 }}
+                        primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 500, color: '#1A1D2E' }}
+                        secondaryTypographyProps={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.25 }}
                       />
                       <ListItemSecondaryAction sx={{ right: 20 }}>
                         <Button 
                           variant="outlined"
                           size="small"
                           startIcon={<DownloadIcon />} 
-                          sx={{ borderColor: 'rgba(0,0,0,0.12)', color: '#1D1D1F', textTransform: 'none', fontWeight: 500, borderRadius: 1.5, py: 0.5, '&:hover': { borderColor: 'rgba(0,0,0,0.2)', bgcolor: '#F5F5F7' } }}
+                          sx={{ borderColor: 'rgba(31,90,166,0.16)', color: '#1A1D2E', textTransform: 'none', fontWeight: 500, borderRadius: '6px', py: 0.5, '&:hover': { borderColor: 'rgba(31,90,166,0.25)', bgcolor: '#F0F4F8' } }}
                           onClick={() => handleDownload(report.title.toLowerCase().replace(/ /g, '-'), report.type.toLowerCase())}
                         >
                           Download
                         </Button>
                       </ListItemSecondaryAction>
                     </ListItem>
-                    {index < reportsList.length - 1 && <Divider sx={{ borderColor: 'rgba(0,0,0,0.06)' }} />}
+                    {index < reportsList.length - 1 && <Divider sx={{ borderColor: 'rgba(31,90,166,0.09)' }} />}
                   </React.Fragment>
                 ))}
               </List>

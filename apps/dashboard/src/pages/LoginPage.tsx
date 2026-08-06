@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import {
-  Box, TextField, Button, Typography, Divider, Alert, CircularProgress, Stack, Link, Chip
+  Box, TextField, Button, Typography, Divider, Alert, CircularProgress, Stack, Link, InputAdornment, IconButton
 } from '@mui/material';
 import {
   Google as GoogleIcon,
-  Person as PersonIcon,
-  ManageAccounts as ManagerIcon,
-  AdminPanelSettings as AdminIcon,
-  TrendingUp as ExecIcon,
-  ArrowForward,
-  CheckCircle
+  EmailOutlined as EmailIcon,
+  LockOutlined as LockIcon,
+  VisibilityOutlined as VisibilityIcon,
+  VisibilityOffOutlined as VisibilityOffIcon,
 } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,46 +30,10 @@ const ROLE_ROUTES: Record<UserRole, string> = {
 };
 
 const DEMO_ACCOUNTS = [
-  {
-    role: 'EMPLOYEE' as UserRole,
-    label: 'Employee',
-    email: 'employee@ai360.io',
-    desc: 'AI Chat, Prompt Studio, Analytics',
-    icon: PersonIcon,
-    color: '#2563EB',
-    soft: 'rgba(37,99,235,0.08)',
-    route: '/dashboard/employee',
-  },
-  {
-    role: 'MANAGER' as UserRole,
-    label: 'Manager',
-    email: 'manager@ai360.io',
-    desc: 'Team Analytics, FinOps, Reports',
-    icon: ManagerIcon,
-    color: '#0D9488',
-    soft: 'rgba(13,148,136,0.08)',
-    route: '/dashboard/manager',
-  },
-  {
-    role: 'EXECUTIVE' as UserRole,
-    label: 'Executive',
-    email: 'executive@ai360.io',
-    desc: 'Org ROI, Dept Rankings, Forecast',
-    icon: ExecIcon,
-    color: '#7C3AED',
-    soft: 'rgba(124,58,237,0.08)',
-    route: '/dashboard/executive',
-  },
-  {
-    role: 'ADMIN' as UserRole,
-    label: 'Admin',
-    email: 'admin@ai360.io',
-    desc: 'Users, Providers, Budgets, Settings',
-    icon: AdminIcon,
-    color: '#D97706',
-    soft: 'rgba(217,119,6,0.08)',
-    route: '/dashboard/admin',
-  },
+  { role: 'EMPLOYEE' as UserRole, label: 'Employee', email: 'employee@ai360.io', color: '#2563EB' },
+  { role: 'MANAGER' as UserRole, label: 'Manager', email: 'manager@ai360.io', color: '#0D9488' },
+  { role: 'EXECUTIVE' as UserRole, label: 'Executive', email: 'executive@ai360.io', color: '#7C3AED' },
+  { role: 'ADMIN' as UserRole, label: 'Admin', email: 'admin@ai360.io', color: '#D97706' },
 ];
 
 export default function LoginPage() {
@@ -79,7 +41,9 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('EMPLOYEE');
+  const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isExiting, setIsExiting] = useState(false);
 
   const { control, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -90,6 +54,13 @@ export default function LoginPage() {
     return <Navigate to={ROLE_ROUTES[role] ?? '/dashboard/employee'} replace />;
   }
 
+  const navigateWithTransition = (path: string) => {
+    setIsExiting(true);
+    setTimeout(() => {
+      navigate(path);
+    }, 280);
+  };
+
   const onSubmit = async (data: LoginForm) => {
     setAuthError(null);
     try {
@@ -98,7 +69,7 @@ export default function LoginPage() {
       } else {
         await signInWithEmail(data.email, data.password, selectedRole);
       }
-      navigate(ROLE_ROUTES[selectedRole] ?? '/dashboard/employee');
+      navigateWithTransition(ROLE_ROUTES[selectedRole] ?? '/dashboard/employee');
     } catch (err: any) {
       setAuthError(err?.message ?? 'Authentication failed.');
     }
@@ -109,358 +80,437 @@ export default function LoginPage() {
     setValue('email', email);
     setValue('password', 'Password123');
     loginAsDemoUser(demoRole);
-    navigate(ROLE_ROUTES[demoRole]);
+    navigateWithTransition(ROLE_ROUTES[demoRole]);
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', bgcolor: '#FFFFFF', overflow: 'hidden' }}>
-      
-      {/* ── LEFT FORM PANEL ── */}
+    <Box
+      sx={{
+        minHeight: '100vh',
+        width: '100vw',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        background: 'linear-gradient(180deg, #A8DAFF 0%, #C4E6FF 35%, #E2F2FF 70%, #F4F9FF 100%)',
+        p: 2,
+      }}
+    >
+      {/* Background Radial Light Effect */}
       <Box
         sx={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          px: { xs: 3, sm: 6, md: 8 },
-          py: { xs: 3, md: 5 },
-          maxWidth: { xs: '100%', md: '50%' },
-          bgcolor: '#FFFFFF',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: 'none',
+          opacity: 0.6,
+          background: 'radial-gradient(circle at 50% 30%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 65%)',
+        }}
+      />
+
+      {/* Bottom Background Soft Clouds Graphic */}
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: -2,
+          left: 0,
+          right: 0,
+          width: '100%',
+          height: { xs: 120, sm: 160, md: 200 },
+          pointerEvents: 'none',
+          zIndex: 0,
+          overflow: 'hidden',
         }}
       >
-        {/* Brand */}
-        <Box>
-          <Stack direction="row" spacing={1.25} alignItems="center">
-            <Box
-              component="img"
-              src="/logo.png"
-              alt="AI360 Logo"
-              sx={{ height: 28, width: 28, borderRadius: '6px', boxShadow: '0 2px 6px rgba(0,0,0,0.1)' }}
-            />
-            <Typography sx={{ fontSize: '16px', fontWeight: 800, color: '#1A1D23', letterSpacing: '-0.025em' }}>
-              AI360
-            </Typography>
-          </Stack>
-        </Box>
+        <svg viewBox="0 0 1440 220" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%', display: 'block' }}>
+          {/* Back cloud layer */}
+          <path
+            d="M0,150 C180,110 380,130 540,90 C700,50 900,85 1060,65 C1220,45 1360,100 1440,110 L1440,220 L0,220 Z"
+            fill="rgba(255, 255, 255, 0.45)"
+          />
+          {/* Mid cloud layer */}
+          <path
+            d="M-50,165 C140,120 300,105 470,125 C640,145 820,95 1000,105 C1180,115 1340,75 1490,130 L1490,220 L-50,220 Z"
+            fill="rgba(255, 255, 255, 0.75)"
+          />
+          {/* Foreground cloud layer */}
+          <path
+            d="M0,185 C200,135 350,155 560,125 C770,95 920,135 1120,115 C1320,95 1400,145 1440,155 L1440,220 L0,220 Z"
+            fill="#FFFFFF"
+          />
+        </svg>
+      </Box>
 
-        {/* FORM */}
+      {/* Floating Centered Glass Card Container */}
+      <Box
+        component={motion.div}
+        initial={{ opacity: 0, scale: 0.94, y: 20 }}
+        animate={isExiting ? { opacity: 0, scale: 0.95, y: -16 } : { opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        sx={{
+          position: 'relative',
+          zIndex: 1,
+          width: '100%',
+          maxWidth: { xs: '92vw', sm: 560, md: 620 },
+          borderRadius: '28px',
+          background: 'linear-gradient(180deg, rgba(235, 248, 255, 0.88) 0%, rgba(255, 255, 255, 0.94) 22%, rgba(255, 255, 255, 0.96) 100%)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.9)',
+          boxShadow: '0 20px 60px rgba(0, 70, 150, 0.12), 0 4px 20px rgba(0, 0, 0, 0.04)',
+          px: { xs: 3.5, sm: 5 },
+          py: { xs: 4, sm: 4.5 },
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        {/* Top Logo Container (Increased Size) */}
         <Box
           component={motion.div}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-          sx={{ maxWidth: 420, width: '100%', mx: 'auto', my: 'auto' }}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+          sx={{
+            width: 72,
+            height: 72,
+            borderRadius: '20px',
+            bgcolor: '#FFFFFF',
+            boxShadow: '0 6px 20px rgba(0,70,150,0.10), 0 2px 6px rgba(0,0,0,0.04)',
+            border: '1px solid rgba(0,0,0,0.06)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mb: 2.5,
+          }}
         >
-          <AnimatePresence mode="wait">
-            <Box
-              component={motion.div}
-              key={isSignUp ? 'signup-head' : 'signin-head'}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              sx={{ mb: 4 }}
-            >
-              <Typography sx={{ fontSize: '1.875rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D23', lineHeight: 1.2 }}>
-                {isSignUp ? 'Create an account' : 'Welcome back'}
-              </Typography>
-              <Typography sx={{ fontSize: '13.5px', color: '#6B7280', mt: 0.75 }}>
-                {isSignUp ? 'Sign up for your enterprise workspace' : 'Sign in to your enterprise workspace'}
-              </Typography>
-            </Box>
-          </AnimatePresence>
+          <Box component="img" src="/logo.png" alt="AI360 Logo" sx={{ width: 48, height: 48, borderRadius: '12px', objectFit: 'cover' }} />
+        </Box>
 
-          {/* Role selector */}
-          <Box sx={{ p: '3px', bgcolor: '#F0F2F5', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '10px', display: 'flex', mb: 3 }}>
-            {(['EMPLOYEE', 'MANAGER', 'ADMIN', 'EXECUTIVE'] as UserRole[]).map((r) => {
-              const isSelected = selectedRole === r;
-              return (
-                <Button
-                  key={r}
-                  disableElevation
-                  onClick={() => setSelectedRole(r)}
-                  sx={{
-                    flex: 1,
-                    minWidth: 0,
-                    textTransform: 'capitalize',
-                    fontSize: '11.5px',
-                    fontWeight: isSelected ? 600 : 500,
-                    borderRadius: '7px',
-                    p: '6px 4px',
-                    color: isSelected ? '#1A1D23' : '#6B7280',
-                    bgcolor: isSelected ? '#FFFFFF' : 'transparent',
-                    boxShadow: isSelected ? '0 1px 4px rgba(0,0,0,0.10)' : 'none',
-                    '&:hover': { bgcolor: isSelected ? '#FFFFFF' : 'rgba(0,0,0,0.04)' },
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  {r.charAt(0) + r.slice(1).toLowerCase()}
-                </Button>
-              );
-            })}
+        {/* Dynamic Header (Subtitle removed as requested) */}
+        <AnimatePresence mode="wait">
+          <Box
+            component={motion.div}
+            key={isSignUp ? 'signup-head' : 'signin-head'}
+            initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+            transition={{ duration: 0.2 }}
+            sx={{ textAlign: 'center', mb: 3, width: '100%' }}
+          >
+            <Typography sx={{ fontSize: '1.65rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#111827', lineHeight: 1.2 }}>
+              {isSignUp ? 'Create an account' : 'Sign in with email'}
+            </Typography>
           </Box>
+        </AnimatePresence>
 
-          {authError && (
-            <Alert severity="error" sx={{ mb: 3, borderRadius: 2, fontSize: '0.8rem' }}>
-              {authError}
-            </Alert>
-          )}
-
-          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={1.5}>
-              <Controller
-                name="email"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    placeholder="Email address"
-                    fullWidth
-                    size="small"
-                    error={!!errors.email}
-                    helperText={errors.email?.message}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        bgcolor: '#F0F2F5',
-                        borderRadius: '10px',
-                        fontSize: '13px',
-                        '& fieldset': { border: 'none' },
-                        '&:hover fieldset': { border: '1px solid rgba(0,0,0,0.1)' },
-                        '&.Mui-focused fieldset': { border: '1.5px solid #2563EB' },
-                      },
-                      '& .MuiOutlinedInput-input': { p: '12px 14px' }
-                    }}
-                  />
-                )}
-              />
-              <Controller
-                name="password"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    type="password"
-                    placeholder="Password"
-                    fullWidth
-                    size="small"
-                    error={!!errors.password}
-                    helperText={errors.password?.message}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        bgcolor: '#F0F2F5',
-                        borderRadius: '10px',
-                        fontSize: '13px',
-                        '& fieldset': { border: 'none' },
-                        '&:hover fieldset': { border: '1px solid rgba(0,0,0,0.1)' },
-                        '&.Mui-focused fieldset': { border: '1.5px solid #2563EB' },
-                      },
-                      '& .MuiOutlinedInput-input': { p: '12px 14px' }
-                    }}
-                  />
-                )}
-              />
-
+        {/* Role Selector Segment */}
+        <Box sx={{ width: '100%', p: '3px', bgcolor: 'rgba(0,0,0,0.04)', borderRadius: '12px', display: 'flex', mb: 3 }}>
+          {(['EMPLOYEE', 'MANAGER', 'ADMIN', 'EXECUTIVE'] as UserRole[]).map((r) => {
+            const isSelected = selectedRole === r;
+            return (
               <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                disabled={isSubmitting}
+                key={r}
+                disableElevation
+                onClick={() => setSelectedRole(r)}
                 sx={{
-                  height: 44,
-                  mt: 0.5,
-                  borderRadius: '10px',
-                  bgcolor: '#2563EB',
-                  color: '#FFFFFF',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  fontSize: '14px',
-                  boxShadow: '0 1px 4px rgba(37,99,235,0.3)',
-                  '&:hover': { bgcolor: '#1D4ED8', boxShadow: '0 4px 12px rgba(37,99,235,0.3)' },
+                  flex: 1,
+                  minWidth: 0,
+                  textTransform: 'capitalize',
+                  fontSize: '11.5px',
+                  fontWeight: isSelected ? 600 : 500,
+                  borderRadius: '9px',
+                  py: '6px',
+                  px: '2px',
+                  color: isSelected ? '#111827' : '#6B7280',
+                  bgcolor: isSelected ? '#FFFFFF' : 'transparent',
+                  boxShadow: isSelected ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                  '&:hover': { bgcolor: isSelected ? '#FFFFFF' : 'rgba(0,0,0,0.03)' },
                   transition: 'all 0.2s ease',
                 }}
               >
-                {isSubmitting ? <CircularProgress size={20} color="inherit" /> : (isSignUp ? 'Sign up' : 'Sign in')}
+                {r.charAt(0) + r.slice(1).toLowerCase()}
               </Button>
-            </Stack>
-          </Box>
+            );
+          })}
+        </Box>
 
-          <Divider sx={{ my: 2.5, color: '#9CA3AF', fontSize: '12px' }}>or</Divider>
+        {authError && (
+          <Alert severity="error" sx={{ width: '100%', mb: 2.5, borderRadius: 2, fontSize: '0.8rem' }}>
+            {authError}
+          </Alert>
+        )}
 
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={() => signInWithGoogle(selectedRole)}
-            startIcon={<GoogleIcon sx={{ fontSize: 18 }} />}
+        {/* Beautiful Form Inputs with Left Field Names */}
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%' }}>
+          <Stack spacing={2}>
+            
+            {/* Email Field Row */}
+            <Box sx={{ width: '100%' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  bgcolor: '#EEF1F4',
+                  borderRadius: '14px',
+                  px: 2,
+                  py: 0.5,
+                  border: errors.email ? '1.5px solid #FF3B30' : '1px solid rgba(0,0,0,0.05)',
+                  transition: 'all 0.2s ease',
+                  '&:focus-within': {
+                    bgcolor: '#FFFFFF',
+                    borderColor: '#2563EB',
+                    boxShadow: '0 0 0 3px rgba(37,99,235,0.12)',
+                  },
+                }}
+              >
+                <Typography sx={{ width: 80, flexShrink: 0, fontSize: '13.5px', fontWeight: 600, color: '#374151', textAlign: 'left' }}>
+                  Email
+                </Typography>
+                <Divider orientation="vertical" flexItem sx={{ my: 1, mr: 1.5, borderColor: 'rgba(0,0,0,0.08)' }} />
+                <Controller
+                  name="email"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      placeholder="name@company.com"
+                      fullWidth
+                      variant="standard"
+                      InputProps={{
+                        disableUnderline: true,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <EmailIcon sx={{ fontSize: 18, color: '#9CA3AF' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiInput-root': { fontSize: '14px', color: '#111827', py: 0.75 }
+                      }}
+                    />
+                  )}
+                />
+              </Box>
+              {errors.email && (
+                <Typography sx={{ fontSize: '12px', color: '#FF3B30', mt: 0.5, ml: 1, textAlign: 'left' }}>
+                  {errors.email.message}
+                </Typography>
+              )}
+            </Box>
+
+            {/* Password Field Row */}
+            <Box sx={{ width: '100%' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  bgcolor: '#EEF1F4',
+                  borderRadius: '14px',
+                  px: 2,
+                  py: 0.5,
+                  border: errors.password ? '1.5px solid #FF3B30' : '1px solid rgba(0,0,0,0.05)',
+                  transition: 'all 0.2s ease',
+                  '&:focus-within': {
+                    bgcolor: '#FFFFFF',
+                    borderColor: '#2563EB',
+                    boxShadow: '0 0 0 3px rgba(37,99,235,0.12)',
+                  },
+                }}
+              >
+                <Typography sx={{ width: 80, flexShrink: 0, fontSize: '13.5px', fontWeight: 600, color: '#374151', textAlign: 'left' }}>
+                  Password
+                </Typography>
+                <Divider orientation="vertical" flexItem sx={{ my: 1, mr: 1.5, borderColor: 'rgba(0,0,0,0.08)' }} />
+                <Controller
+                  name="password"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      fullWidth
+                      variant="standard"
+                      InputProps={{
+                        disableUnderline: true,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockIcon sx={{ fontSize: 18, color: '#9CA3AF' }} />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton size="small" onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: '#9CA3AF', mr: 0.5 }}>
+                              {showPassword ? <VisibilityOffIcon sx={{ fontSize: 18 }} /> : <VisibilityIcon sx={{ fontSize: 18 }} />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiInput-root': { fontSize: '14px', color: '#111827', py: 0.75 }
+                      }}
+                    />
+                  )}
+                />
+              </Box>
+              {errors.password && (
+                <Typography sx={{ fontSize: '12px', color: '#FF3B30', mt: 0.5, ml: 1, textAlign: 'left' }}>
+                  {errors.password.message}
+                </Typography>
+              )}
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: -0.5 }}>
+              <Link
+                component="button"
+                type="button"
+                underline="none"
+                onClick={() => setAuthError('Demo mode: Click any demo role link below or enter credentials.')}
+                sx={{ fontSize: '12px', color: '#6B7280', '&:hover': { color: '#111827' } }}
+              >
+                Forgot password?
+              </Link>
+            </Box>
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              disabled={isSubmitting}
+              sx={{
+                height: 46,
+                borderRadius: '12px',
+                bgcolor: '#1E2028',
+                color: '#FFFFFF',
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: '14px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                '&:hover': { bgcolor: '#000000', boxShadow: '0 6px 16px rgba(0,0,0,0.25)' },
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {isSubmitting ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={isSignUp ? 'btn-signup' : 'btn-signin'}
+                    initial={{ opacity: 0, y: 3 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -3 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    {isSignUp ? 'Get Started' : 'Sign in'}
+                  </motion.span>
+                </AnimatePresence>
+              )}
+            </Button>
+          </Stack>
+        </Box>
+
+        <Divider sx={{ width: '100%', my: 2.5, color: '#9CA3AF', fontSize: '12px', '&::before, &::after': { borderTop: '1px dotted rgba(0,0,0,0.15)' } }}>
+          Or sign in with
+        </Divider>
+
+        {/* Social / Demo Button */}
+        <Button
+          variant="outlined"
+          fullWidth
+          onClick={() => {
+            loginAsDemoUser(selectedRole);
+            navigateWithTransition(ROLE_ROUTES[selectedRole]);
+          }}
+          startIcon={<GoogleIcon sx={{ fontSize: 18, color: '#EA4335' }} />}
+          sx={{
+            height: 42,
+            borderRadius: '12px',
+            color: '#111827',
+            bgcolor: '#FFFFFF',
+            borderColor: 'rgba(0,0,0,0.1)',
+            fontWeight: 500,
+            textTransform: 'none',
+            fontSize: '13px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+            '&:hover': { borderColor: 'rgba(0,0,0,0.2)', bgcolor: '#FAFAFA' },
+          }}
+        >
+          Continue with Google
+        </Button>
+
+        {/* Sign in / Sign up Toggle */}
+        <Box sx={{ width: '100%', textAlign: 'center', mt: 2.5 }}>
+          <Link
+            component="button"
+            type="button"
+            underline="none"
+            onClick={() => setIsSignUp(!isSignUp)}
+            sx={{ color: '#6B7280', fontSize: '13px', '&:hover': { color: '#111827' } }}
+          >
+            {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+          </Link>
+        </Box>
+
+        {/* Quick Access links centrally aligned below signup URL */}
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 3, pt: 2, borderTop: '1px dashed rgba(0,0,0,0.08)' }}>
+          <Typography
+            align="center"
             sx={{
-              height: 42,
-              borderRadius: '10px',
-              color: '#1A1D23',
-              borderColor: 'rgba(0,0,0,0.12)',
-              fontWeight: 500,
-              textTransform: 'none',
-              fontSize: '13px',
-              '&:hover': { borderColor: 'rgba(0,0,0,0.22)', bgcolor: '#F0F2F5' },
+              fontSize: '11px',
+              fontWeight: 600,
+              letterSpacing: '0.07em',
+              textTransform: 'uppercase',
+              color: '#9CA3AF',
+              mb: 1,
+              display: 'block',
+              width: '100%',
             }}
           >
-            Continue with Google
-          </Button>
-
-          <Box sx={{ textAlign: 'center', mt: 3 }}>
-            <Link
-              component="button"
-              underline="none"
-              onClick={() => setIsSignUp(!isSignUp)}
-              sx={{ color: '#6B7280', fontSize: '13px', '&:hover': { color: '#1A1D23' } }}
-            >
-              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-            </Link>
-          </Box>
+            Quick Demo Access
+          </Typography>
+          <Stack
+            direction="row"
+            spacing={1.25}
+            justifyContent="center"
+            alignItems="center"
+            flexWrap="wrap"
+            sx={{ width: '100%' }}
+          >
+            {DEMO_ACCOUNTS.map((demo, idx) => (
+              <React.Fragment key={demo.role}>
+                {idx > 0 && <Typography sx={{ fontSize: '12px', color: '#D1D5DB', userSelect: 'none' }}>•</Typography>}
+                <Link
+                  component="button"
+                  type="button"
+                  underline="hover"
+                  onClick={() => handleDemoLink(demo.role, demo.email)}
+                  sx={{
+                    fontSize: '12.5px',
+                    fontWeight: 600,
+                    color: demo.color,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    '&:hover': { opacity: 0.75 }
+                  }}
+                >
+                  {demo.label}
+                </Link>
+              </React.Fragment>
+            ))}
+          </Stack>
         </Box>
 
         {/* Copyright */}
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: '11px', color: '#9CA3AF' }}>
+        <Box sx={{ width: '100%', textAlign: 'center', mt: 3 }}>
+          <Typography align="center" sx={{ fontSize: '11px', color: '#9CA3AF' }}>
             © 2026 AI360 Inc. — Enterprise AI Intelligence Platform
           </Typography>
         </Box>
-      </Box>
 
-      {/* ── RIGHT BRAND PANEL ── */}
-      <Box
-        component={motion.div}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        sx={{
-          flex: 1,
-          display: { xs: 'none', md: 'flex' },
-          bgcolor: '#F5F7FA',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
-          borderLeft: '1px solid rgba(0,0,0,0.06)',
-        }}
-      >
-        <Box sx={{ width: '100%', maxWidth: 440, px: 5 }}>
-          {/* Hero brand */}
-          <Box sx={{ mb: 5 }}>
-            <Box
-              component="img"
-              src="/logo.png"
-              alt="AI360 Platform Logo"
-              sx={{
-                height: 72,
-                width: 72,
-                borderRadius: '16px',
-                mb: 2,
-                boxShadow: '0 8px 24px rgba(37,99,235,0.25)',
-              }}
-            />
-            <Typography sx={{ fontSize: '3.2rem', fontWeight: 800, letterSpacing: '-0.04em', color: '#1A1D23', lineHeight: 1.05 }}>
-              AI360
-            </Typography>
-            <Typography sx={{ fontSize: '15px', fontWeight: 500, color: '#6B7280', mt: 0.75 }}>
-              Enterprise AI Intelligence Platform
-            </Typography>
-            <Stack direction="row" spacing={1} sx={{ mt: 2.5 }}>
-              {['Multi-Model AI', 'FinOps', 'Analytics', 'Governance'].map((pill) => (
-                <Chip
-                  key={pill}
-                  label={pill}
-                  size="small"
-                  sx={{
-                    bgcolor: '#FFFFFF',
-                    color: '#374151',
-                    fontWeight: 500,
-                    fontSize: '11px',
-                    border: '1px solid rgba(0,0,0,0.08)',
-                    borderRadius: '6px',
-                  }}
-                />
-              ))}
-            </Stack>
-          </Box>
-
-          {/* Stats row */}
-          <Stack direction="row" spacing={0} sx={{ mb: 5, bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.07)', overflow: 'hidden' }}>
-            {[
-              { val: '23', label: 'AI Models' },
-              { val: '$2.4M', label: 'Saved' },
-              { val: '94%', label: 'Adoption' },
-            ].map((stat, i) => (
-              <Box key={i} sx={{ flex: 1, textAlign: 'center', py: 2, px: 1, borderRight: i < 2 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
-                <Typography sx={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D23', lineHeight: 1.2 }}>
-                  {stat.val}
-                </Typography>
-                <Typography sx={{ fontSize: '10.5px', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, mt: 0.25 }}>
-                  {stat.label}
-                </Typography>
-              </Box>
-            ))}
-          </Stack>
-
-          {/* Demo access section */}
-          <Box>
-            <Typography sx={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', mb: 2 }}>
-              Quick access — demo accounts
-            </Typography>
-            <Stack spacing={1.5}>
-              {DEMO_ACCOUNTS.map((demo, idx) => {
-                const Icon = demo.icon;
-                return (
-                  <Box
-                    key={demo.role}
-                    component={motion.div}
-                    initial={{ opacity: 0, x: 12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4, delay: 0.3 + idx * 0.07 }}
-                    onClick={() => handleDemoLink(demo.role, demo.email)}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                      p: '12px 16px',
-                      bgcolor: '#FFFFFF',
-                      border: '1px solid rgba(0,0,0,0.07)',
-                      borderRadius: '12px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        borderColor: demo.color,
-                        bgcolor: demo.soft,
-                        boxShadow: `0 4px 12px rgba(0,0,0,0.06)`,
-                        transform: 'translateY(-1px)',
-                      },
-                    }}
-                  >
-                    <Box sx={{
-                      width: 36, height: 36, borderRadius: '9px',
-                      bgcolor: demo.soft,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0,
-                    }}>
-                      <Icon sx={{ fontSize: 18, color: demo.color }} />
-                    </Box>
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Typography sx={{ fontSize: '13px', fontWeight: 600, color: '#1A1D23', lineHeight: 1.3 }}>
-                        {demo.label} Dashboard
-                      </Typography>
-                      <Typography sx={{ fontSize: '11.5px', color: '#6B7280', mt: 0.25 }}>
-                        {demo.desc}
-                      </Typography>
-                    </Box>
-                    <ArrowForward sx={{ fontSize: 16, color: '#9CA3AF', flexShrink: 0 }} />
-                  </Box>
-                );
-              })}
-            </Stack>
-          </Box>
-        </Box>
-
-        <Typography sx={{ position: 'absolute', bottom: 28, fontSize: '11px', color: '#9CA3AF' }}>
-          No account required for demo access
-        </Typography>
       </Box>
     </Box>
   );

@@ -19,10 +19,17 @@ import {
   AutoAwesome as AIIcon,
   MonetizationOn as FinOpsIcon,
   Star as StarIcon,
+  EmojiEvents as LeaderboardIcon,
+  Category as CategoryIcon,
+  VpnKey as LicenseIcon,
+  Speed as SpeedIcon,
+  School as SchoolIcon,
+  Shield as SecurityIcon,
+  WorkspacePremium as MaturityIcon,
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const SIDEBAR_EXPANDED = 220;
+const SIDEBAR_EXPANDED = 235;
 const SIDEBAR_COLLAPSED = 58;
 
 interface NavGroup {
@@ -37,29 +44,35 @@ interface NavGroup {
 
 const employeeGroups: NavGroup[] = [
   {
-    sectionTitle: 'MAIN NAVIGATION',
+    sectionTitle: 'DASHBOARD VIEWS',
     items: [
-      { label: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard/employee' },
-      { label: 'AI Chat Workspace', icon: <ChatIcon />, path: '/dashboard/employee/chat' },
-      { label: 'Prompt Studio', icon: <AIIcon />, path: '/dashboard/employee/prompt' },
-      { label: 'Marketplace', icon: <StarIcon />, path: '/dashboard/employee/recommendations', badge: 'Popular' },
+      { label: 'Overview', icon: <DashboardIcon />, path: '/dashboard/employee' },
+      { label: 'AI Chat Workspace', icon: <ChatIcon />, path: '/dashboard/employee?tab=chat' },
+      { label: 'Prompt Coach', icon: <AIIcon />, path: '/dashboard/employee?tab=prompt-coach' },
+      { label: 'Model Recommendations', icon: <RecommendIcon />, path: '/dashboard/employee?tab=model-recs' },
+      { label: 'Marketplace', icon: <StarIcon />, path: '/dashboard/employee?tab=marketplace', badge: 'Popular' },
+      { label: 'Learning Coach', icon: <SchoolIcon />, path: '/dashboard/employee?tab=learning-coach' },
+      { label: 'Privacy Guard', icon: <SecurityIcon />, path: '/dashboard/employee?tab=privacy-guard' },
     ],
   },
   {
     sectionTitle: 'INTELLIGENCE & FINOPS',
     items: [
-      { label: 'Analytics', icon: <AnalyticsIcon />, path: '/dashboard/employee/analytics' },
-      { label: 'Recommendations', icon: <RecommendIcon />, path: '/dashboard/employee/recommendations' },
+      { label: 'Full Analytics', icon: <AnalyticsIcon />, path: '/dashboard/employee/analytics' },
     ],
   },
 ];
 
 const managerGroups: NavGroup[] = [
   {
-    sectionTitle: 'MAIN NAVIGATION',
+    sectionTitle: 'TEAM DASHBOARD VIEWS',
     items: [
-      { label: 'Team Dashboard', icon: <DashboardIcon />, path: '/dashboard/manager' },
-      { label: 'Team Analytics', icon: <AnalyticsIcon />, path: '/dashboard/manager/analytics' },
+      { label: 'Overview', icon: <DashboardIcon />, path: '/dashboard/manager' },
+      { label: 'Department Analytics', icon: <AnalyticsIcon />, path: '/dashboard/manager?tab=analytics' },
+      { label: 'Leaderboard', icon: <LeaderboardIcon />, path: '/dashboard/manager?tab=leaderboard' },
+      { label: 'Prompt Categories', icon: <CategoryIcon />, path: '/dashboard/manager?tab=prompt-categories' },
+      { label: 'License Detection', icon: <LicenseIcon />, path: '/dashboard/manager?tab=license-detection' },
+      { label: 'Benchmarks', icon: <SpeedIcon />, path: '/dashboard/manager?tab=benchmarks' },
     ],
   },
   {
@@ -75,15 +88,20 @@ const managerGroups: NavGroup[] = [
 
 const executiveGroups: NavGroup[] = [
   {
-    sectionTitle: 'MAIN NAVIGATION',
+    sectionTitle: 'EXECUTIVE VIEWS',
     items: [
-      { label: 'Executive Intelligence', icon: <DashboardIcon />, path: '/dashboard/executive' },
-      { label: 'AI ROI Attribution', icon: <ForecastIcon />, path: '/dashboard/executive/roi' },
+      { label: 'Overview', icon: <DashboardIcon />, path: '/dashboard/executive' },
+      { label: 'ROI & Spend', icon: <FinOpsIcon />, path: '/dashboard/executive?tab=roi-spend' },
+      { label: 'Department Rankings', icon: <AnalyticsIcon />, path: '/dashboard/executive?tab=rankings' },
+      { label: 'Budget Forecast', icon: <ForecastIcon />, path: '/dashboard/executive?tab=forecast' },
+      { label: 'Recommendations', icon: <RecommendIcon />, path: '/dashboard/executive?tab=recommendations' },
+      { label: 'Maturity Score', icon: <MaturityIcon />, path: '/dashboard/executive?tab=maturity-score' },
     ],
   },
   {
     sectionTitle: 'SYSTEM MANAGEMENT',
     items: [
+      { label: 'AI ROI Attribution', icon: <ForecastIcon />, path: '/dashboard/executive/roi' },
       { label: 'Dept Rankings', icon: <AnalyticsIcon />, path: '/dashboard/executive/departments' },
       { label: 'Budget Forecast', icon: <ForecastIcon />, path: '/dashboard/executive/forecast' },
       { label: 'Executive Reports', icon: <ReportIcon />, path: '/dashboard/executive/reports' },
@@ -146,9 +164,9 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
           borderRadius: 0,
           overflowX: 'hidden',
           transition: 'width 0.3s ease',
-          background: '#ECEEF2',
-          borderRight: '1px solid rgba(0, 0, 0, 0.07)',
-          color: '#1A1D23',
+          background: '#E4EFE9',
+          borderRight: '1px solid rgba(43, 108, 93, 0.14)',
+          color: '#1A2F29',
         },
       }}
     >
@@ -211,7 +229,10 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
 
               <List disablePadding>
                 {group.items.map((item) => {
-                  const isActive = location.pathname === item.path || (item.path !== '/dashboard/employee' && location.pathname.startsWith(item.path));
+                  const currentFullPath = location.pathname + location.search;
+                  const isActive = item.path.includes('?')
+                    ? currentFullPath === item.path
+                    : (location.pathname === item.path && (!location.search || location.search === '?tab=overview'));
                   return (
                     <ListItem key={`${item.label}-${item.path}`} disablePadding>
                       <Tooltip title={collapsed ? item.label : ''} placement="right" arrow>
@@ -223,13 +244,13 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
                             m: '2px 8px',
                             p: '8px 10px',
                             justifyContent: collapsed ? 'center' : 'flex-start',
-                            bgcolor: isActive ? 'rgba(37,99,235,0.09)' : 'transparent',
-                            color: isActive ? '#2563EB' : '#6B7280',
-                            borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent',
+                            bgcolor: isActive ? 'rgba(44,122,123,0.12)' : 'transparent',
+                            color: isActive ? '#2C7A7B' : '#4A655D',
+                            borderLeft: isActive ? '3px solid #2C7A7B' : '3px solid transparent',
                             transition: 'all 0.2s ease',
                             '&:hover': {
-                              bgcolor: isActive ? 'rgba(37,99,235,0.09)' : 'rgba(0,0,0,0.04)',
-                              color: isActive ? '#2563EB' : '#1A1D23',
+                              bgcolor: isActive ? 'rgba(44,122,123,0.14)' : 'rgba(43,108,93,0.06)',
+                              color: isActive ? '#2C7A7B' : '#1A2F29',
                             },
                           }}
                         >

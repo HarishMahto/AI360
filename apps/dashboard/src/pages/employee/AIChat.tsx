@@ -10,7 +10,7 @@ import { useChatHistory, useSendChat, usePromptPrivacy } from '../../api/hooks';
 import { analyzePrompt } from '../../engines/promptEngine';
 import { getModelRecommendation } from '../../engines/recommendationEngine';
 
-const BRAND_COLOR = '#0066CC';
+const BRAND_COLOR = '#1F5AA6';
 
 export default function AIChat() {
   const [selectedModel, setSelectedModel] = useState('gpt-4o-mini');
@@ -103,10 +103,10 @@ export default function AIChat() {
   const chatHistory = Array.isArray(historyData) ? historyData : historyData?.items || [];
 
   return (
-    <Box className="page-enter" sx={{ display: 'flex', height: 'calc(100vh - 200px)', width: '100%', gap: 2, p: { xs: 2, md: 3 }, bgcolor: '#F5F7FA' }}>
-      <Box sx={{ width: 280, display: 'flex', flexDirection: 'column', bgcolor: '#FFFFFF', borderRadius: 3.5, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-        <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-          <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>History</Typography>
+    <Box className="page-enter page-content" sx={{ display: 'flex', height: 'calc(100vh - 200px)', width: '100%', gap: 2, p: { xs: 1, md: 1.5 }, bgcolor: '#F4F6FA' }}>
+      <Box sx={{ width: 280, display: 'flex', flexDirection: 'column', bgcolor: '#FFFFFF', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)' }}>
+        <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
+          <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em' }}>History</Typography>
           <IconButton sx={{ color: BRAND_COLOR }} size="small"><Add /></IconButton>
         </Box>
         <List sx={{ flexGrow: 1, overflowY: 'auto', p: 0 }}>
@@ -116,13 +116,13 @@ export default function AIChat() {
             </Box>
           ) : (
             chatHistory.map((item: any) => (
-              <ListItem button key={item.id} sx={{ borderBottom: '1px solid rgba(0,0,0,0.04)', '&:hover': { bgcolor: '#F5F5F7' } }}>
-                <History sx={{ mr: 1.5, color: '#6E6E73', fontSize: 18 }} />
+              <ListItem button key={item.id} sx={{ borderBottom: '1px solid rgba(31,90,166,0.05)', '&:hover': { bgcolor: '#F0F4F8' } }}>
+                <History sx={{ mr: 1.5, color: '#9CA3AF', fontSize: 18 }} />
                 <ListItemText
                   primary={item.title || item.topic || 'Session'}
                   secondary={item.date || item.createdAt || 'Recent'}
-                  primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}
-                  secondaryTypographyProps={{ fontSize: '0.75rem', color: '#6E6E73' }}
+                  primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1A1D2E' }}
+                  secondaryTypographyProps={{ fontSize: '0.75rem', color: '#4B5563' }}
                 />
               </ListItem>
             ))
@@ -130,9 +130,9 @@ export default function AIChat() {
         </List>
       </Box>
 
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', bgcolor: '#FFFFFF', borderRadius: 3.5, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-        <Box sx={{ p: 2, borderBottom: '1px solid rgba(0,0,0,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>AI Workspace</Typography>
+      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', bgcolor: '#FFFFFF', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)' }}>
+        <Box sx={{ p: 2, borderBottom: '1px solid rgba(31,90,166,0.09)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em' }}>AI Workspace</Typography>
           <FormControl size="small" sx={{ minWidth: 200 }}>
             <InputLabel>Model</InputLabel>
             <Select value={selectedModel} label="Model" onChange={(e) => setSelectedModel(e.target.value)} sx={{ borderRadius: 2 }}>
@@ -154,19 +154,19 @@ export default function AIChat() {
         <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
           {messages.map((msg, index) => (
             <Box key={msg.id} sx={{ display: 'flex', gap: 2, flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row', animation: 'fadeUp 0.3s ease both', animationDelay: `${index * 0.05}s` }}>
-              <Box sx={{ p: 2, borderRadius: 3, bgcolor: msg.sender === 'user' ? 'rgba(0,102,204,0.08)' : '#F5F5F7', color: '#1D1D1F', maxWidth: '80%' }}>
+              <Box sx={{ p: 2, borderRadius: 3, bgcolor: msg.sender === 'user' ? 'rgba(31,90,166,0.08)' : '#FFFFFF', border: msg.sender === 'user' ? '1px solid rgba(31,90,166,0.15)' : '1px solid rgba(31,90,166,0.09)', color: '#1A1D2E', maxWidth: '80%' }}>
                 <Typography sx={{ fontSize: '0.875rem' }}>{msg.text}</Typography>
                 <Stack direction="row" spacing={1} mt={1}>
-                  <Chip label={msg.model} size="small" sx={{ height: 20, fontSize: '0.65rem' }} />
-                  {msg.score && <Chip label={`Score: ${msg.score}`} size="small" sx={{ height: 20, fontSize: '0.65rem', bgcolor: 'rgba(52,199,89,0.10)', color: '#1A7F37' }} />}
-                  {msg.cost && <Typography sx={{ fontSize: '0.65rem', color: '#6E6E73', mt: 0.5 }}>{msg.cost}</Typography>}
+                  <Chip label={msg.model} size="small" sx={{ height: 20, borderRadius: '5px', fontSize: '10px', fontWeight: 700 }} />
+                  {msg.score && <Chip label={`Score: ${msg.score}`} size="small" sx={{ height: 20, borderRadius: '5px', fontSize: '10px', fontWeight: 700, bgcolor: 'rgba(5,150,105,0.10)', color: '#059669' }} />}
+                  {msg.cost && <Typography sx={{ fontSize: '0.65rem', color: '#9CA3AF', mt: 0.5 }}>{msg.cost}</Typography>}
                 </Stack>
               </Box>
             </Box>
           ))}
         </Box>
 
-        <Box sx={{ p: 2, borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+        <Box sx={{ p: 2, borderTop: '1px solid rgba(31,90,166,0.09)' }}>
           <TextField
             fullWidth
             placeholder="Type your prompt..."
@@ -181,7 +181,7 @@ export default function AIChat() {
                   </IconButton>
                 </InputAdornment>
               ),
-              sx: { borderRadius: 2.5, bgcolor: '#F5F5F7' }
+              sx: { borderRadius: 2.5, bgcolor: '#F0F4F8' }
             }}
           />
         </Box>
