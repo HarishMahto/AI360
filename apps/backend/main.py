@@ -85,6 +85,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
+    swagger_favicon_url="https://ai360-c1b0b.web.app/logo.png",
     lifespan=lifespan,
 )
 
