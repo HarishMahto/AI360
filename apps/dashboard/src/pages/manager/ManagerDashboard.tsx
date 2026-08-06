@@ -160,93 +160,87 @@ export default function ManagerDashboard() {
 
       {/* TAB 0: OVERVIEW */}
       {activeTab === 0 && (
-        <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
+        <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
           {/* KPI GRID */}
-          <Grid container spacing={2} disableEqualOverflow sx={{ mb: 4 }}>
-            <Grid item xs={12} sm={6} md={2.4}>
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                    <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
-                      Adoption Score
-                    </Typography>
-                    <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
-                      <TrendingUp fontSize="small" />
-                    </Box>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(5, 1fr)' }, gap: 2, mb: 4, width: '100%' }}>
+            <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                    Adoption Score
+                  </Typography>
+                  <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
+                    <TrendingUp fontSize="small" />
                   </Box>
-                  <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#1D1D1F' }}>{stats.team_adoption_score}/100</Typography>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#34C759', mt: 0.5 }}>{stats.adoption_percentage}% Active</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2.4}>
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #0D9488', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                    <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
-                      Efficiency Score
-                    </Typography>
-                    <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(13,148,136,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0D9488' }}>
-                      <Speed fontSize="small" />
-                    </Box>
-                  </Box>
-                  <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#1D1D1F' }}>{stats.team_efficiency_score}/100</Typography>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>+5% vs last month</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2.4}>
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #D97706', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                    <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
-                      Department ROI
-                    </Typography>
-                    <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(217,119,6,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706' }}>
-                      <AttachMoney fontSize="small" />
-                    </Box>
-                  </Box>
-                  <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#34C759' }}>{stats.department_roi_pct}%</Typography>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>4.8x return</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2.4}>
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #7C3AED', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                    <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
-                      Forecast
-                    </Typography>
-                    <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7C3AED' }}>
-                      <ShowChart fontSize="small" />
-                    </Box>
-                  </Box>
-                  <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#1D1D1F' }}>${(stats.projected_spend_usd / 1000).toFixed(1)}k</Typography>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>+15% growth</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2.4}>
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                    <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
-                      Unused Seats
-                    </Typography>
-                    <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
-                      <Groups fontSize="small" />
-                    </Box>
-                  </Box>
-                  <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#FF3B30' }}>{stats.unused_licenses_count}</Typography>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#FF3B30', mt: 0.5 }}>${stats.unused_licenses_cost_savings}/mo waste</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
+                </Box>
+                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#1D1D1F' }}>{stats.team_adoption_score}/100</Typography>
+                <Typography sx={{ fontSize: '0.75rem', color: '#34C759', mt: 0.5 }}>{stats.adoption_percentage}% Active</Typography>
+              </CardContent>
+            </Card>
 
-          <Grid container spacing={2} disableEqualOverflow>
-            <Grid item xs={12} md={7}>
+            <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #0D9488', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                    Efficiency Score
+                  </Typography>
+                  <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(13,148,136,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0D9488' }}>
+                    <Speed fontSize="small" />
+                  </Box>
+                </Box>
+                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#1D1D1F' }}>{stats.team_efficiency_score}/100</Typography>
+                <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>+5% vs last month</Typography>
+              </CardContent>
+            </Card>
+
+            <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #D97706', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                    Department ROI
+                  </Typography>
+                  <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(217,119,6,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706' }}>
+                    <AttachMoney fontSize="small" />
+                  </Box>
+                </Box>
+                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#34C759' }}>{stats.department_roi_pct}%</Typography>
+                <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>4.8x return</Typography>
+              </CardContent>
+            </Card>
+
+            <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #7C3AED', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                    Forecast
+                  </Typography>
+                  <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7C3AED' }}>
+                    <ShowChart fontSize="small" />
+                  </Box>
+                </Box>
+                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#1D1D1F' }}>${(stats.projected_spend_usd / 1000).toFixed(1)}k</Typography>
+                <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>+15% growth</Typography>
+              </CardContent>
+            </Card>
+
+            <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                    Unused Seats
+                  </Typography>
+                  <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
+                    <Groups fontSize="small" />
+                  </Box>
+                </Box>
+                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#FF3B30' }}>{stats.unused_licenses_count}</Typography>
+                <Typography sx={{ fontSize: '0.75rem', color: '#FF3B30', mt: 0.5 }}>${stats.unused_licenses_cost_savings}/mo waste</Typography>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' }, gap: 2, width: '100%' }}>
+            <Box sx={{ width: '100%' }}>
               <Box mb={2}>
                 <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Token Trends & Consumption</Typography>
               </Box>
@@ -271,9 +265,9 @@ export default function ManagerDashboard() {
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
 
-            <Grid item xs={12} md={5}>
+            <Box sx={{ width: '100%' }}>
               <Box mb={2}>
                 <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Department Cost Breakdown</Typography>
               </Box>
@@ -296,8 +290,8 @@ export default function ManagerDashboard() {
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Box>
       )}
 

@@ -81,153 +81,144 @@ export default function AdminPanel() {
           </Box>
         </Box>
 
-        <Box sx={{ overflow: 'hidden' }}><Grid container spacing={0} sx={{ mb: 2 }} disableEqualOverflow>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 2, width: '100%' }}>
           {SYSTEM_METRICS.map((m) => (
-            <Grid item xs={12} sm={6} md={3} key={m.id} sx={{ p: '6px !important' }}>
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: `3px solid ${m.color}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04)', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
-                <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
-                  <Box sx={{ position: 'absolute', top: 16, right: 16, width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: `${m.color}15`, color: m.color }}>
-                    {m.icon}
-                  </Box>
-                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73', mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {m.label}
-                  </Typography>
-                  <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
-                    {m.value}
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.75rem', color: m.color, mt: 0.5, fontWeight: 500 }}>
-                    {m.trend}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+            <Card key={m.id} sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: `3px solid ${m.color}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04)', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
+                <Box sx={{ position: 'absolute', top: 16, right: 16, width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: `${m.color}15`, color: m.color }}>
+                  {m.icon}
+                </Box>
+                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73', mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {m.label}
+                </Typography>
+                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
+                  {m.value}
+                </Typography>
+                <Typography sx={{ fontSize: '0.75rem', color: m.color, mt: 0.5, fontWeight: 500 }}>
+                  {m.trend}
+                </Typography>
+              </CardContent>
+            </Card>
           ))}
-        </Grid></Box>
+        </Box>
 
-        <Box sx={{ overflow: 'hidden' }}><Grid container spacing={0} disableEqualOverflow>
-          <Grid item xs={12} lg={8} sx={{ p: '6px !important' }}>
-            <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 2, mb: 2, width: '100%' }}>
+          <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
+            <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Box>
+                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Platform Growth</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>Revenue & Active Users</Typography>
+                </Box>
+                <IconButton size="small"><MoreVertIcon fontSize="small" /></IconButton>
+              </Box>
+              <Box sx={{ width: '100%', height: 320 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={REVENUE_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={ACCENT_BLUE} stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor={ACCENT_BLUE} stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAEAEA" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} tickFormatter={(val) => `$${val/1000}k`} />
+                    <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }} />
+                    <Area type="monotone" dataKey="value" stroke={ACCENT_BLUE} strokeWidth={2} fillOpacity={1} fill="url(#colorRev)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Box>
+            </CardContent>
+          </Card>
+
+          <Stack spacing={2} sx={{ width: '100%' }}>
+            <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                  <Box>
-                    <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Platform Growth</Typography>
-                    <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>Revenue & Active Users</Typography>
-                  </Box>
-                  <IconButton size="small"><MoreVertIcon fontSize="small" /></IconButton>
-                </Box>
-                <Box sx={{ width: '100%', height: 320 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={REVENUE_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={ACCENT_BLUE} stopOpacity={0.2}/>
-                          <stop offset="95%" stopColor={ACCENT_BLUE} stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAEAEA" />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} dy={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} tickFormatter={(val) => `$${val/1000}k`} />
-                      <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }} />
-                      <Area type="monotone" dataKey="value" stroke={ACCENT_BLUE} strokeWidth={2} fillOpacity={1} fill="url(#colorRev)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Quick Actions</Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
+                  {QUICK_ACTIONS.map((a) => (
+                    <Box key={a.label} sx={{
+                      p: 2, borderRadius: 2, cursor: 'pointer',
+                      bgcolor: '#FAFAFA',
+                      border: '1px solid rgba(0,0,0,0.04)',
+                      transition: 'all 0.2s',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 1,
+                      '&:hover': { bgcolor: '#F5F5F7', borderColor: 'rgba(0,0,0,0.08)' }
+                    }}>
+                      <Box sx={{ color: a.color }}>{a.icon}</Box>
+                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1D1D1F' }}>{a.label}</Typography>
+                    </Box>
+                  ))}
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
 
-          <Grid item xs={12} lg={4} sx={{ p: '6px !important' }}>
-            <Stack spacing={3}>
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Quick Actions</Typography>
-                  <Grid container spacing={2}>
-                    {QUICK_ACTIONS.map((a) => (
-                      <Grid item xs={6} key={a.label}>
-                        <Box sx={{
-                          p: 2, borderRadius: 2, cursor: 'pointer',
-                          bgcolor: '#FAFAFA',
-                          border: '1px solid rgba(0,0,0,0.04)',
-                          transition: 'all 0.2s',
-                          display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 1,
-                          '&:hover': { bgcolor: '#F5F5F7', borderColor: 'rgba(0,0,0,0.08)' }
-                        }}>
-                          <Box sx={{ color: a.color }}>{a.icon}</Box>
-                          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1D1D1F' }}>{a.label}</Typography>
-                        </Box>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </CardContent>
-              </Card>
-
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Recent Activity</Typography>
-                  <Stack spacing={2.5}>
-                    {AUDIT_LOGS.map((log, i) => (
-                      <Box key={i} sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
-                        <Box sx={{ mt: 0.25 }}>
-                          {log.type === 'success' ? <CheckCircle sx={{ fontSize: 16, color: SUCCESS_GREEN }} /> : 
-                           log.type === 'warning' ? <Warning sx={{ fontSize: 16, color: WARNING_ORANGE }} /> : 
-                           <ErrorIcon sx={{ fontSize: 16, color: DANGER_RED }} />}
-                        </Box>
-                        <Box>
-                          <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{log.msg}</Typography>
-                          <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{log.time}</Typography>
-                        </Box>
+            <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Recent Activity</Typography>
+                <Stack spacing={2.5}>
+                  {AUDIT_LOGS.map((log, i) => (
+                    <Box key={i} sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+                      <Box sx={{ mt: 0.25 }}>
+                        {log.type === 'success' ? <CheckCircle sx={{ fontSize: 16, color: SUCCESS_GREEN }} /> : 
+                         log.type === 'warning' ? <Warning sx={{ fontSize: 16, color: WARNING_ORANGE }} /> : 
+                         <ErrorIcon sx={{ fontSize: 16, color: DANGER_RED }} />}
                       </Box>
-                    ))}
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Stack>
-          </Grid>
-
-          <Grid item xs={12} sx={{ p: '6px !important' }}>
-            <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-              <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
-                <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Top Organizations</Typography>
-                  <Chip label="View All" size="small" sx={{ height: 24, fontSize: '0.75rem', bgcolor: 'transparent', border: '1px solid rgba(0,0,0,0.1)' }} />
-                </Box>
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow sx={{ bgcolor: '#F5F5F7' }}>
-                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25, px: 3 }}>Organization</TableCell>
-                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25 }}>Users</TableCell>
-                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25 }}>Spend</TableCell>
-                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25, px: 3 }}>Status</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {DEMO_ORGS.map((org) => (
-                        <TableRow key={org.name} sx={{ '&:hover': { bgcolor: '#F5F5F7' }, '&:last-child td': { border: 0 } }}>
-                          <TableCell sx={{ py: 1.5, px: 3, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                            <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar sx={{ width: 32, height: 32, fontSize: '0.8125rem', fontWeight: 600, bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE }}>{org.name[0]}</Avatar>
-                              <Box>
-                                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>{org.name}</Typography>
-                                <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{org.plan}</Typography>
-                              </Box>
-                            </Stack>
-                          </TableCell>
-                          <TableCell sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{org.users}</TableCell>
-                          <TableCell sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>${org.spend.toLocaleString()}</TableCell>
-                          <TableCell sx={{ py: 1.5, px: 3, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                            <Chip label={org.status} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: org.status === 'active' ? 'rgba(52,199,89,0.10)' : 'rgba(0,0,0,0.04)', color: org.status === 'active' ? '#1A7F37' : '#6E6E73', textTransform: 'capitalize' }} />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                      <Box>
+                        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{log.msg}</Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{log.time}</Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                </Stack>
               </CardContent>
             </Card>
-          </Grid>
-          
-        </Grid></Box>
+          </Stack>
+        </Box>
+
+        <Box sx={{ width: '100%', mt: 2 }}>
+          <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+              <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Top Organizations</Typography>
+                <Chip label="View All" size="small" sx={{ height: 24, fontSize: '0.75rem', bgcolor: 'transparent', border: '1px solid rgba(0,0,0,0.1)' }} />
+              </Box>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: '#F5F5F7' }}>
+                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25, px: 3 }}>Organization</TableCell>
+                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25 }}>Users</TableCell>
+                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25 }}>Spend</TableCell>
+                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25, px: 3 }}>Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {DEMO_ORGS.map((org) => (
+                      <TableRow key={org.name} sx={{ '&:hover': { bgcolor: '#F5F5F7' }, '&:last-child td': { border: 0 } }}>
+                        <TableCell sx={{ py: 1.5, px: 3, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                          <Stack direction="row" alignItems="center" spacing={2}>
+                            <Avatar sx={{ width: 32, height: 32, fontSize: '0.8125rem', fontWeight: 600, bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE }}>{org.name[0]}</Avatar>
+                            <Box>
+                              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>{org.name}</Typography>
+                              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{org.plan}</Typography>
+                            </Box>
+                          </Stack>
+                        </TableCell>
+                        <TableCell sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{org.users}</TableCell>
+                        <TableCell sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>${org.spend.toLocaleString()}</TableCell>
+                        <TableCell sx={{ py: 1.5, px: 3, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                          <Chip label={org.status} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: org.status === 'active' ? 'rgba(52,199,89,0.10)' : 'rgba(0,0,0,0.04)', color: org.status === 'active' ? '#1A7F37' : '#6E6E73', textTransform: 'capitalize' }} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Box>
       </Box>
     </Box>
   );

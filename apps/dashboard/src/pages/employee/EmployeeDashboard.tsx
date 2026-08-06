@@ -287,95 +287,87 @@ export default function EmployeeDashboard() {
         {/* Tab Content */}
         {activeTab === 0 && (
           <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
-            <Box sx={{ overflow: 'hidden', mb: 2 }}>
-              <Grid container spacing={0} disableEqualOverflow>
-                {[
-                  { label: 'TODAYS PROMPTS', value: '43', sub: '+12% vs avg', subColor: '#059669', accent: '#1F5AA6', icon: <TrendingUp fontSize="small" sx={{ color: '#1F5AA6' }}/> },
-                  { label: 'TODAYS COST', value: '$1.32', sub: '72% saved via optimization', subColor: '#059669', accent: '#60A5FA', icon: <MonetizationOn fontSize="small" sx={{ color: '#60A5FA' }}/> },
-                  { label: 'PROMPT QUALITY SCORE', value: '84/100', sub: 'Clarity, Context & Specificity', subColor: '#4B5563', accent: '#D97706', icon: <WorkspacePremium fontSize="small" sx={{ color: '#D97706' }}/> },
-                  { label: 'HOURS SAVED', value: '2.8h', sub: 'Equivalent to 35% boost', subColor: '#1F5AA6', accent: '#6B46C1', icon: <AccessTime fontSize="small" sx={{ color: '#6B46C1' }}/> }
-                ].map((stat, i) => (
-                  <Grid item xs={12} sm={6} md={3} key={i} sx={{ p: '6px !important' }}>
-                    <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'box-shadow 0.25s ease, border-color 0.25s ease', borderTop: `3px solid ${stat.accent}`, '&:hover': { boxShadow: '0 4px 16px rgba(31,90,166,0.09)', borderColor: 'rgba(31,90,166,0.24)' } }}>
-                      <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
-                        <Box sx={{ position: 'absolute', top: 16, right: 16, width: 36, height: 36, borderRadius: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: alpha(stat.accent, 0.1) }}>
-                          {stat.icon}
-                        </Box>
-                        <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4B5563', mb: 1 }}>{stat.label}</Typography>
-                        <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>{stat.value}</Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: stat.subColor, mt: 0.5 }}>{stat.sub}</Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
+            {/* Stat Cards Row - 100% Full Screen Width */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 2, width: '100%' }}>
+              {[
+                { label: 'TODAYS PROMPTS', value: '43', sub: '+12% vs avg', subColor: '#059669', accent: '#1F5AA6', icon: <TrendingUp fontSize="small" sx={{ color: '#1F5AA6' }}/> },
+                { label: 'TODAYS COST', value: '$1.32', sub: '72% saved via optimization', subColor: '#059669', accent: '#60A5FA', icon: <MonetizationOn fontSize="small" sx={{ color: '#60A5FA' }}/> },
+                { label: 'PROMPT QUALITY SCORE', value: '84/100', sub: 'Clarity, Context & Specificity', subColor: '#4B5563', accent: '#D97706', icon: <WorkspacePremium fontSize="small" sx={{ color: '#D97706' }}/> },
+                { label: 'HOURS SAVED', value: '2.8h', sub: 'Equivalent to 35% boost', subColor: '#1F5AA6', accent: '#6B46C1', icon: <AccessTime fontSize="small" sx={{ color: '#6B46C1' }}/> }
+              ].map((stat, i) => (
+                <Card key={i} sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'box-shadow 0.25s ease, border-color 0.25s ease', borderTop: `3px solid ${stat.accent}`, '&:hover': { boxShadow: '0 4px 16px rgba(31,90,166,0.09)', borderColor: 'rgba(31,90,166,0.24)' } }}>
+                  <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
+                    <Box sx={{ position: 'absolute', top: 16, right: 16, width: 36, height: 36, borderRadius: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: alpha(stat.accent, 0.1) }}>
+                      {stat.icon}
+                    </Box>
+                    <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4B5563', mb: 1 }}>{stat.label}</Typography>
+                    <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>{stat.value}</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: stat.subColor, mt: 0.5 }}>{stat.sub}</Typography>
+                  </CardContent>
+                </Card>
+              ))}
             </Box>
 
-            <Box sx={{ overflow: 'hidden', width: '100%' }}>
-              <Grid container spacing={0} disableEqualOverflow>
-                <Grid item xs={12} md={7} sx={{ p: '6px !important' }}>
-                  <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
-                    <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Productivity Trend</Typography>
-                    <Box sx={{ height: 320, width: '100%' }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={[
-                          { day: 'Mon', hours: 2.1 },
-                          { day: 'Tue', hours: 2.8 },
-                          { day: 'Wed', hours: 2.4 },
-                          { day: 'Thu', hours: 3.1 },
-                          { day: 'Fri', hours: 2.8 },
-                          { day: 'Sat', hours: 1.0 },
-                          { day: 'Sun', hours: 0.5 }
-                        ]}>
-                          <defs>
-                            <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#1F5AA6" stopOpacity={0.25} />
-                              <stop offset="95%" stopColor="#1F5AA6" stopOpacity={0} />
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2EAE6" />
-                          <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#4B5563' }} dy={10} />
-                          <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#4B5563' }} dx={-10} />
-                          <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid rgba(31,90,166,0.2)', boxShadow: '0 4px 16px rgba(31,90,166,0.12)' }} />
-                          <Area type="monotone" dataKey="hours" stroke="#1F5AA6" strokeWidth={3} fillOpacity={1} fill="url(#colorHours)" />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </Box>
-                  </Card>
-                </Grid>
+            {/* Productivity Trend & Session Summary Row - 100% Full Screen Width */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' }, gap: 2, width: '100%' }}>
+              <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
+                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Productivity Trend</Typography>
+                <Box sx={{ height: 320, width: '100%' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={[
+                      { day: 'Mon', hours: 2.1 },
+                      { day: 'Tue', hours: 2.8 },
+                      { day: 'Wed', hours: 2.4 },
+                      { day: 'Thu', hours: 3.1 },
+                      { day: 'Fri', hours: 2.8 },
+                      { day: 'Sat', hours: 1.0 },
+                      { day: 'Sun', hours: 0.5 }
+                    ]}>
+                      <defs>
+                        <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#1F5AA6" stopOpacity={0.25} />
+                          <stop offset="95%" stopColor="#1F5AA6" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2EAE6" />
+                      <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#4B5563' }} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#4B5563' }} dx={-10} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid rgba(31,90,166,0.2)', boxShadow: '0 4px 16px rgba(31,90,166,0.12)' }} />
+                      <Area type="monotone" dataKey="hours" stroke="#1F5AA6" strokeWidth={3} fillOpacity={1} fill="url(#colorHours)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </Box>
+              </Card>
 
-                <Grid item xs={12} md={5} sx={{ p: '6px !important' }}>
-                  <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
-                    <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Session Summary</Typography>
-                    <TableContainer sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: 'none' }}>
-                      <Table>
-                        <TableHead>
-                          <TableRow sx={{ bgcolor: '#F0F4F8' }}>
-                            <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }}>Period</TableCell>
-                            <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }} align="center">Prompts</TableCell>
-                            <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }} align="center">Cost</TableCell>
-                            <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }} align="right">Saved</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          <TableRow sx={{ '&:hover': { bgcolor: '#F4F6FA' } }}>
-                            <TableCell sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>Mid-day</TableCell>
-                            <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>34</TableCell>
-                            <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>$1.32</TableCell>
-                            <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)', color: '#059669', fontWeight: 600 }}>2.3h</TableCell>
-                          </TableRow>
-                          <TableRow sx={{ '&:hover': { bgcolor: '#F4F6FA' }, '&:last-child td': { border: 0 } }}>
-                            <TableCell sx={{ fontSize: '0.8125rem', py: 1.375, px: 2 }}>End-of-day</TableCell>
-                            <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2 }}>43</TableCell>
-                            <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2 }}>$1.80</TableCell>
-                            <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, color: '#059669', fontWeight: 600 }}>2.8h</TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Card>
-                </Grid>
-              </Grid>
+              <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
+                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Session Summary</Typography>
+                <TableContainer sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: 'none' }}>
+                  <Table>
+                    <TableHead>
+                      <TableRow sx={{ bgcolor: '#F0F4F8' }}>
+                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }}>Period</TableCell>
+                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }} align="center">Prompts</TableCell>
+                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }} align="center">Cost</TableCell>
+                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }} align="right">Saved</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      <TableRow sx={{ '&:hover': { bgcolor: '#F4F6FA' } }}>
+                        <TableCell sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>Mid-day</TableCell>
+                        <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>34</TableCell>
+                        <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>$1.32</TableCell>
+                        <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)', color: '#059669', fontWeight: 600 }}>2.3h</TableCell>
+                      </TableRow>
+                      <TableRow sx={{ '&:hover': { bgcolor: '#F4F6FA' }, '&:last-child td': { border: 0 } }}>
+                        <TableCell sx={{ fontSize: '0.8125rem', py: 1.375, px: 2 }}>End-of-day</TableCell>
+                        <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2 }}>43</TableCell>
+                        <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2 }}>$1.80</TableCell>
+                        <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, color: '#059669', fontWeight: 600 }}>2.8h</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Card>
             </Box>
           </Box>
         )}

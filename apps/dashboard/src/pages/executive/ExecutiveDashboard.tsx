@@ -108,111 +108,99 @@ export default function ExecutiveDashboard() {
       </Box>
 
         {/* KPIs */}
-        <Grid container spacing={2} disableEqualOverflow sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={2.4}>
-            <Card onClick={() => setSelectedDrilldown('spend')} sx={{ borderRadius: 0, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
-              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
-                    Total Org Spend
-                  </Typography>
-                  <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
-                    <AttachMoney fontSize="small" />
-                  </Box>
-                </Box>
-                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
-                  ${(stats.total_spend_usd / 1000).toFixed(0)}k YTD
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(5, 1fr)' }, gap: 2, mb: 4, width: '100%' }}>
+          <Card onClick={() => setSelectedDrilldown('spend')} sx={{ width: '100%', borderRadius: 0, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+            <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                  Total Org Spend
                 </Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>+8% budget alignment</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={2.4}>
-            <Card onClick={() => setSelectedDrilldown('spend')} sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #0D9488', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
-              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
-                    AI ROI Value
-                  </Typography>
-                  <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(13,148,136,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0D9488' }}>
-                    <TrendingUp fontSize="small" />
-                  </Box>
+                <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
+                  <AttachMoney fontSize="small" />
                 </Box>
-                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: SUCCESS_GREEN, fontVariantNumeric: 'tabular-nums' }}>
-                  {stats.roi_estimate}% ROI
-                </Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: SUCCESS_GREEN, mt: 0.5 }}>$1.42M Net Value</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+              </Box>
+              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
+                ${(stats.total_spend_usd / 1000).toFixed(0)}k YTD
+              </Typography>
+              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>+8% budget alignment</Typography>
+            </CardContent>
+          </Card>
 
-          <Grid item xs={12} sm={6} md={2.4}>
-            <Card onClick={() => setSelectedDrilldown('hours')} sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #D97706', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
-              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
-                    Time Saved
-                  </Typography>
-                  <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(217,119,6,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706' }}>
-                    <Savings fontSize="small" />
-                  </Box>
+          <Card onClick={() => setSelectedDrilldown('spend')} sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #0D9488', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+            <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                  AI ROI Value
+                </Typography>
+                <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(13,148,136,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0D9488' }}>
+                  <TrendingUp fontSize="small" />
                 </Box>
-                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
-                  28,500h
-                </Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>Equivalent to 3,560 days</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+              </Box>
+              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: SUCCESS_GREEN, fontVariantNumeric: 'tabular-nums' }}>
+                {stats.roi_estimate}% ROI
+              </Typography>
+              <Typography sx={{ fontSize: '0.75rem', color: SUCCESS_GREEN, mt: 0.5 }}>$1.42M Net Value</Typography>
+            </CardContent>
+          </Card>
 
-          <Grid item xs={12} sm={6} md={2.4}>
-            <Card onClick={() => setSelectedDrilldown('rankings')} sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #7C3AED', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
-              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
-                    Active Users
-                  </Typography>
-                  <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7C3AED' }}>
-                    <Groups fontSize="small" />
-                  </Box>
+          <Card onClick={() => setSelectedDrilldown('hours')} sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #D97706', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+            <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                  Time Saved
+                </Typography>
+                <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(217,119,6,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706' }}>
+                  <Savings fontSize="small" />
                 </Box>
-                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
-                  1,240
-                </Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>88% org adoption</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+              </Box>
+              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
+                28,500h
+              </Typography>
+              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>Equivalent to 3,560 days</Typography>
+            </CardContent>
+          </Card>
 
-          <Grid item xs={12} sm={6} md={2.4}>
-            <Card onClick={() => setSelectedDrilldown('recommendations')} sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
-              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                  <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
-                    Next Investment
-                  </Typography>
-                  <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
-                    <Lightbulb fontSize="small" />
-                  </Box>
+          <Card onClick={() => setSelectedDrilldown('rankings')} sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #7C3AED', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+            <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                  Active Users
+                </Typography>
+                <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7C3AED' }}>
+                  <Groups fontSize="small" />
                 </Box>
-                <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em', color: ACCENT_BLUE, pt: 1, pb: 0.5 }}>
-                  Sales Prompts
+              </Box>
+              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
+                1,240
+              </Typography>
+              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>88% org adoption</Typography>
+            </CardContent>
+          </Card>
+
+          <Card onClick={() => setSelectedDrilldown('recommendations')} sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+            <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                  Next Investment
                 </Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>+35% growth opportunity</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-
+                <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
+                  <Lightbulb fontSize="small" />
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em', color: ACCENT_BLUE, pt: 1, pb: 0.5 }}>
+                Sales Prompts
+              </Typography>
+              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>+35% growth opportunity</Typography>
+            </CardContent>
+          </Card>
+        </Box>
 
         {/* TAB CONTENT */}
-        <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
+        <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
           
           {activeTab === 0 && (
-            <Grid container spacing={2} disableEqualOverflow>
-              <Grid item xs={12} md={7}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' }, gap: 2, width: '100%' }}>
+              <Box sx={{ width: '100%' }}>
                 <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Box sx={{ mb: 3 }}>
@@ -243,9 +231,9 @@ export default function ExecutiveDashboard() {
                     </Box>
                   </CardContent>
                 </Card>
-              </Grid>
+              </Box>
 
-              <Grid item xs={12} md={5}>
+              <Box sx={{ width: '100%' }}>
                 <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
@@ -273,9 +261,9 @@ export default function ExecutiveDashboard() {
                     </Stack>
                   </CardContent>
                 </Card>
-              </Grid>
+              </Box>
 
-              <Grid item xs={12} md={6}>
+              <Box sx={{ width: '100%' }}>
                 <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>Forward Budget Forecast</Typography>
@@ -294,9 +282,9 @@ export default function ExecutiveDashboard() {
                     </Box>
                   </CardContent>
                 </Card>
-              </Grid>
+              </Box>
 
-              <Grid item xs={12} md={6}>
+              <Box sx={{ width: '100%' }}>
                 <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>Investment Recommendations</Typography>
@@ -321,8 +309,8 @@ export default function ExecutiveDashboard() {
                     </Stack>
                   </CardContent>
                 </Card>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           )}
 
           {activeTab === 1 && (
