@@ -21,7 +21,7 @@ export default function ManagerLayout() {
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          sx={{ flex: 1, overflow: 'auto', p: 0, pt: '52px', bgcolor: '#FAFAFA' }}
+          sx={{ flex: 1, overflow: 'auto', p: 0, pt: '70px', bgcolor: '#FAFAFA' }}
         >
           <Outlet />
         </Box>

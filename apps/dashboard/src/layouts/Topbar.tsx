@@ -43,69 +43,103 @@ export default function Topbar({ title, subtitle, collapsed = false }: TopbarPro
         width: { xs: '100%', md: `calc(100% - ${sidebarWidth}px)` },
         transition: 'left 0.3s ease, width 0.3s ease',
         zIndex: 1100,
-        backgroundColor: 'rgba(255,255,255,0.92)',
+        backgroundColor: 'rgba(255,255,255,0.95)',
         backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(0,0,0,0.08)',
-        boxShadow: 'none',
-        px: { xs: 2, md: 3 },
+        borderBottom: '1px solid rgba(0,0,0,0.09)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+        px: { xs: 2, md: 3.5 },
         py: 0,
         margin: 0,
-        height: 52,
+        height: 70,
       }}
     >
-      <Toolbar disableGutters sx={{ minHeight: '52px !important', height: 52, justifyContent: 'space-between' }}>
+      <Toolbar disableGutters sx={{ minHeight: '70px !important', height: 70, justifyContent: 'space-between' }}>
         
         {/* LEFT: TITLE & SUBTITLE */}
         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <Typography sx={{ fontSize: '15px', fontWeight: 600, color: '#1A1D23', lineHeight: 1.2 }}>
+          <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1A1D2E', lineHeight: 1.25, letterSpacing: '-0.015em' }}>
             {title}
           </Typography>
           {subtitle && (
-            <Typography sx={{ fontSize: '12px', color: '#6B7280', mt: 0.5, lineHeight: 1.2 }}>
+            <Typography sx={{ fontSize: '0.875rem', color: '#4B5563', mt: 0.5, lineHeight: 1.2, fontWeight: 400 }}>
               {subtitle}
             </Typography>
           )}
         </Box>
 
-        {/* RIGHT: NOTIFICATIONS & AVATAR */}
-        <Stack direction="row" spacing={1.5} alignItems="center">
+        {/* RIGHT: GATEWAY STATUS, NOTIFICATIONS & USER PROFILE */}
+        <Stack direction="row" spacing={2.5} alignItems="center">
           
+          {/* Active Status Pill */}
+          <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1, px: 2, py: 0.875, borderRadius: '20px', bgcolor: 'rgba(5,150,105,0.08)', border: '1px solid rgba(5,150,105,0.18)' }}>
+            <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#059669', animation: 'pulse 2s infinite' }} />
+            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#059669', letterSpacing: '-0.01em' }}>
+              Gateway Active
+            </Typography>
+          </Box>
+
+          {/* Notifications */}
           <Tooltip title="Notifications">
             <IconButton
               onClick={(e) => setNotifAnchor(e.currentTarget)}
               sx={{
-                width: 32,
-                height: 32,
-                borderRadius: 2,
-                color: '#6B7280',
-                '&:hover': { bgcolor: '#F0F2F5', color: '#1A1D23' },
+                width: 44,
+                height: 44,
+                borderRadius: '12px',
+                color: '#4B5563',
+                bgcolor: 'rgba(0,0,0,0.03)',
+                border: '1px solid rgba(0,0,0,0.06)',
+                '&:hover': { bgcolor: '#F0F4F8', color: '#1A1D2E', borderColor: 'rgba(31,90,166,0.2)' },
                 transition: 'all 0.2s ease',
               }}
             >
-              <Badge badgeContent={NOTIFICATIONS.length} sx={{ '& .MuiBadge-badge': { bgcolor: '#DC2626', color: '#FFF', fontSize: '10px', height: 16, minWidth: 16 } }}>
-                <NotificationsIcon sx={{ fontSize: 20 }} />
+              <Badge badgeContent={NOTIFICATIONS.length} sx={{ '& .MuiBadge-badge': { bgcolor: '#DC2626', color: '#FFF', fontSize: '11px', fontWeight: 700, height: 18, minWidth: 18, borderRadius: '9px' } }}>
+                <NotificationsIcon sx={{ fontSize: 24 }} />
               </Badge>
             </IconButton>
           </Tooltip>
 
+          {/* Profile User Badge */}
           <Tooltip title={authUser?.displayName ?? 'Profile'}>
-            <Avatar
-              src={authUser?.photoURL ?? undefined}
+            <Box
               onClick={(e) => setAvatarAnchor(e.currentTarget)}
               sx={{
-                width: 32,
-                height: 32,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                p: 0.75,
+                pr: 2,
+                borderRadius: '24px',
+                bgcolor: 'rgba(31,90,166,0.06)',
+                border: '1px solid rgba(31,90,166,0.12)',
                 cursor: 'pointer',
-                fontSize: '12px',
-                fontWeight: 700,
-                bgcolor: 'rgba(37,99,235,0.10)',
-                color: '#2563EB',
                 transition: 'all 0.2s ease',
-                '&:hover': { opacity: 0.8 },
+                '&:hover': { bgcolor: 'rgba(31,90,166,0.12)', borderColor: 'rgba(31,90,166,0.25)' }
               }}
             >
-              {authUser?.displayName?.[0]?.toUpperCase() || 'U'}
-            </Avatar>
+              <Avatar
+                src={authUser?.photoURL ?? undefined}
+                sx={{
+                  width: 40,
+                  height: 40,
+                  fontSize: '15px',
+                  fontWeight: 700,
+                  bgcolor: '#1F5AA6',
+                  color: '#FFFFFF',
+                  boxShadow: '0 2px 6px rgba(31,90,166,0.3)',
+                }}
+              >
+                {authUser?.displayName?.[0]?.toUpperCase() || 'U'}
+              </Avatar>
+              <Box sx={{ display: { xs: 'none', md: 'block' }, textAlign: 'left' }}>
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1A1D2E', lineHeight: 1.2 }}>
+                  {authUser?.displayName || 'User'}
+                </Typography>
+                <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', lineHeight: 1.2 }}>
+                  {authUser?.email?.split('@')[0] || 'Member'}
+                </Typography>
+              </Box>
+            </Box>
           </Tooltip>
         </Stack>
       </Toolbar>

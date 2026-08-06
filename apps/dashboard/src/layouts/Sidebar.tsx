@@ -177,32 +177,38 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: collapsed ? 'center' : 'flex-start',
-            height: 52,
-            px: collapsed ? 0 : 2,
-            borderBottom: '1px solid rgba(0,0,0,0.08)',
-            flexShrink: 0,
+            height: 70,
+            px: collapsed ? 0 : 2.5,
+            borderBottom: '1px solid rgba(43, 108, 93, 0.14)',
           }}
         >
-          <Stack direction="row" spacing={1.25} alignItems="center">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, textDecoration: 'none' }}>
             <Box
-              component="img"
-              src="/logo.png"
-              alt="AI360 Logo"
               sx={{
-                height: 28,
-                width: 28,
-                borderRadius: '6px',
-                objectFit: 'cover',
-                flexShrink: 0,
-                boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                width: 38,
+                height: 38,
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #1F5AA6 0%, #059669 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#FFF',
+                boxShadow: '0 3px 8px rgba(31,90,166,0.3)',
               }}
-            />
+            >
+              <AIIcon sx={{ fontSize: 24 }} />
+            </Box>
             {!collapsed && (
-              <Typography sx={{ fontSize: '16px', fontWeight: 800, color: '#1A1D23', letterSpacing: '-0.025em' }}>
-                AI360
-              </Typography>
+              <Box>
+                <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#1A2F29', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                  AI360
+                </Typography>
+                <Typography sx={{ fontSize: '0.67rem', fontWeight: 700, color: '#2B6C5D', letterSpacing: '0.08em', textTransform: 'uppercase', mt: 0.25 }}>
+                  ENTERPRISE
+                </Typography>
+              </Box>
             )}
-          </Stack>
+          </Box>
         </Box>
 
         {/* NAVIGATION ITEMS */}
