@@ -246,54 +246,18 @@ export default function EmployeeDashboard() {
     <Box className="page-enter" sx={{ bgcolor: '#F4F6FA', minHeight: '100vh', pb: 8, overflow: 'hidden' }}>
       <Box sx={{ px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 }, width: '100%' }}>
         
-        {/* User Header (Square workspace container) */}
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, alignItems: { xs: 'flex-start', lg: 'center' }, justifyContent: 'space-between', gap: 4, background: 'linear-gradient(135deg, rgba(31,90,166,0.08) 0%, rgba(5,150,105,0.05) 100%)', borderRadius: '12px', p: 3, mb: 3, border: '1px solid rgba(31,90,166,0.09)' }}>
-          <Stack direction="row" spacing={3} alignItems="center">
-            <Avatar src={userData.avatar} sx={{ width: 84, height: 84 }} />
-            <Box>
-              <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
-                Hello, {userData.name.split(' ')[0]}
-              </Typography>
-              <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
-                {userData.role} • {userData.greeting}
-              </Typography>
-            </Box>
-          </Stack>
-
-          <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-            <Box sx={{ px: 2, py: 1.5, borderRadius: '12px', bgcolor: '#FFFFFF', border: '1px solid rgba(31,90,166,0.09)' }}>
-              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4B5563' }}>
-                Mid-Day Snapshot
-              </Typography>
-              <Stack direction="row" spacing={1.5} alignItems="baseline" mt={0.5}>
-                <Typography sx={{ fontSize: '1.2rem', fontWeight: 700, color: '#1A1D2E' }}>34</Typography>
-                <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: BRAND_COLOR }}>$1.32</Typography>
-                <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#059669' }}>2.3h saved</Typography>
-              </Stack>
-            </Box>
-            <Box sx={{ px: 2, py: 1.5, borderRadius: '12px', bgcolor: '#FFFFFF', border: '1px solid rgba(31,90,166,0.09)' }}>
-              <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4B5563' }}>
-                End-of-Day Summary
-              </Typography>
-              <Stack direction="row" spacing={1.5} alignItems="baseline" mt={0.5}>
-                <Typography sx={{ fontSize: '1.2rem', fontWeight: 700, color: '#1A1D2E' }}>43</Typography>
-                <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#4B5563' }}>8,300 tokens</Typography>
-                <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#059669' }}>2.8h saved</Typography>
-              </Stack>
-            </Box>
-          </Stack>
-        </Box>
-
         {/* Tab Content */}
         {activeTab === 0 && (
           <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
             {/* Stat Cards Row - 100% Full Screen Width */}
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 2, width: '100%' }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(6, 1fr)' }, gap: 2, mb: 2, width: '100%' }}>
               {[
                 { label: 'TODAYS PROMPTS', value: '43', sub: '+12% vs avg', subColor: '#059669', accent: '#1F5AA6', icon: <TrendingUp fontSize="small" sx={{ color: '#1F5AA6' }}/> },
                 { label: 'TODAYS COST', value: '$1.32', sub: '72% saved via optimization', subColor: '#059669', accent: '#60A5FA', icon: <MonetizationOn fontSize="small" sx={{ color: '#60A5FA' }}/> },
                 { label: 'PROMPT QUALITY SCORE', value: '84/100', sub: 'Clarity, Context & Specificity', subColor: '#4B5563', accent: '#D97706', icon: <WorkspacePremium fontSize="small" sx={{ color: '#D97706' }}/> },
-                { label: 'HOURS SAVED', value: '2.8h', sub: 'Equivalent to 35% boost', subColor: '#1F5AA6', accent: '#6B46C1', icon: <AccessTime fontSize="small" sx={{ color: '#6B46C1' }}/> }
+                { label: 'HOURS SAVED', value: '2.8h', sub: 'Equivalent to 35% boost', subColor: '#1F5AA6', accent: '#6B46C1', icon: <AccessTime fontSize="small" sx={{ color: '#6B46C1' }}/> },
+                { label: 'MID-DAY SNAPSHOT', value: '34', sub: '$1.32 • 2.3h saved', subColor: '#059669', accent: '#059669', icon: <Speed fontSize="small" sx={{ color: '#059669' }}/> },
+                { label: 'END-OF-DAY SUMMARY', value: '43', sub: '8,300 tokens • 2.8h saved', subColor: '#1F5AA6', accent: '#0284C7', icon: <History fontSize="small" sx={{ color: '#0284C7' }}/> }
               ].map((stat, i) => (
                 <Card key={i} sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'box-shadow 0.25s ease, border-color 0.25s ease', borderTop: `3px solid ${stat.accent}`, '&:hover': { boxShadow: '0 4px 16px rgba(31,90,166,0.09)', borderColor: 'rgba(31,90,166,0.24)' } }}>
                   <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
