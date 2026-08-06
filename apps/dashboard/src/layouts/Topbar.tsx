@@ -8,6 +8,7 @@ import {
   Notifications as NotificationsIcon,
   Settings as SettingsIcon,
   Logout as LogoutIcon,
+  Code as CodeIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -156,6 +157,10 @@ export default function Topbar({ title, subtitle, collapsed = false }: TopbarPro
           </Box>
         </Box>
         <List disablePadding sx={{ p: 1 }}>
+          <ListItem sx={{ borderRadius: 1.5, px: 1.5, py: 1, cursor: 'pointer', '&:hover': { bgcolor: '#F0F2F5' } }} onClick={() => { window.open('https://ai-360-dashboard.vercel.app/docs', '_blank'); setAvatarAnchor(null); }}>
+            <CodeIcon sx={{ fontSize: 18, color: '#2563EB', mr: 1.5 }} />
+            <Typography sx={{ fontSize: '13px', color: '#1A1D23', fontWeight: 500 }}>API Docs (Swagger UI)</Typography>
+          </ListItem>
           <ListItem sx={{ borderRadius: 1.5, px: 1.5, py: 1, cursor: 'pointer', '&:hover': { bgcolor: '#F0F2F5' } }} onClick={() => { navigate('/dashboard/admin/settings'); setAvatarAnchor(null); }}>
             <SettingsIcon sx={{ fontSize: 18, color: '#6B7280', mr: 1.5 }} />
             <Typography sx={{ fontSize: '13px', color: '#1A1D23' }}>Settings</Typography>
