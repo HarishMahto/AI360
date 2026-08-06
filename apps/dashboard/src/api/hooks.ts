@@ -1,6 +1,11 @@
 // AI360 – TanStack Query hooks with graceful fallback error handling
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
+import {
+  MORNING_COST_ADVISOR, TEAM_BENCHMARKS, MATURITY_LADDER,
+  LEADERBOARD_RANKINGS, calculateROI, generateOLSForecast,
+  getSmartRecommendations, getModelRecommendation
+} from '../engines';
 
 // ─── Query Keys ──────────────────────────────────────────────────────────────
 export const QueryKeys = {
@@ -160,11 +165,6 @@ export function useForecast(params?: { period?: '7d' | '30d' | '90d' }) {
 }
 
 // ─── Section 11.5 Signature Enterprise Hooks ──────────────────────────────────
-import {
-  MORNING_COST_ADVISOR, TEAM_BENCHMARKS, MATURITY_LADDER,
-  LEADERBOARD_RANKINGS, calculateROI, generateOLSForecast,
-  getSmartRecommendations, getModelRecommendation
-} from '../engines';
 
 export function useCostAdvisor() {
   return useQuery({

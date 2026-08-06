@@ -11,7 +11,6 @@ import {
   ListItem,
   Divider,
   LinearProgress,
-
   TextField,
   Button,
   InputAdornment,
@@ -36,17 +35,6 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-
-const TAB_NAME_MAP: Record<string, number> = {
-  overview: 0,
-  chat: 1,
-  'prompt-coach': 2,
-  'model-recs': 3,
-  marketplace: 4,
-  'learning-coach': 5,
-  'privacy-guard': 6,
-  'prompt-history': 7,
-};
 import {
   AreaChart,
   Area,
@@ -72,7 +60,6 @@ import { alpha } from '@mui/material/styles';
 import {
   useEmployeeDashboard,
   useSendChat,
-
   usePromptCoach,
   useModelRecommendations,
   usePromptHistory,
@@ -83,6 +70,17 @@ import {
   useSaveThenPublishPrompt,
 } from '../../api/hooks';
 import { analyzePrompt } from '../../engines';
+
+const TAB_NAME_MAP: Record<string, number> = {
+  overview: 0,
+  chat: 1,
+  'prompt-coach': 2,
+  'model-recs': 3,
+  marketplace: 4,
+  'learning-coach': 5,
+  'privacy-guard': 6,
+  'prompt-history': 7,
+};
 
 const BRAND_COLOR = '#1F5AA6';
 

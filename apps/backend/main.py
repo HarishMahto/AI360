@@ -90,9 +90,19 @@ app = FastAPI(
 )
 
 # ─── Middleware ───────────────────────────────────────────────────────────────
+allowed_origins = list(set(settings.cors_origins + [
+    "https://ai360-c1b0b.web.app",
+    "https://ai360-c1b0b.firebaseapp.com",
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://localhost:4173",
+]))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.web\.app|https://.*\.firebaseapp\.com|https://.*\.vercel\.app|http://localhost:\d+|http://127\.0\.0\.1:\d+",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
