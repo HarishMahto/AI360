@@ -24,6 +24,33 @@ export default function AIChat() {
   const sendChatMutation = useSendChat();
   const privacyMutation = usePromptPrivacy();
 
+  const handleNewChat = () => {
+    setMessages([{ id: Date.now(), text: 'Hello! I am AI360 Workspace Gateway. Select any model or type your request below.', sender: 'ai', model: selectedModel, score: 95 }]);
+    setInput('');
+    setSecurityNotice(null);
+  };
+
+  const handleLoadHistory = (item: any) => {
+    // Each /chat/history record is one real prompt/response pair persisted by the backend
+    // (see PROMPT_HISTORY docs written in domains/ai_gateway/router.py) — restore both sides
+    // of the actual saved conversation turn instead of a synthetic placeholder.
+    const historyModel = item.model || selectedModel;
+    const historical = [
+      { id: Date.now(), text: item.prompt || 'Previous prompt.', sender: 'user', model: historyModel, score: item.promptScore ?? null },
+      {
+        id: Date.now() + 1,
+        text: item.response || 'No response was recorded for this session.',
+        sender: 'ai',
+        model: historyModel,
+        tokens: item.totalTokens,
+        cost: item.estimatedCostUSD != null ? `$${Number(item.estimatedCostUSD).toFixed(4)}` : undefined,
+      },
+    ];
+    setMessages(historical);
+    setSelectedModel(historyModel);
+    setSecurityNotice(null);
+  };
+
   const handleSend = () => {
     if (!input.trim() || sendChatMutation.isPending) return;
 
@@ -100,14 +127,16 @@ export default function AIChat() {
     );
   };
 
-  const chatHistory = Array.isArray(historyData) ? historyData : historyData?.items || [];
+  // GET /chat/history responds with { data: [...], page, page_size, has_more } — read `.data`,
+  // not `.items` (a prior mismatch here meant the history sidebar was always empty).
+  const chatHistory = Array.isArray(historyData) ? historyData : historyData?.data || historyData?.items || [];
 
   return (
     <Box className="page-enter page-content" sx={{ display: 'flex', height: 'calc(100vh - 200px)', width: '100%', gap: 2, p: { xs: 1, md: 1.5 }, bgcolor: '#F4F6FA' }}>
       <Box sx={{ width: 280, display: 'flex', flexDirection: 'column', bgcolor: '#FFFFFF', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)' }}>
         <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
           <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em' }}>History</Typography>
-          <IconButton sx={{ color: BRAND_COLOR }} size="small"><Add /></IconButton>
+          <IconButton sx={{ color: BRAND_COLOR }} size="small" onClick={handleNewChat} title="New Chat"><Add /></IconButton>
         </Box>
         <List sx={{ flexGrow: 1, overflowY: 'auto', p: 0 }}>
           {isHistoryLoading ? (
@@ -116,11 +145,11 @@ export default function AIChat() {
             </Box>
           ) : (
             chatHistory.map((item: any) => (
-              <ListItem button key={item.id} sx={{ borderBottom: '1px solid rgba(31,90,166,0.05)', '&:hover': { bgcolor: '#F0F4F8' } }}>
+              <ListItem button key={item.id} onClick={() => handleLoadHistory(item)} sx={{ borderBottom: '1px solid rgba(31,90,166,0.05)', '&:hover': { bgcolor: '#F0F4F8', cursor: 'pointer' } }}>
                 <History sx={{ mr: 1.5, color: '#9CA3AF', fontSize: 18 }} />
                 <ListItemText
-                  primary={item.title || item.topic || 'Session'}
-                  secondary={item.date || item.createdAt || 'Recent'}
+                  primary={item.prompt ? (item.prompt.length > 42 ? `${item.prompt.slice(0, 42)}…` : item.prompt) : (item.title || item.topic || 'Session')}
+                  secondary={item.timestamp ? new Date(item.timestamp).toLocaleString() : (item.date || item.createdAt || 'Recent')}
                   primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1A1D2E' }}
                   secondaryTypographyProps={{ fontSize: '0.75rem', color: '#4B5563' }}
                 />

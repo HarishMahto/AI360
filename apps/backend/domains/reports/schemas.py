@@ -13,3 +13,15 @@ class ReportRequest(BaseModel):
 class ReportResponse(BaseModel):
     download_url: str
     expires_at: str
+    id: Optional[str] = None
+    title: Optional[str] = None
+    type: Optional[str] = None
+    format: Optional[str] = None
+
+class ReportListItem(BaseModel):
+    """A single row in the 'Recent Reports' list (GET /reports)."""
+    id: str
+    title: str
+    type: str
+    format: str
+    generated_at: str

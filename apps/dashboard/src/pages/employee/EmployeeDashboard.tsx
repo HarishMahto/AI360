@@ -5,17 +5,15 @@ import {
   Stack,
   Typography,
   Grid,
-  Avatar,
   Chip,
   IconButton,
   List,
   ListItem,
   Divider,
   LinearProgress,
-  useTheme,
+
   TextField,
   Button,
-  Paper,
   InputAdornment,
   Table,
   TableBody,
@@ -27,11 +25,16 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Tooltip as MuiTooltip,
-  Badge,
   CircularProgress,
   Card,
-  CardContent
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CardContent,
+  Skeleton,
+  Snackbar,
+  Alert
 } from '@mui/material';
 
 const TAB_NAME_MAP: Record<string, number> = {
@@ -42,8 +45,8 @@ const TAB_NAME_MAP: Record<string, number> = {
   marketplace: 4,
   'learning-coach': 5,
   'privacy-guard': 6,
+  'prompt-history': 7,
 };
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   AreaChart,
   Area,
@@ -52,104 +55,66 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
-  Cell
 } from 'recharts';
 import {
-  CheckCircle,
-  AccessTime,
-  TrendingUp,
-  MoreVert,
-  Assignment,
-  EmojiEvents,
-  AutoAwesome,
-  Send,
-  Person,
-  SmartToy,
-  Search,
+  ContentCopy,
   Star,
   Share,
-  ContentCopy,
-  Tune,
-  Lightbulb,
-  Psychology,
-  ElectricBolt,
-  WorkspacePremium,
+  TrendingUp,
   MonetizationOn,
-  History,
-  Bookmark,
-  Store,
-  School,
+  WorkspacePremium,
+  AccessTime,
   Speed,
-  Security,
-  Shield,
-  Warning,
-  VpnKey,
-  VerifiedUser
+  History,
+  Send,
 } from '@mui/icons-material';
 import { alpha } from '@mui/material/styles';
 import {
   useEmployeeDashboard,
   useSendChat,
-  useScorePrompt,
-  useOptimizePrompt,
-  useLeaderboards,
+
   usePromptCoach,
   useModelRecommendations,
   usePromptHistory,
   usePromptMarketplace,
   useLearningCoachTips,
-  useSessionSummary
+  useSessionSummary,
+  useToggleFavoritePrompt,
+  useSaveThenPublishPrompt,
 } from '../../api/hooks';
-import { analyzePrompt, getModelRecommendation, type LeaderboardCategory } from '../../engines';
+import { analyzePrompt } from '../../engines';
 
 const BRAND_COLOR = '#1F5AA6';
 
 export default function EmployeeDashboard() {
-  const theme = useTheme();
   const { data: serverData, isLoading } = useEmployeeDashboard();
   const sendChatMutation = useSendChat();
-  const scoreMutation = useScorePrompt();
-  const optimizeMutation = useOptimizePrompt();
 
   const [searchParams] = useSearchParams();
   const currentTabKey = searchParams.get('tab') || 'overview';
   const activeTab = TAB_NAME_MAP[currentTabKey] ?? 0;
-  const leaderboardsData = useLeaderboards().data || {};
 
   const sessionSummaryData = useSessionSummary().data;
   const learningCoachData = useLearningCoachTips().data;
   const modelRecsData = useModelRecommendations().data;
   const marketplaceData = usePromptMarketplace().data;
-  const promptCoachQuery = usePromptCoach();
-
-  const [testPrivacyPrompt, setTestPrivacyPrompt] = useState('Customer ABC SAP password is SuperSecretSAP_2026! Please summarize these confidential financial metrics and architecture.');
-  const [activeLeaderboardCat, setActiveLeaderboardCat] = useState<LeaderboardCategory>('Top Prompt Writer');
-  const privacyAnalysis = analyzePrompt(testPrivacyPrompt);
-  const modelRec = getModelRecommendation(testPrivacyPrompt);
 
   const [vaguePrompt, setVaguePrompt] = useState('Write Java API');
-  const [coachingResult, setCoachingResult] = useState<{
-    original: string;
-    suggestion: string;
-    optimized: string;
-    score: number;
-    rubric: { clarity: number; context: number; specificity: number; format: number; examples: number };
-    tokensOriginal: number;
-    tokensOptimized: number;
-    savingsPct: number;
-  } | null>({
-    original: 'Write Java API',
-    suggestion: 'Add the framework version for a more precise result.',
-    optimized: 'Generate a Spring Boot 3 REST API using Java 21, JWT authentication, MySQL, and Clean Architecture.',
-    score: 82,
-    rubric: { clarity: 85, context: 80, specificity: 85, format: 80, examples: 78 },
-    tokensOriginal: 650,
-    tokensOptimized: 180,
-    savingsPct: 72
-  });
+  const promptCoachQuery = usePromptCoach(vaguePrompt);
+  const coachingResult = promptCoachQuery.data;
+  const handleRunCoachDemo = () => promptCoachQuery.refetch();
 
+  const [dismissedRecs, setDismissedRecs] = useState<Set<number>>(new Set());
+
+  const toggleFavoriteMutation = useToggleFavoritePrompt();
+  const saveThenPublishMutation = useSaveThenPublishPrompt();
+  const [publishTitle, setPublishTitle] = useState('');
+  const [publishCategory, setPublishCategory] = useState('Coding');
+  const [publishContent, setPublishContent] = useState('');
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
+
+  const [testPrivacyPrompt, setTestPrivacyPrompt] = useState('Customer ABC SAP password is SuperSecretSAP_2026! Please summarize these confidential financial metrics and architecture.');
+  const privacyAnalysis = analyzePrompt(testPrivacyPrompt);
   const [selectedModel, setSelectedModel] = useState('gpt-4o-mini');
   const [chatInput, setChatInput] = useState('');
   const [chatMessages, setChatMessages] = useState<any[]>([
@@ -158,43 +123,16 @@ export default function EmployeeDashboard() {
   ]);
 
   const [searchHistory, setSearchHistory] = useState('');
+  const [historyQuery, setHistoryQuery] = useState('');
+  const [historyFavoriteOnly, setHistoryFavoriteOnly] = useState(false);
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false);
+  const { data: promptHistoryData } = usePromptHistory(historyQuery, historyFavoriteOnly);
   const [promptsList, setPromptsList] = useState([
     { id: 1, title: 'SAP Prompt', author: 'DevOps Team', rating: 5.0, uses: 520, hoursSaved: 1100, category: 'Enterprise', isFavorite: true, content: 'Analyze SAP RFC logs and extract key error codes in JSON format.' },
     { id: 2, title: 'Spring Boot Architecture Spec', author: 'Architecture Guild', rating: 4.9, uses: 340, hoursSaved: 780, category: 'Coding', isFavorite: true, content: 'Generate a Spring Boot 3 REST API using Java 21, JWT auth, and MySQL.' },
     { id: 3, title: 'Exec Summary Generator', author: 'Product Lead', rating: 4.8, uses: 290, hoursSaved: 540, category: 'Summarization', isFavorite: false, content: 'Summarize meeting transcripts into 3 bullet points with action items.' }
   ]);
 
-  const handleRunCoachDemo = () => {
-    if (promptCoachQuery.data) {
-      setCoachingResult({
-        original: vaguePrompt || promptCoachQuery.data.originalPrompt,
-        suggestion: promptCoachQuery.data.suggestion,
-        optimized: promptCoachQuery.data.optimizedPrompt,
-        score: promptCoachQuery.data.scoreOutOf100,
-        rubric: {
-          clarity: promptCoachQuery.data.dimensions?.clarity ? Math.round(promptCoachQuery.data.dimensions.clarity * 5) : 85,
-          context: promptCoachQuery.data.dimensions?.context ? Math.round(promptCoachQuery.data.dimensions.context * 5) : 80,
-          specificity: promptCoachQuery.data.dimensions?.specificity ? Math.round(promptCoachQuery.data.dimensions.specificity * 5) : 85,
-          format: promptCoachQuery.data.dimensions?.format ? Math.round(promptCoachQuery.data.dimensions.format * 5) : 80,
-          examples: promptCoachQuery.data.dimensions?.useOfExamples ? Math.round(promptCoachQuery.data.dimensions.useOfExamples * 5) : 78
-        },
-        tokensOriginal: promptCoachQuery.data.tokenOptimizer?.currentTokens || 650,
-        tokensOptimized: promptCoachQuery.data.tokenOptimizer?.optimizedTokens || 180,
-        savingsPct: promptCoachQuery.data.tokenOptimizer?.savingsPercent || 72
-      });
-    } else {
-      setCoachingResult({
-        original: vaguePrompt || 'Write Java API',
-        suggestion: 'Add the framework version for a more precise result.',
-        optimized: 'Generate a Spring Boot 3 REST API using Java 21, JWT authentication, MySQL, and Clean Architecture.',
-        score: 82,
-        rubric: { clarity: 85, context: 80, specificity: 85, format: 80, examples: 78 },
-        tokensOriginal: 650,
-        tokensOptimized: 180,
-        savingsPct: 72
-      });
-    }
-  };
 
   const handleSendChatMessage = () => {
     if (!chatInput.trim() || sendChatMutation.isPending) return;
@@ -235,12 +173,34 @@ export default function EmployeeDashboard() {
     );
   };
 
-  const userData = serverData?.user || {
-    name: 'Sarah Jenkins',
-    role: 'Senior Product Engineer',
-    avatar: 'https://i.pravatar.cc/150?u=sarah',
-    greeting: 'Ready to create & optimize AI workflows today?'
-  };
+
+
+  const todayPrompts = serverData?.today_prompts ?? 43;
+  const todayCost = serverData?.today_cost ?? 1.32;
+  const avgScore = serverData?.average_score ?? 84;
+  const totalHoursSaved = serverData?.hours_saved ?? 2.8;
+  const midDay = sessionSummaryData?.snapshots?.[0] ?? { prompts: 34, cost: '$1.32', hoursSaved: 2.3 };
+  const endOfDay = sessionSummaryData?.snapshots?.[1] ?? { prompts: 43, cost: '$1.80', hoursSaved: 2.8 };
+
+  if (isLoading) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Grid container spacing={3}>
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Grid item xs={12} sm={6} md={4} lg={2} key={i}>
+              <Skeleton variant="rectangular" height={140} sx={{ borderRadius: '12px' }} />
+            </Grid>
+          ))}
+          <Grid item xs={12} md={7}>
+            <Skeleton variant="rectangular" height={360} sx={{ borderRadius: '12px' }} />
+          </Grid>
+          <Grid item xs={12} md={5}>
+            <Skeleton variant="rectangular" height={360} sx={{ borderRadius: '12px' }} />
+          </Grid>
+        </Grid>
+      </Box>
+    );
+  }
 
   return (
     <Box className="page-enter" sx={{ bgcolor: '#F4F6FA', minHeight: '100vh', pb: 8, overflow: 'hidden' }}>
@@ -252,12 +212,12 @@ export default function EmployeeDashboard() {
             {/* Stat Cards Row - 100% Full Screen Width */}
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(6, 1fr)' }, gap: 2, mb: 2, width: '100%' }}>
               {[
-                { label: 'TODAYS PROMPTS', value: '43', sub: '+12% vs avg', subColor: '#059669', accent: '#1F5AA6', icon: <TrendingUp fontSize="small" sx={{ color: '#1F5AA6' }}/> },
-                { label: 'TODAYS COST', value: '$1.32', sub: '72% saved via optimization', subColor: '#059669', accent: '#60A5FA', icon: <MonetizationOn fontSize="small" sx={{ color: '#60A5FA' }}/> },
-                { label: 'PROMPT QUALITY SCORE', value: '84/100', sub: 'Clarity, Context & Specificity', subColor: '#4B5563', accent: '#D97706', icon: <WorkspacePremium fontSize="small" sx={{ color: '#D97706' }}/> },
-                { label: 'HOURS SAVED', value: '2.8h', sub: 'Equivalent to 35% boost', subColor: '#1F5AA6', accent: '#6B46C1', icon: <AccessTime fontSize="small" sx={{ color: '#6B46C1' }}/> },
-                { label: 'MID-DAY SNAPSHOT', value: '34', sub: '$1.32 • 2.3h saved', subColor: '#059669', accent: '#059669', icon: <Speed fontSize="small" sx={{ color: '#059669' }}/> },
-                { label: 'END-OF-DAY SUMMARY', value: '43', sub: '8,300 tokens • 2.8h saved', subColor: '#1F5AA6', accent: '#0284C7', icon: <History fontSize="small" sx={{ color: '#0284C7' }}/> }
+                { label: 'TODAYS PROMPTS', value: todayPrompts.toString(), sub: '+12% vs avg', subColor: '#059669', accent: '#1F5AA6', icon: <TrendingUp fontSize="small" sx={{ color: '#1F5AA6' }}/> },
+                { label: 'TODAYS COST', value: `$${todayCost}`, sub: '72% saved via optimization', subColor: '#059669', accent: '#60A5FA', icon: <MonetizationOn fontSize="small" sx={{ color: '#60A5FA' }}/> },
+                { label: 'PROMPT QUALITY SCORE', value: `${avgScore}/100`, sub: 'Clarity, Context & Specificity', subColor: '#4B5563', accent: '#D97706', icon: <WorkspacePremium fontSize="small" sx={{ color: '#D97706' }}/> },
+                { label: 'HOURS SAVED', value: `${totalHoursSaved}h`, sub: 'Equivalent to 35% boost', subColor: '#1F5AA6', accent: '#6B46C1', icon: <AccessTime fontSize="small" sx={{ color: '#6B46C1' }}/> },
+                { label: 'MID-DAY SNAPSHOT', value: midDay.prompts.toString(), sub: `${midDay.cost} • ${midDay.hoursSaved}h saved`, subColor: '#059669', accent: '#059669', icon: <Speed fontSize="small" sx={{ color: '#059669' }}/> },
+                { label: 'END-OF-DAY SUMMARY', value: endOfDay.prompts.toString(), sub: `Tokens: ${endOfDay.tokens || 'N/A'} • ${endOfDay.hoursSaved}h saved`, subColor: '#1F5AA6', accent: '#0284C7', icon: <History fontSize="small" sx={{ color: '#0284C7' }}/> }
               ].map((stat, i) => (
                 <Card key={i} sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'box-shadow 0.25s ease, border-color 0.25s ease', borderTop: `3px solid ${stat.accent}`, '&:hover': { boxShadow: '0 4px 16px rgba(31,90,166,0.09)', borderColor: 'rgba(31,90,166,0.24)' } }}>
                   <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
@@ -316,18 +276,17 @@ export default function EmployeeDashboard() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      <TableRow sx={{ '&:hover': { bgcolor: '#F4F6FA' } }}>
-                        <TableCell sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>Mid-day</TableCell>
-                        <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>34</TableCell>
-                        <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>$1.32</TableCell>
-                        <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)', color: '#059669', fontWeight: 600 }}>2.3h</TableCell>
-                      </TableRow>
-                      <TableRow sx={{ '&:hover': { bgcolor: '#F4F6FA' }, '&:last-child td': { border: 0 } }}>
-                        <TableCell sx={{ fontSize: '0.8125rem', py: 1.375, px: 2 }}>End-of-day</TableCell>
-                        <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2 }}>43</TableCell>
-                        <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2 }}>$1.80</TableCell>
-                        <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, color: '#059669', fontWeight: 600 }}>2.8h</TableCell>
-                      </TableRow>
+                      {(sessionSummaryData?.snapshots || [
+                        { period: 'Mid-day', prompts: 34, tokens: '—', cost: '$1.32', hoursSaved: 2.3 },
+                        { period: 'End-of-day', prompts: 43, tokens: '8,300', cost: '$1.80', hoursSaved: 2.8 }
+                      ]).map((snap: any, i: number) => (
+                        <TableRow key={i} sx={{ '&:hover': { bgcolor: '#F4F6FA' }, ...(i === 1 ? { '&:last-child td': { border: 0 } } : {}) }}>
+                          <TableCell sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>{snap.period}</TableCell>
+                          <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>{snap.prompts}</TableCell>
+                          <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>{typeof snap.cost === 'string' ? snap.cost : `$${snap.cost}`}</TableCell>
+                          <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)', color: '#059669', fontWeight: 600 }}>{snap.hoursSaved}h</TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -396,15 +355,20 @@ export default function EmployeeDashboard() {
                 <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
                   <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Prompt Coach</Typography>
                   <TextField fullWidth value={vaguePrompt} onChange={(e) => setVaguePrompt(e.target.value)} placeholder="Enter vague prompt..." sx={{ mb: 2 }} />
-                  <Button variant="outlined" onClick={handleRunCoachDemo} sx={{ mb: 3, borderColor: 'rgba(31,90,166,0.2)', color: '#1A1D2E', '&:hover': { borderColor: 'rgba(31,90,166,0.3)', bgcolor: '#F0F4F8' } }}>
-                    Optimize Prompt
+                  <Button variant="outlined" onClick={handleRunCoachDemo} disabled={promptCoachQuery.isFetching} sx={{ mb: 3, borderColor: 'rgba(31,90,166,0.2)', color: '#1A1D2E', '&:hover': { borderColor: 'rgba(31,90,166,0.3)', bgcolor: '#F0F4F8' } }}>
+                    {promptCoachQuery.isFetching ? <CircularProgress size={18} sx={{ mr: 1 }} /> : null}Optimize Prompt
                   </Button>
                   {coachingResult && (
                     <Box sx={{ p: 2.5, borderRadius: '12px', bgcolor: 'rgba(31,90,166,0.05)', borderLeft: `3px solid ${BRAND_COLOR}` }}>
-                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1A1D2E', mb: 1 }}>Suggestion</Typography>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
+                        <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1A1D2E' }}>Suggestion</Typography>
+                        <Chip label={`Score: ${coachingResult.scoreOutOf100}/100`} size="small" sx={{ bgcolor: 'rgba(5,150,105,0.10)', color: '#059669', fontWeight: 600 }} />
+                      </Stack>
                       <Typography sx={{ fontSize: '0.875rem', color: '#4B5563', mb: 2 }}>{coachingResult.suggestion}</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1A1D2E', mb: 1 }}>Original</Typography>
+                      <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', p: 1.5, mb: 2, bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)' }}>{coachingResult.originalPrompt}</Typography>
                       <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1A1D2E', mb: 1 }}>Optimized</Typography>
-                      <Typography sx={{ fontSize: '0.875rem', color: '#1A1D2E', p: 1.5, bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)' }}>{coachingResult.optimized}</Typography>
+                      <Typography sx={{ fontSize: '0.875rem', color: '#1A1D2E', p: 1.5, bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)' }}>{coachingResult.optimizedPrompt}</Typography>
                     </Box>
                   )}
                 </Card>
@@ -415,15 +379,21 @@ export default function EmployeeDashboard() {
                   <TableContainer sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', mb: 3 }}>
                     <Table>
                       <TableBody>
-                        <TableRow><TableCell sx={{ fontSize: '0.8125rem' }}>Original</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem' }}>650 tokens</TableCell></TableRow>
-                        <TableRow><TableCell sx={{ fontSize: '0.8125rem' }}>Optimized</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem' }}>180 tokens</TableCell></TableRow>
-                        <TableRow sx={{ bgcolor: '#F0F4F8' }}><TableCell sx={{ fontSize: '0.8125rem', fontWeight: 600 }}>Savings</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#059669' }}>72%</TableCell></TableRow>
+                        <TableRow><TableCell sx={{ fontSize: '0.8125rem' }}>Original</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem' }}>{coachingResult?.tokenOptimizer.currentTokens ?? 650} tokens</TableCell></TableRow>
+                        <TableRow><TableCell sx={{ fontSize: '0.8125rem' }}>Optimized</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem' }}>{coachingResult?.tokenOptimizer.optimizedTokens ?? 180} tokens</TableCell></TableRow>
+                        <TableRow sx={{ bgcolor: '#F0F4F8' }}><TableCell sx={{ fontSize: '0.8125rem', fontWeight: 600 }}>Savings</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#059669' }}>{coachingResult?.tokenOptimizer.savingsPercent ?? 72}%</TableCell></TableRow>
                       </TableBody>
                     </Table>
                   </TableContainer>
                   <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E', mb: 1.5 }}>Quality Score Breakdown</Typography>
                   <Stack spacing={1.5}>
-                    {[{ label: 'Clarity', val: 85 }, { label: 'Context', val: 80 }, { label: 'Specificity', val: 85 }].map((dim, i) => (
+                    {[
+                      { label: 'Clarity', val: coachingResult?.dimensions.clarity ? Math.round(coachingResult.dimensions.clarity * 5) : 85 },
+                      { label: 'Context', val: coachingResult?.dimensions.context ? Math.round(coachingResult.dimensions.context * 5) : 80 },
+                      { label: 'Specificity', val: coachingResult?.dimensions.specificity ? Math.round(coachingResult.dimensions.specificity * 5) : 85 },
+                      { label: 'Format', val: coachingResult?.dimensions.format ? Math.round(coachingResult.dimensions.format * 5) : 80 },
+                      { label: 'Use of Examples', val: coachingResult?.dimensions.useOfExamples ? Math.round(coachingResult.dimensions.useOfExamples * 5) : 80 },
+                    ].map((dim, i) => (
                       <Box key={i}>
                         <Stack direction="row" justifyContent="space-between" mb={0.5}>
                           <Typography sx={{ fontSize: '0.75rem', color: '#4B5563' }}>{dim.label}</Typography>
@@ -450,14 +420,21 @@ export default function EmployeeDashboard() {
                       <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#4B5563' }}>Context</TableCell>
                       <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#4B5563' }}>Recommendation</TableCell>
                       <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#4B5563' }}>Savings</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#4B5563' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {(modelRecsData || [{ signal: 'Summarization', recommendation: 'Gemini 1.5 Flash', estimatedSaving: '70% cheaper' }]).map((rec: any, idx: number) => (
+                    {(modelRecsData || [{ signal: 'Summarization', recommendation: 'Gemini 1.5 Flash', estimatedSaving: '70% cheaper' }])
+                      .filter((_: any, idx: number) => !dismissedRecs.has(idx))
+                      .map((rec: any, idx: number) => (
                       <TableRow key={idx} sx={{ '&:hover': { bgcolor: '#F4F6FA' } }}>
                         <TableCell sx={{ fontSize: '0.8125rem', color: '#1A1D2E' }}>{rec.signal}</TableCell>
                         <TableCell><Chip label={rec.recommendation} size="small" sx={{ bgcolor: 'rgba(31,90,166,0.10)', color: BRAND_COLOR, fontWeight: 500 }} /></TableCell>
                         <TableCell align="right" sx={{ fontSize: '0.8125rem', color: '#059669', fontWeight: 600 }}>{rec.estimatedSaving}</TableCell>
+                        <TableCell align="right">
+                          <Button size="small" variant="contained" onClick={() => { setSelectedModel(rec.targetModel || 'gemini-1.5-flash'); setSnackbar({ open: true, message: `Switched active model to ${rec.recommendation}`, severity: 'success' }); }} sx={{ mr: 1, bgcolor: BRAND_COLOR }}>Apply</Button>
+                          <Button size="small" variant="outlined" onClick={() => setDismissedRecs(prev => new Set(prev).add(idx))} sx={{ color: '#1A1D2E', borderColor: 'rgba(31,90,166,0.2)' }}>Dismiss</Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -471,18 +448,27 @@ export default function EmployeeDashboard() {
           <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
             <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
               <TextField size="small" placeholder="Search prompts..." value={searchHistory} onChange={(e) => setSearchHistory(e.target.value)} sx={{ width: 300 }} />
-              <Button variant="contained" sx={{ bgcolor: BRAND_COLOR }}>Publish to Marketplace</Button>
+              <Button variant="contained" sx={{ bgcolor: BRAND_COLOR }} onClick={() => { setPublishTitle(''); setPublishCategory('Coding'); setPublishContent(chatInput || ''); setPublishDialogOpen(true); }}>Publish to Marketplace</Button>
             </Box>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)' }, gap: 2, width: '100%' }}>
-              {(marketplaceData || promptsList).map((p: any) => (
+              {(marketplaceData || promptsList).filter((p: any) => {
+                const term = searchHistory.toLowerCase();
+                const title = p.title?.toLowerCase() || '';
+                const content = (p.promptTemplate || p.content || '').toLowerCase();
+                const author = (p.authorTeam || p.author || '').toLowerCase();
+                return title.includes(term) || content.includes(term) || author.includes(term);
+              }).map((p: any) => (
                 <Box key={p.id} sx={{ width: '100%' }}>
                   <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%', display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 0.5 }}>{p.title}</Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mb: 1.5 }}>By {p.author}</Typography>
-                    <Typography sx={{ fontSize: '0.8125rem', color: '#1A1D2E', mb: 2, flexGrow: 1, fontStyle: 'italic' }}>"{p.content}"</Typography>
-                    <Stack direction="row" spacing={2} sx={{ mt: 'auto' }}>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#4B5563' }}>Uses: {p.uses}</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mb: 0.5 }}>By {p.authorTeam || p.author}</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#D97706', mb: 1.5 }}>{p.starDisplay || '★★★★★'}</Typography>
+                    <Typography sx={{ fontSize: '0.8125rem', color: '#1A1D2E', mb: 2, flexGrow: 1, fontStyle: 'italic' }}>"{p.promptTemplate || p.content}"</Typography>
+                    <Stack direction="row" spacing={2} sx={{ mt: 'auto', alignItems: 'center' }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#4B5563' }}>Uses: {p.usedByCount || p.uses}</Typography>
                       <Typography sx={{ fontSize: '0.75rem', color: '#059669' }}>{p.hoursSaved}h saved</Typography>
+                      <Box sx={{ flexGrow: 1 }} />
+                      <Button size="small" variant="outlined" onClick={() => setChatInput(p.promptTemplate || p.content || '')}>Use</Button>
                     </Stack>
                   </Card>
                 </Box>
@@ -501,7 +487,8 @@ export default function EmployeeDashboard() {
                     {(learningCoachData?.tips || [{ tip: 'Use concrete examples', description: 'Include sample input/output pairs.' }]).map((item: any, idx: number) => (
                       <Box key={idx} sx={{ p: 2, borderRadius: '12px', bgcolor: '#F0F4F8', borderLeft: `3px solid ${BRAND_COLOR}` }}>
                         <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E' }}>{item.tip}</Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5 }}>{item.description}</Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5, mb: item.targetWeakness ? 1 : 0 }}>{item.description}</Typography>
+                        {item.targetWeakness && <Chip label={item.targetWeakness} size="small" sx={{ bgcolor: 'rgba(217,119,6,0.1)', color: '#D97706', fontWeight: 600, fontSize: '0.7rem' }} />}
                       </Box>
                     ))}
                   </Stack>
@@ -511,7 +498,12 @@ export default function EmployeeDashboard() {
                 <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
                   <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Achievements</Typography>
                   <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, width: '100%' }}>
-                    {[{ title: 'Prompt Master', desc: 'Maintained 80+ score', earned: true }, { title: 'Token Optimizer', desc: 'Saved 50k tokens', earned: false }].map((badge, idx) => (
+                    {[
+                      { title: 'Prompt Master', desc: 'Maintained 80+ score', earned: (serverData?.average_score ?? 84) >= 80 },
+                      { title: 'Token Optimizer', desc: 'Saved 50k tokens', earned: (serverData?.tokens_saved ?? 60000) >= 50000 },
+                      { title: 'Daily Achiever', desc: '30+ prompts today', earned: (serverData?.today_prompts ?? 43) >= 30 },
+                      { title: 'AI Power User', desc: 'Saved 2+ hours', earned: (serverData?.hours_saved ?? 2.8) >= 2 }
+                    ].map((badge, idx) => (
                       <Box key={idx} sx={{ width: '100%' }}>
                         <Box sx={{ p: 2, borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', opacity: badge.earned ? 1 : 0.5 }}>
                           <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E' }}>{badge.title}</Typography>
@@ -543,7 +535,103 @@ export default function EmployeeDashboard() {
           </Box>
         )}
 
+        {activeTab === 7 && (
+          <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
+            <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3 }}>
+              <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Prompt History</Typography>
+              <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
+                <TextField size="small" placeholder="Search history..." value={historyQuery} onChange={(e) => setHistoryQuery(e.target.value)} sx={{ width: 300 }} />
+                <Button variant={historyFavoriteOnly ? 'contained' : 'outlined'} sx={historyFavoriteOnly ? { bgcolor: BRAND_COLOR } : {}} onClick={() => setHistoryFavoriteOnly(!historyFavoriteOnly)}>Favorites</Button>
+              </Box>
+              <List>
+                {(promptHistoryData || []).map((p: any, idx: number) => (
+                  <React.Fragment key={p.id}>
+                    <ListItem sx={{ py: 2, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 1 }}>
+                        <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E' }}>{p.title}</Typography>
+                        <Box>
+                          <IconButton size="small" onClick={() => setChatInput(p.promptText)}><ContentCopy fontSize="small" /></IconButton>
+                          <IconButton
+                            size="small"
+                            sx={{ color: p.isFavorite ? '#D97706' : 'inherit' }}
+                            onClick={() => toggleFavoriteMutation.mutate(p.id, {
+                              onError: () => setSnackbar({ open: true, message: 'Could not update favorite.', severity: 'error' })
+                            })}
+                          >
+                            <Star fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={async () => {
+                              try {
+                                await navigator.clipboard.writeText(p.promptText);
+                                setSnackbar({ open: true, message: 'Prompt copied — share the link with your team.', severity: 'success' });
+                              } catch {
+                                setSnackbar({ open: true, message: 'Could not copy prompt to clipboard.', severity: 'error' });
+                              }
+                            }}
+                          >
+                            <Share fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </Box>
+                      <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mb: 1 }}>"{p.promptText}"</Typography>
+                      <Stack direction="row" spacing={1}>
+                        <Chip label={p.category} size="small" sx={{ fontSize: '0.7rem' }} />
+                        <Chip label={`Score: ${p.promptScore}`} size="small" sx={{ fontSize: '0.7rem', bgcolor: 'rgba(5,150,105,0.1)', color: '#059669' }} />
+                        <Typography sx={{ fontSize: '0.75rem', color: '#9CA3AF', mt: 0.5 }}>{new Date(p.createdAt).toLocaleDateString()}</Typography>
+                      </Stack>
+                    </ListItem>
+                    {idx < (promptHistoryData || []).length - 1 && <Divider />}
+                  </React.Fragment>
+                ))}
+              </List>
+            </Card>
+          </Box>
+        )}
+
       </Box>
+
+      {/* Publish Dialog */}
+      <Dialog open={publishDialogOpen} onClose={() => setPublishDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Publish to Marketplace</DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
+          <TextField label="Title" fullWidth size="small" value={publishTitle} onChange={(e) => setPublishTitle(e.target.value)} />
+          <FormControl fullWidth size="small">
+            <InputLabel>Category</InputLabel>
+            <Select label="Category" value={publishCategory} onChange={(e) => setPublishCategory(e.target.value)}>
+              <MenuItem value="Coding">Coding</MenuItem>
+              <MenuItem value="Enterprise">Enterprise</MenuItem>
+              <MenuItem value="Summarization">Summarization</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField label="Prompt Content" multiline rows={4} fullWidth value={publishContent} onChange={(e) => setPublishContent(e.target.value)} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPublishDialogOpen(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            sx={{ bgcolor: BRAND_COLOR }}
+            disabled={!publishTitle.trim() || !publishContent.trim() || saveThenPublishMutation.isPending}
+            onClick={() => saveThenPublishMutation.mutate(
+              { title: publishTitle, promptText: publishContent, category: publishCategory.toUpperCase() },
+              {
+                onSuccess: () => {
+                  setPublishDialogOpen(false);
+                  setSnackbar({ open: true, message: `"${publishTitle}" published to the marketplace.`, severity: 'success' });
+                },
+                onError: () => setSnackbar({ open: true, message: 'Failed to publish prompt.', severity: 'error' }),
+              }
+            )}
+          >
+            {saveThenPublishMutation.isPending ? <CircularProgress size={18} sx={{ mr: 1 }} /> : null}Publish
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert severity={snackbar.severity} onClose={() => setSnackbar(s => ({ ...s, open: false }))} sx={{ width: '100%' }}>{snackbar.message}</Alert>
+      </Snackbar>
     </Box>
   );
 }

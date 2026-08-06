@@ -196,8 +196,8 @@ async def toggle_favorite_prompt(
     prompt_id: str,
     current_user: CurrentUser = Depends(get_current_user),
 ):
-    """Pins or unpins a prompt in history."""
-    status = _employee_engine.toggle_favorite(prompt_id)
+    """Pins or unpins a prompt in history. Scoped to the requesting user's own prompts."""
+    status = _employee_engine.toggle_favorite(prompt_id, current_user.user_id)
     return {"id": prompt_id, "is_favorite": status}
 
 
@@ -215,10 +215,10 @@ async def publish_prompt_to_marketplace(
     prompt_id: str,
     current_user: CurrentUser = Depends(get_current_user),
 ):
-    """Publishes a proven prompt from history into the organization Marketplace."""
-    res = _employee_engine.publish_to_marketplace(prompt_id)
+    """Publishes a proven prompt from the requesting user's own history into the organization Marketplace."""
+    res = _employee_engine.publish_to_marketplace(prompt_id, current_user.user_id)
     if not res:
-        raise HTTPException(status_code=404, detail="Prompt ID not found in history")
+        raise HTTPException(status_code=404, detail="Prompt ID not found in your history")
     return res
 
 

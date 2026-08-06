@@ -5,11 +5,22 @@ import {
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from 'recharts';
 import { TrendingUp, Speed, AccessTime } from '@mui/icons-material';
 import { alpha } from '@mui/material/styles';
+import {
+  useEmployeeDashboard,
+  useEmployeeAnalytics,
+  useLearningCoachTips,
+  useSessionSummary
+} from '../../api/hooks';
 
 const BRAND_COLOR = '#1F5AA6';
 
 export default function Analytics() {
-  const trendData = [
+  const { data: serverData } = useEmployeeDashboard();
+  const { data: analyticsData } = useEmployeeAnalytics();
+  const { data: coachData } = useLearningCoachTips();
+  const { data: sessionData } = useSessionSummary();
+
+  const trendData = analyticsData?.trendData || [
     { day: 'Mon', score: 72, tokens: 4200 },
     { day: 'Tue', score: 76, tokens: 3800 },
     { day: 'Wed', score: 80, tokens: 5100 },
@@ -17,6 +28,21 @@ export default function Analytics() {
     { day: 'Fri', score: 85, tokens: 3100 },
     { day: 'Sat', score: 88, tokens: 1200 },
     { day: 'Sun', score: 92, tokens: 800 }
+  ];
+
+  const avgScore = serverData?.average_score ?? 84;
+  const tokensConsumed = analyticsData?.total_tokens ?? '21.1k';
+  const hoursSaved = serverData?.hours_saved ?? 42.5;
+
+  const coachingTips = coachData?.tips || [
+    { tip: 'Use concrete examples', description: 'Pass sample JSON or expected output.' },
+    { tip: 'Mention framework version', description: 'Specify Java 21, React 19, Spring Boot 3.' },
+    { tip: 'Specify output format', description: 'Request bullet points or Markdown table.' }
+  ];
+
+  const usageSummary = sessionData?.snapshots || [
+    { period: 'Mid-day', prompts: 34, tokens: '—', cost: '$1.32', hoursSaved: 2.3 },
+    { period: 'End-of-day', prompts: 43, tokens: '8,300', cost: '$1.80', hoursSaved: 2.8 }
   ];
 
   return (
@@ -34,7 +60,7 @@ export default function Analytics() {
                 <TrendingUp fontSize="small" sx={{ color: '#1F5AA6' }}/>
               </Box>
               <Typography sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', mb: 1 }}>AVG SCORE</Typography>
-              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>84/100</Typography>
+              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>{avgScore}/100</Typography>
               <Typography sx={{ fontSize: '0.75rem', color: '#059669', mt: 0.5 }}>+15% this month</Typography>
             </CardContent>
           </Card>
@@ -45,7 +71,7 @@ export default function Analytics() {
                 <Speed fontSize="small" sx={{ color: '#60A5FA' }}/>
               </Box>
               <Typography sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', mb: 1 }}>TOKENS CONSUMED</Typography>
-              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>21.1k</Typography>
+              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>{tokensConsumed}</Typography>
               <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5 }}>72% saved via optimization</Typography>
             </CardContent>
           </Card>
@@ -56,7 +82,7 @@ export default function Analytics() {
                 <AccessTime fontSize="small" sx={{ color: '#D97706' }}/>
               </Box>
               <Typography sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', mb: 1 }}>HOURS SAVED</Typography>
-              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>42.5h</Typography>
+              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>{hoursSaved}h</Typography>
               <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5 }}>Equivalent to 5.3 work days</Typography>
             </CardContent>
           </Card>
@@ -87,18 +113,12 @@ export default function Analytics() {
           <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, p: 3, height: '100%' }}>
             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em', mb: 2 }}>Coaching Tips</Typography>
             <Stack spacing={2}>
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#F0F4F8', borderLeft: `3px solid ${BRAND_COLOR}` }}>
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E' }}>Use concrete examples</Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5 }}>Pass sample JSON or expected output.</Typography>
-              </Box>
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#F0F4F8', borderLeft: `3px solid ${BRAND_COLOR}` }}>
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E' }}>Mention framework version</Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5 }}>Specify Java 21, React 19, Spring Boot 3.</Typography>
-              </Box>
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#F0F4F8', borderLeft: `3px solid ${BRAND_COLOR}` }}>
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E' }}>Specify output format</Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5 }}>Request bullet points or Markdown table.</Typography>
-              </Box>
+              {coachingTips.map((tip: any, idx: number) => (
+                <Box key={idx} sx={{ p: 2, borderRadius: 2, bgcolor: '#F0F4F8', borderLeft: `3px solid ${BRAND_COLOR}` }}>
+                  <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E' }}>{tip.tip}</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5 }}>{tip.description}</Typography>
+                </Box>
+              ))}
             </Stack>
           </Card>
         </Box>
@@ -118,20 +138,15 @@ export default function Analytics() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableRow sx={{ '&:hover': { bgcolor: '#F0F4F8' } }}>
-                    <TableCell sx={{ fontSize: '0.8125rem' }}>Mid-day</TableCell>
-                    <TableCell align="center" sx={{ fontSize: '0.8125rem' }}>34</TableCell>
-                    <TableCell align="center" sx={{ fontSize: '0.8125rem' }}>—</TableCell>
-                    <TableCell align="center" sx={{ fontSize: '0.8125rem' }}>$1.32</TableCell>
-                    <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#059669' }}>2.3h</TableCell>
-                  </TableRow>
-                  <TableRow sx={{ '&:hover': { bgcolor: '#F0F4F8' }, '&:last-child td': { border: 0 } }}>
-                    <TableCell sx={{ fontSize: '0.8125rem' }}>End-of-day</TableCell>
-                    <TableCell align="center" sx={{ fontSize: '0.8125rem' }}>43</TableCell>
-                    <TableCell align="center" sx={{ fontSize: '0.8125rem' }}>8,300</TableCell>
-                    <TableCell align="center" sx={{ fontSize: '0.8125rem' }}>$1.80</TableCell>
-                    <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#059669' }}>2.8h</TableCell>
-                  </TableRow>
+                  {usageSummary.map((snap: any, i: number) => (
+                    <TableRow key={i} sx={{ '&:hover': { bgcolor: '#F0F4F8' }, ...(i === usageSummary.length - 1 ? { '&:last-child td': { border: 0 } } : {}) }}>
+                      <TableCell sx={{ fontSize: '0.8125rem' }}>{snap.period}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.8125rem' }}>{snap.prompts}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.8125rem' }}>{snap.tokens || '—'}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.8125rem' }}>{typeof snap.cost === 'string' ? snap.cost : `$${snap.cost}`}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#059669' }}>{snap.hoursSaved}h</TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>

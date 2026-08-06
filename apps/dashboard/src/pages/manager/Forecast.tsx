@@ -15,10 +15,11 @@ export default function Forecast() {
     );
   }
 
-  const chartPoints = olsEngineResult.forecastPoints.map(p => ({
+  const chartPoints = olsEngineResult.forecastPoints.map((p, i) => ({
     name: p.dayOrMonth,
-    ActualCost: p.historicalCost || null,
-    ProjectedCost: p.projectedCost || p.historicalCost,
+    'Historical Actuals': p.historicalCost ?? null,
+    'OLS Trend': p.historicalCost != null ? Math.round(olsEngineResult.slope * (i + 1) + olsEngineResult.intercept) : null,
+    'OLS Forecast': p.projectedCost ?? null,
   }));
 
   const cardSx = { borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' } };
@@ -65,8 +66,8 @@ export default function Forecast() {
                       formatter={(value: number) => [`$${value}`, '']}
                     />
                     <Legend iconType="circle" wrapperStyle={{ fontSize: '13px', paddingTop: '10px', color: '#4B5563' }} />
-                    <Line type="monotone" dataKey="Actual" stroke="#1F5AA6" strokeWidth={3} dot={{ r: 4 }} name="Historical Actuals ($)" />
-                    <Line type="monotone" dataKey="OLS (Trend)" stroke="#059669" strokeWidth={2} strokeDasharray="5 5" dot={false} name="OLS Line of Best Fit ($)" />
+                    <Line type="monotone" dataKey="Historical Actuals" stroke="#1F5AA6" strokeWidth={3} dot={{ r: 4 }} name="Historical Actuals ($)" />
+                    <Line type="monotone" dataKey="OLS Trend" stroke="#059669" strokeWidth={2} strokeDasharray="5 5" dot={false} name="OLS Line of Best Fit ($)" />
                     <Line type="monotone" dataKey="OLS Forecast" stroke="#D97706" strokeWidth={3} strokeDasharray="3 3" dot={{ r: 5 }} name="OLS Projected Runway ($)" />
                   </LineChart>
                 </ResponsiveContainer>

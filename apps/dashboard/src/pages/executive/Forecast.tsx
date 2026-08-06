@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Typography, Card, CardContent, Grid, CircularProgress, Stack } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Card, CardContent, Grid, CircularProgress, Stack, ButtonGroup, Button } from '@mui/material';
 import {
   ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
@@ -22,6 +22,8 @@ const defaultKpis = [
 
 export default function Forecast() {
   const { data, isLoading } = useForecast();
+  const [scenario, setScenario] = useState<'conservative'|'expected'|'aggressive'>('expected');
+  const scenarioMultipliers = { conservative: 1.10, expected: 1.18, aggressive: 1.30 };
 
   if (isLoading) {
     return (
@@ -31,7 +33,8 @@ export default function Forecast() {
     );
   }
 
-  const chartData = data?.timeline || data?.forecastData || defaultMockData;
+  const baseChartData = data?.timeline || data?.forecastData || defaultMockData;
+  const chartData = baseChartData.map((d: any) => ({ ...d, projectedSpend: d.projectedSpend ? Math.round(d.projectedSpend * scenarioMultipliers[scenario] / 1.18) : null }));
   const kpis = data?.kpis || defaultKpis;
 
   const standardCardSx = { borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' } };
@@ -81,6 +84,14 @@ export default function Forecast() {
                 </Box>
               </Stack>
             </Stack>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+              <ButtonGroup size="small" variant="outlined" sx={{ '& .MuiButton-root': { textTransform: 'none' } }}>
+                <Button onClick={() => setScenario('conservative')} variant={scenario === 'conservative' ? 'contained' : 'outlined'}>Conservative (+10%)</Button>
+                <Button onClick={() => setScenario('expected')} variant={scenario === 'expected' ? 'contained' : 'outlined'}>Expected (+18%)</Button>
+                <Button onClick={() => setScenario('aggressive')} variant={scenario === 'aggressive' ? 'contained' : 'outlined'}>Aggressive (+30%)</Button>
+              </ButtonGroup>
+            </Box>
 
             <Box sx={{ height: 450, width: '100%' }}>
               <ResponsiveContainer>

@@ -23,11 +23,15 @@ export interface ForecastPoint {
 export interface CostAdvisorNudge {
   period: string;
   department: string;
-  spentFormatted: string;
-  potentialSavingFormatted: string;
+  // snake_case to match the FastAPI CostAdvisorResponse shape returned by GET /finops/cost-advisor —
+  // this object is used as this query's initialData/fallback, so its keys must match the live response.
+  spent_formatted: string;
+  spent_usd: number;
+  potential_saving_formatted: string;
+  potential_saving_usd: number;
   recommendation: string;
-  spendAmount: number;
-  savingAmount: number;
+  action_type: string;
+  target_model: string;
 }
 
 /**
@@ -36,11 +40,13 @@ export interface CostAdvisorNudge {
 export const MORNING_COST_ADVISOR: CostAdvisorNudge = {
   period: 'Yesterday',
   department: 'Engineering',
-  spentFormatted: '₹820',
-  potentialSavingFormatted: '₹210',
+  spent_formatted: '₹820',
+  spent_usd: 9.88,
+  potential_saving_formatted: '₹210',
+  potential_saving_usd: 2.53,
   recommendation: 'Move summarization tasks to Gemini Flash.',
-  spendAmount: 820,
-  savingAmount: 210,
+  action_type: 'switch_model',
+  target_model: 'Gemini Flash',
 };
 
 /**

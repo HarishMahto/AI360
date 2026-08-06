@@ -26,6 +26,7 @@ import {
   School as SchoolIcon,
   Shield as SecurityIcon,
   WorkspacePremium as MaturityIcon,
+  History
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -53,6 +54,7 @@ const employeeGroups: NavGroup[] = [
       { label: 'Marketplace', icon: <StarIcon />, path: '/dashboard/employee?tab=marketplace', badge: 'Popular' },
       { label: 'Learning Coach', icon: <SchoolIcon />, path: '/dashboard/employee?tab=learning-coach' },
       { label: 'Privacy Guard', icon: <SecurityIcon />, path: '/dashboard/employee?tab=privacy-guard' },
+      { label: 'Prompt History', icon: <History />, path: '/dashboard/employee?tab=prompt-history' },
     ],
   },
   {
@@ -188,15 +190,17 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
                 width: 38,
                 height: 38,
                 borderRadius: '10px',
-                background: 'linear-gradient(135deg, #1F5AA6 0%, #059669 100%)',
+                bgcolor: '#FFFFFF',
+                boxShadow: '0 3px 8px rgba(31,90,166,0.15)',
+                border: '1px solid rgba(0,0,0,0.08)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#FFF',
-                boxShadow: '0 3px 8px rgba(31,90,166,0.3)',
+                flexShrink: 0,
+                overflow: 'hidden',
               }}
             >
-              <AIIcon sx={{ fontSize: 24 }} />
+              <Box component="img" src="/logo.png" alt="AI360 Logo" sx={{ width: 48, height: 48, borderRadius: '6px', objectFit: 'cover' }} />
             </Box>
             {!collapsed && (
               <Box>

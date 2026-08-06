@@ -29,9 +29,9 @@ export function ProtectedRoute({ allowedRoles, redirectTo = '/login' }: Protecte
       >
         <Box
           component="img"
-          src="/ai360-logo.svg"
+          src="/logo.png"
           alt="AI360"
-          sx={{ width: 48, height: 48, mb: 1, animation: 'pulse 2s infinite' }}
+          sx={{ width: 48, height: 48, borderRadius: '12px', mb: 1, animation: 'pulse 2s infinite' }}
           onError={(e) => {
             (e.target as HTMLImageElement).style.display = 'none';
           }}

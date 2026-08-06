@@ -7,7 +7,7 @@ import { useSmartSuggestions } from '../../api/hooks';
 const BRAND_COLOR = '#1F5AA6';
 
 export default function Recommendations() {
-  const smart = useSmartSuggestions('Engineering').data!;
+  const smart = useSmartSuggestions('Engineering').data;
 
   const recommendationsTable = [
     { signal: 'Summarization', recommendation: 'Gemini Flash', savings: '78% cheaper', color: '#059669' },
@@ -41,7 +41,7 @@ export default function Recommendations() {
           <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, p: 3, height: '100%' }}>
             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em', mb: 2 }}>Improvements</Typography>
             <Stack spacing={1.5}>
-              {smart.promptImprovements.map((tip, idx) => (
+              {(smart?.promptImprovements ?? []).map((tip, idx) => (
                 <Box key={idx} sx={{ p: 1.5, borderRadius: 2, bgcolor: '#F0F4F8' }}>
                   <Typography sx={{ fontSize: '0.8125rem', color: '#1A1D2E' }}>{tip}</Typography>
                 </Box>
@@ -52,7 +52,7 @@ export default function Recommendations() {
           <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, p: 3, height: '100%' }}>
             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em', mb: 2 }}>Cost Reduction</Typography>
             <Stack spacing={1.5}>
-              {smart.costReductionTips.map((tip, idx) => (
+              {(smart?.costReductionTips ?? []).map((tip, idx) => (
                 <Box key={idx} sx={{ p: 1.5, borderRadius: 2, bgcolor: '#F0F4F8' }}>
                   <Typography sx={{ fontSize: '0.8125rem', color: '#1A1D2E' }}>{tip}</Typography>
                 </Box>

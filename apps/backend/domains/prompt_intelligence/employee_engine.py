@@ -10,6 +10,7 @@ import uuid
 from typing import List, Optional
 
 from config import get_settings
+from core.firebase import Collections
 from domains.prompt_intelligence.schemas import (
     FiveDimensionScore,
     LearningCoachResponse,
@@ -312,14 +313,16 @@ Original Prompt: {text}"""
         """
         Retrieves saved user prompt history from Firebase Firestore or fallback cache.
         Supports full-text search across title, prompt_text, and category, and filtering by favorites.
+        Always scoped to the requesting user_id — the in-memory seed/cache is filtered the
+        same way Firestore results would be, so one user never sees another user's prompts.
         """
-        items = list(_IN_MEMORY_HISTORY)
+        items = [i for i in _IN_MEMORY_HISTORY if i.user_id == user_id]
         db = self._try_get_firestore()
         if db:
             try:
                 # Use filter keyword argument to prevent positional argument deprecation warning
                 from google.cloud.firestore_v1.base_query import FieldFilter
-                docs = db.collection("promptHistory").where(filter=FieldFilter("userId", "==", user_id)).get()
+                docs = db.collection(Collections.PROMPT_HISTORY).where(filter=FieldFilter("userId", "==", user_id)).get()
                 for doc in docs:
                     d = doc.to_dict()
                     doc_id = d.get("id", doc.id)
@@ -372,7 +375,7 @@ Original Prompt: {text}"""
         db = self._try_get_firestore()
         if db:
             try:
-                db.collection("promptHistory").document(item_id).set({
+                db.collection(Collections.PROMPT_HISTORY).document(item_id).set({
                     "id": item_id,
                     "userId": user_id,
                     "title": new_item.title,
@@ -390,17 +393,26 @@ Original Prompt: {text}"""
 
         return new_item
 
-    def toggle_favorite(self, prompt_id: str) -> bool:
-        """Toggles the is_favorite pin state on a saved prompt."""
+    def toggle_favorite(self, prompt_id: str, user_id: str) -> bool:
+        """Toggles the is_favorite pin state on a saved prompt. Only the owning user may toggle it."""
+        db = self._try_get_firestore()
+        if db:
+            try:
+                doc_ref = db.collection(Collections.PROMPT_HISTORY).document(prompt_id)
+                doc = doc_ref.get()
+                if doc.exists:
+                    d = doc.to_dict()
+                    if d.get("userId") != user_id:
+                        return False
+                    new_state = not bool(d.get("isFavorite", False))
+                    doc_ref.update({"isFavorite": new_state})
+                    return new_state
+            except Exception as e:
+                logger.debug(f"Firestore favorite toggle err: {e}")
+
         for i in _IN_MEMORY_HISTORY:
-            if i.id == prompt_id:
+            if i.id == prompt_id and i.user_id == user_id:
                 i.is_favorite = not i.is_favorite
-                db = self._try_get_firestore()
-                if db:
-                    try:
-                        db.collection("promptHistory").document(prompt_id).update({"isFavorite": i.is_favorite})
-                    except Exception:
-                        pass
                 return i.is_favorite
         return False
 
@@ -416,7 +428,7 @@ Original Prompt: {text}"""
         db = self._try_get_firestore()
         if db:
             try:
-                docs = db.collection("marketplace").get()
+                docs = db.collection(Collections.MARKETPLACE).get()
                 for doc in docs:
                     d = doc.to_dict()
                     if not any(x.id == doc.id for x in items):
@@ -444,33 +456,56 @@ Original Prompt: {text}"""
         items.sort(key=lambda x: x.used_by_count, reverse=True)
         return items
 
-    def publish_to_marketplace(self, prompt_id: str) -> Optional[PromptMarketplaceItem]:
-        """Publishes a user's proven history prompt into the enterprise Prompt Marketplace."""
-        history_item = next((i for i in _IN_MEMORY_HISTORY if i.id == prompt_id), None)
-        if not history_item:
-            return None
+    def publish_to_marketplace(self, prompt_id: str, user_id: str) -> Optional[PromptMarketplaceItem]:
+        """Publishes a user's proven history prompt into the enterprise Prompt Marketplace.
+        Only the owning user may publish a given prompt_id; looks in Firestore first,
+        then the in-memory cache, so prompts saved purely to Firestore can still be published.
+        """
+        title = None
+        category = "CODING"
+        prompt_text = None
 
-        history_item.is_marketplace_template = True
+        db = self._try_get_firestore()
+        if db:
+            try:
+                doc = db.collection(Collections.PROMPT_HISTORY).document(prompt_id).get()
+                if doc.exists:
+                    d = doc.to_dict()
+                    if d.get("userId") != user_id:
+                        return None
+                    title = d.get("title")
+                    category = d.get("category", "CODING")
+                    prompt_text = d.get("promptText")
+                    doc.reference.update({"isMarketplaceTemplate": True})
+            except Exception as e:
+                logger.debug(f"Firestore marketplace publish lookup err: {e}")
+
+        if title is None:
+            history_item = next((i for i in _IN_MEMORY_HISTORY if i.id == prompt_id and i.user_id == user_id), None)
+            if not history_item:
+                return None
+            history_item.is_marketplace_template = True
+            title, category, prompt_text = history_item.title, history_item.category, history_item.prompt_text
+
         mkt_id = f"mkt_{prompt_id}"
         new_mkt = PromptMarketplaceItem(
             id=mkt_id,
-            title=history_item.title,
+            title=title,
             star_rating=5.0,
             star_display="★★★★★",
             used_by_count=1,
             hours_saved=2.5,
             author_team="Engineering",
-            category=history_item.category,
+            category=category,
             description="Used by 1 developer · Saved 2.5 hours across the team",
-            prompt_template=history_item.prompt_text,
+            prompt_template=prompt_text or "",
         )
         if not any(x.id == mkt_id for x in _IN_MEMORY_MARKETPLACE):
             _IN_MEMORY_MARKETPLACE.insert(0, new_mkt)
 
-        db = self._try_get_firestore()
         if db:
             try:
-                db.collection("marketplace").document(mkt_id).set({
+                db.collection(Collections.MARKETPLACE).document(mkt_id).set({
                     "title": new_mkt.title,
                     "starRating": new_mkt.star_rating,
                     "usedByCount": new_mkt.used_by_count,
@@ -478,6 +513,7 @@ Original Prompt: {text}"""
                     "authorTeam": new_mkt.author_team,
                     "category": new_mkt.category,
                     "promptTemplate": new_mkt.prompt_template,
+                    "publishedByUserId": user_id,
                 })
             except Exception:
                 pass

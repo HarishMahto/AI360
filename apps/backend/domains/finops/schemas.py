@@ -32,6 +32,15 @@ class ROICalculateRequest(BaseModel):
     hourly_cost_rate: float = 60.0
     ai_cost_incurred: float = 15800.0
 
+class ApplySuggestionRequest(BaseModel):
+    department: str = "Engineering"
+    action_type: str = "switch_model"
+    target_model: str = "Gemini Flash"
+
+class ApplySuggestionResponse(BaseModel):
+    applied: bool
+    message: str
+
 class ROICalculateResponse(BaseModel):
     hours_saved: float
     hourly_cost_rate: float
@@ -40,5 +49,17 @@ class ROICalculateResponse(BaseModel):
     net_roi: float
     net_roi_percentage: float
     formula_string: str
+
+class LicenseSeatItem(BaseModel):
+    id: str
+    name: str
+    email: str
+    department: str
+    last_active: str
+    seat_cost_usd: float
+    status: str  # "active" | "inactive" | "reallocated"
+
+class ReallocateAllResponse(BaseModel):
+    reallocated_count: int
 
 

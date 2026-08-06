@@ -468,20 +468,25 @@ export default function LoginPage() {
               mb: 1,
               display: 'block',
               width: '100%',
+              textAlign: 'center',
             }}
           >
             Quick Demo Access
           </Typography>
-          <Stack
-            direction="row"
-            spacing={1.25}
-            justifyContent="center"
-            alignItems="center"
-            flexWrap="wrap"
-            sx={{ width: '100%' }}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 1.25,
+              width: '100%',
+              textAlign: 'center',
+            }}
           >
             {DEMO_ACCOUNTS.map((demo, idx) => (
-              <React.Fragment key={demo.role}>
+              <Box key={demo.role} sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.25 }}>
                 {idx > 0 && <Typography sx={{ fontSize: '12px', color: '#D1D5DB', userSelect: 'none' }}>•</Typography>}
                 <Link
                   component="button"
@@ -499,9 +504,9 @@ export default function LoginPage() {
                 >
                   {demo.label}
                 </Link>
-              </React.Fragment>
+              </Box>
             ))}
-          </Stack>
+          </Box>
         </Box>
 
         {/* Copyright */}

@@ -7,7 +7,7 @@ export interface ModelRecommendation {
   reasoning: string;
   estimatedCostPer1kTokens: number; // in INR / USD cents
   latencyMs: number;
-  costSavingsPercent vsLegacy: number;
+  costSavingsPercent: number;
 }
 
 export interface SmartSuggestions {

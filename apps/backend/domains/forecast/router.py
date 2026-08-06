@@ -2,6 +2,7 @@
 AI360 – Forecast HTTP Router
 """
 import logging
+from typing import Optional
 from fastapi import APIRouter, Depends
 
 from core.rbac import get_current_user, CurrentUser, require_roles
@@ -14,14 +15,22 @@ router = APIRouter(prefix="/forecast", tags=["Forecast"])
 
 @router.get("", response_model=ForecastResponse, dependencies=[Depends(require_roles(["MANAGER", "ADMIN", "EXECUTIVE"]))])
 async def get_forecast(
-    target_type: str,
-    target_id: str,
+    target_type: Optional[str] = None,
+    target_id: Optional[str] = None,
     current_user: CurrentUser = Depends(get_current_user),
     db = Depends(get_firestore)
 ):
     """
     Returns the predicted forecast (spend & usage) for a given target.
+    Defaults to the caller's own organization when no target is supplied, so
+    Manager/Executive dashboards can call this endpoint without extra params.
     """
+    if not target_type or not target_id:
+        if current_user.department_id and (target_type or "department") == "department":
+            target_type, target_id = "department", current_user.department_id
+        else:
+            target_type, target_id = "organization", current_user.organization_id
+
     engine = ForecastEngine(db)
     return engine.get_forecast(target_id, target_type)
 

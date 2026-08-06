@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Grid, Card, CardContent, Button, Chip, Stack, CircularProgress } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useRecommendations } from '../../api/hooks';
@@ -29,6 +29,11 @@ const mockRecommendations = [
 
 export default function Recommendations() {
   const { data, isLoading } = useRecommendations();
+  const [appliedRecs, setAppliedRecs] = useState<Record<string, boolean>>({});
+
+  const handleApply = (id: string) => {
+    setAppliedRecs(prev => ({ ...prev, [id]: true }));
+  };
 
   if (isLoading) {
     return (
@@ -98,9 +103,10 @@ export default function Recommendations() {
                     size="small"
                     disableElevation
                     startIcon={<CheckCircleIcon fontSize="small" />} 
-                    sx={{ textTransform: 'none', fontWeight: 500, borderRadius: '6px', bgcolor: '#1F5AA6', '&:hover': { bgcolor: '#15417A' } }}
+                    sx={{ textTransform: 'none', fontWeight: 500, borderRadius: '6px', bgcolor: appliedRecs[rec.id] ? '#059669' : '#1F5AA6', '&:hover': { bgcolor: appliedRecs[rec.id] ? '#047857' : '#15417A' } }}
+                    onClick={() => handleApply(rec.id)}
                   >
-                    Apply Recommendation
+                    {appliedRecs[rec.id] ? 'Applied' : 'Apply Recommendation'}
                   </Button>
                 </Box>
               </CardContent>
