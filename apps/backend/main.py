@@ -4,7 +4,7 @@ AI360 Backend – FastAPI Application Entry Point
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import get_settings
@@ -127,3 +127,8 @@ async def health_check():
 @app.get("/", include_in_schema=False)
 async def root():
     return {"message": "AI360 API is running. Visit /docs for API documentation."}
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(status_code=204)
