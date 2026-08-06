@@ -22,31 +22,44 @@ def initialize_firebase() -> None:
 
     settings = get_settings()
 
-    if settings.firebase_project_id and settings.firebase_private_key:
-        # Use service account credentials from environment
-        cred = credentials.Certificate({
-            "type": "service_account",
-            "project_id": settings.firebase_project_id,
-            "private_key_id": settings.firebase_private_key_id,
-            "private_key": settings.firebase_private_key.replace("\\n", "\n"),
-            "client_email": settings.firebase_client_email,
-            "client_id": settings.firebase_client_id,
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-        })
-        firebase_admin.initialize_app(cred)
-        logger.info("Firebase initialized with service account credentials.")
-    else:
-        # Application Default Credentials (local dev with gcloud CLI)
-        firebase_admin.initialize_app()
-        logger.warning("Firebase initialized with Application Default Credentials. Set env vars for production.")
+    try:
+        if settings.firebase_project_id and settings.firebase_private_key:
+            formatted_key = settings.firebase_private_key.replace("\\n", "\n")
+            cred = credentials.Certificate({
+                "type": "service_account",
+                "project_id": settings.firebase_project_id,
+                "private_key_id": settings.firebase_private_key_id,
+                "private_key": formatted_key,
+                "client_email": settings.firebase_client_email,
+                "client_id": settings.firebase_client_id,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+            })
+            firebase_admin.initialize_app(cred)
+            logger.info("Firebase initialized with service account credentials.")
+        elif settings.firebase_project_id:
+            cred = credentials.Certificate({
+                "type": "service_account",
+                "project_id": settings.firebase_project_id,
+            })
+            firebase_admin.initialize_app(cred)
+            logger.info("Firebase initialized with project ID.")
+        else:
+            firebase_admin.initialize_app()
+            logger.warning("Firebase initialized with default credentials.")
+    except Exception as e:
+        logger.warning(f"Firebase Admin SDK initialization deferred: {e}")
 
 
 @lru_cache
-def get_firestore() -> FirestoreClient:
-    """Return cached Firestore client."""
-    initialize_firebase()
-    return firestore.client()
+def get_firestore() -> Optional[FirestoreClient]:
+    """Return cached Firestore client or None if uninitialized."""
+    try:
+        initialize_firebase()
+        return firestore.client()
+    except Exception as e:
+        logger.warning(f"Firestore client unavailable: {e}")
+        return None
 
 
 def verify_firebase_token(id_token: str) -> dict:

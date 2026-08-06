@@ -6,10 +6,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from config import get_settings
-from core.firebase import initialize_firebase
+from core.firebase import initialize_firebase, get_firestore
 from core.exceptions import register_exception_handlers
 
 # Domain routers
@@ -24,8 +23,6 @@ from domains.finops.router import router as finops_router
 from domains.forecast.router import router as forecast_router
 from domains.reports.router import router as reports_router
 from domains.notifications.router import router as notifications_router
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from core.firebase import get_firestore
 from domains.analytics.service import AnalyticsService
 
 # ─── Logging ──────────────────────────────────────────────────────────────────
@@ -41,28 +38,39 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Application lifespan: startup and shutdown events."""
     logger.info("AI360 backend starting up...")
-    initialize_firebase()
-    logger.info("Firebase initialized.")
-    
-    # Initialize APScheduler for background jobs
-    scheduler = AsyncIOScheduler()
-    
-    # Run daily aggregation at midnight UTC
-    def run_aggregation_job():
-        try:
-            db = get_firestore()
-            service = AnalyticsService(db)
-            service.run_daily_aggregation()
-        except Exception as e:
-            logger.error(f"Failed to run daily aggregation job: {e}")
-            
-    scheduler.add_job(run_aggregation_job, 'cron', hour=0, minute=0)
-    scheduler.start()
-    logger.info("APScheduler started.")
-    
+    try:
+        initialize_firebase()
+        logger.info("Firebase initialized.")
+    except Exception as e:
+        logger.warning(f"Firebase initialization warning (non-fatal): {e}")
+        
+    scheduler = None
+    try:
+        from apscheduler.schedulers.asyncio import AsyncIOScheduler
+        scheduler = AsyncIOScheduler()
+        
+        def run_aggregation_job():
+            try:
+                db = get_firestore()
+                if db:
+                    service = AnalyticsService(db)
+                    service.run_daily_aggregation()
+            except Exception as e:
+                logger.error(f"Failed to run daily aggregation job: {e}")
+                
+        scheduler.add_job(run_aggregation_job, 'cron', hour=0, minute=0)
+        scheduler.start()
+        logger.info("APScheduler started.")
+    except Exception as e:
+        logger.warning(f"APScheduler startup skipped in serverless environment: {e}")
+
     yield
     
-    scheduler.shutdown()
+    if scheduler:
+        try:
+            scheduler.shutdown()
+        except Exception:
+            pass
     logger.info("AI360 backend shutting down.")
 
 
@@ -82,7 +90,7 @@ app = FastAPI(
 # ─── Middleware ───────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -103,13 +111,6 @@ app.include_router(finops_router)
 app.include_router(forecast_router)
 app.include_router(reports_router)
 app.include_router(notifications_router)
-
-# Stub routers (to be implemented in later phases)
-# app.include_router(dashboard_router)
-# app.include_router(forecast_router)
-# app.include_router(recommendations_router)
-# app.include_router(reports_router)
-# app.include_router(notifications_router)
 
 
 # ─── Health Check ─────────────────────────────────────────────────────────────
