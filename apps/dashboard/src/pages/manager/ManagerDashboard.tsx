@@ -368,13 +368,13 @@ export default function ManagerDashboard() {
 
       {/* TAB 3: PROMPT CATEGORIES */}
       {activeTab === 3 && (
-        <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
-          <Grid container spacing={2} disableEqualOverflow>
-            <Grid item xs={12} md={7}>
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3 }}>
+        <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' }, gap: 2, width: '100%' }}>
+            <Box sx={{ width: '100%' }}>
+              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3, width: '100%' }}>
                 <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Top Department Prompt Templates</Typography>
-                <TableContainer>
-                  <Table>
+                <TableContainer sx={{ width: '100%' }}>
+                  <Table sx={{ width: '100%' }}>
                     <TableHead>
                       <TableRow sx={{ bgcolor: '#F5F5F7' }}>
                         <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Template Title</TableCell>
@@ -396,9 +396,9 @@ export default function ManagerDashboard() {
                   </Table>
                 </TableContainer>
               </Card>
-            </Grid>
-            <Grid item xs={12} md={5}>
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
+            </Box>
+            <Box sx={{ width: '100%' }}>
+              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3, height: '100%', width: '100%' }}>
                 <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Category Distribution</Typography>
                 <Stack spacing={2}>
                   {stats.category_breakdown.map((cat, i) => (
@@ -412,15 +412,15 @@ export default function ManagerDashboard() {
                   ))}
                 </Stack>
               </Card>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Box>
       )}
 
       {/* TAB 4: LICENSE DETECTION */}
       {activeTab === 4 && (
-        <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
-          <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3 }}>
+        <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
+          <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3, width: '100%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Box>
                 <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Unused License Detection</Typography>
@@ -428,8 +428,8 @@ export default function ManagerDashboard() {
               </Box>
               <Button variant="contained" size="small" sx={{ bgcolor: '#FF3B30', textTransform: 'none', borderRadius: 2 }}>Reallocate All Inactive Seats</Button>
             </Box>
-            <TableContainer>
-              <Table>
+            <TableContainer sx={{ width: '100%' }}>
+              <Table sx={{ width: '100%' }}>
                 <TableHead>
                   <TableRow sx={{ bgcolor: '#F5F5F7' }}>
                     <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>User Name</TableCell>
@@ -458,10 +458,10 @@ export default function ManagerDashboard() {
 
       {/* TAB 5: BENCHMARKS */}
       {activeTab === 5 && (
-        <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
-          <Grid container spacing={2} disableEqualOverflow>
-            <Grid item xs={12} md={6}>
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3 }}>
+        <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, width: '100%' }}>
+            <Box sx={{ width: '100%' }}>
+              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3, width: '100%' }}>
                 <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Department Velocity Benchmarks</Typography>
                 <Stack spacing={2.5}>
                   {[
@@ -480,8 +480,8 @@ export default function ManagerDashboard() {
                   ))}
                 </Stack>
               </Card>
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Box>
+            <Box sx={{ width: '100%' }}>
               <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
                 <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Industry Peer Comparisons</Typography>
                 <TableContainer>
@@ -509,8 +509,8 @@ export default function ManagerDashboard() {
                   </Table>
                 </TableContainer>
               </Card>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Box>
       )}
 

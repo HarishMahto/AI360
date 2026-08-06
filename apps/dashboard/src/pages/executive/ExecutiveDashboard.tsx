@@ -320,8 +320,8 @@ export default function ExecutiveDashboard() {
                 <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>Enterprise return on investment calculation and model spend breakdown.</Typography>
               </Box>
 
-              <Grid container spacing={2} disableEqualOverflow>
-                <Grid item xs={12} md={4}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '4fr 8fr' }, gap: 2, width: '100%' }}>
+                <Box sx={{ width: '100%' }}>
                   <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
                     <CardContent sx={{ p: 4 }}>
                       <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>TOTAL ORG ROI</Typography>
@@ -331,11 +331,11 @@ export default function ExecutiveDashboard() {
                       </Typography>
                     </CardContent>
                   </Card>
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={8}>
-                  <TableContainer component={Paper} elevation={0} sx={{ minHeight: 400,  borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)' }}>
-                    <Table>
+                <Box sx={{ width: '100%' }}>
+                  <TableContainer component={Paper} elevation={0} sx={{ minHeight: 400, borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', width: '100%' }}>
+                    <Table sx={{ width: '100%' }}>
                       <TableHead>
                         <TableRow sx={{ bgcolor: '#F5F5F7' }}>
                           <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Department</TableCell>
@@ -358,20 +358,20 @@ export default function ExecutiveDashboard() {
                       </TableBody>
                     </Table>
                   </TableContainer>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </Box>
           )}
 
           {activeTab === 2 && (
-            <Box>
+            <Box sx={{ width: '100%' }}>
               <Box sx={{ mb: 3 }}>
                 <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>Department Rankings</Typography>
                 <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>Full enterprise ranking by adoption, efficiency, and maturity.</Typography>
               </Box>
 
-              <TableContainer component={Paper} elevation={0} sx={{ minHeight: 400,  borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)' }}>
-                <Table>
+              <TableContainer component={Paper} elevation={0} sx={{ minHeight: 400, borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', width: '100%' }}>
+                <Table sx={{ width: '100%' }}>
                   <TableHead>
                     <TableRow sx={{ bgcolor: '#F5F5F7' }}>
                       <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Rank & Dept</TableCell>
@@ -411,18 +411,18 @@ export default function ExecutiveDashboard() {
           )}
 
           {activeTab === 3 && (
-            <Box>
+            <Box sx={{ width: '100%' }}>
               <Box sx={{ mb: 3 }}>
                 <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>Forward Budget Forecast</Typography>
                 <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>12-month forward-looking budget projections.</Typography>
               </Box>
 
-              <Grid container spacing={2} disableEqualOverflow>
-                <Grid item xs={12} md={8}>
-                  <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: 360 }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '8fr 4fr' }, gap: 2, width: '100%' }}>
+                <Box sx={{ width: '100%' }}>
+                  <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: 360, width: '100%' }}>
                     <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
                       <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 3 }}>Quarterly Budget Projection (2026)</Typography>
-                      <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+                      <Box sx={{ flexGrow: 1, minHeight: 0, width: '100%' }}>
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={DEMO_FORECAST_DATA} margin={{ left: -20, bottom: 0 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAEAEA" />
@@ -436,10 +436,10 @@ export default function ExecutiveDashboard() {
                       </Box>
                     </CardContent>
                   </Card>
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={4}>
-                  <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: 360 }}>
+                <Box sx={{ width: '100%' }}>
+                  <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: 360, width: '100%' }}>
                     <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                       <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 3 }}>Forecast Scenarios</Typography>
                       <Stack spacing={2}>
@@ -458,20 +458,20 @@ export default function ExecutiveDashboard() {
                       </Stack>
                     </CardContent>
                   </Card>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </Box>
           )}
 
           {activeTab === 4 && (
-            <Box>
+            <Box sx={{ width: '100%' }}>
               <Box sx={{ mb: 3 }}>
                 <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>Executive Recommendations</Typography>
                 <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>Intelligence engine recommendations for executive leadership.</Typography>
               </Box>
 
-              <Stack spacing={3}>
-                <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <Stack spacing={3} sx={{ width: '100%' }}>
+                <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', width: '100%' }}>
                   <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
                     <Stack direction="row" spacing={2} alignItems="flex-start">
                       <Avatar sx={{ bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE }}>
@@ -488,7 +488,7 @@ export default function ExecutiveDashboard() {
                   </CardContent>
                 </Card>
 
-                <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', width: '100%' }}>
                   <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
                     <Stack direction="row" spacing={2} alignItems="flex-start">
                       <Avatar sx={{ bgcolor: 'rgba(52,199,89,0.10)', color: SUCCESS_GREEN }}>
@@ -509,13 +509,13 @@ export default function ExecutiveDashboard() {
           )}
 
           {activeTab === 5 && (
-            <Box>
+            <Box sx={{ width: '100%' }}>
               <Box sx={{ mb: 4 }}>
                 <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>FinOps & ROI Engine</Typography>
                 <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>Quantifies financial impact via exact value modeling and OLS forecasting.</Typography>
               </Box>
 
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', mb: 4 }}>
+              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', mb: 4, width: '100%' }}>
                 <CardContent sx={{ p: 3 }}>
                   <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} spacing={3} mb={3}>
                     <Box>
@@ -529,52 +529,45 @@ export default function ExecutiveDashboard() {
                     </Box>
                   </Stack>
 
-                  <Grid container spacing={2} disableEqualOverflow>
-                    <Grid item xs={12} sm={3}>
-                      <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#FAFAFA', border: '1px solid rgba(0,0,0,0.04)' }}>
-                        <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', textTransform: 'uppercase' }}>Hours Saved</Typography>
-                        <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F', mt: 0.5 }}>28,500 hrs</Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#FAFAFA', border: '1px solid rgba(0,0,0,0.04)' }}>
-                        <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', textTransform: 'uppercase' }}>Hourly Rate</Typography>
-                        <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F', mt: 0.5 }}>$50.00 / hr</Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(52,199,89,0.04)', border: '1px solid rgba(52,199,89,0.1)' }}>
-                        <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: SUCCESS_GREEN, textTransform: 'uppercase' }}>Value Generated</Typography>
-                        <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: SUCCESS_GREEN, mt: 0.5 }}>$1,425,000</Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(0,102,204,0.04)', border: '1px solid rgba(0,102,204,0.1)' }}>
-                        <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: ACCENT_BLUE, textTransform: 'uppercase' }}>Net ROI</Typography>
-                        <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: ACCENT_BLUE, mt: 0.5 }}>409%</Typography>
-                      </Box>
-                    </Grid>
-                  </Grid>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(4, 1fr)' }, gap: 2, width: '100%' }}>
+                    <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#FAFAFA', border: '1px solid rgba(0,0,0,0.04)', width: '100%' }}>
+                      <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', textTransform: 'uppercase' }}>Hours Saved</Typography>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F', mt: 0.5 }}>28,500 hrs</Typography>
+                    </Box>
+                    <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#FAFAFA', border: '1px solid rgba(0,0,0,0.04)', width: '100%' }}>
+                      <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', textTransform: 'uppercase' }}>Hourly Rate</Typography>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F', mt: 0.5 }}>$50.00 / hr</Typography>
+                    </Box>
+                    <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(52,199,89,0.04)', border: '1px solid rgba(52,199,89,0.1)', width: '100%' }}>
+                      <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: SUCCESS_GREEN, textTransform: 'uppercase' }}>Value Generated</Typography>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: SUCCESS_GREEN, mt: 0.5 }}>$1,425,000</Typography>
+                    </Box>
+                    <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(0,102,204,0.04)', border: '1px solid rgba(0,102,204,0.1)', width: '100%' }}>
+                      <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: ACCENT_BLUE, textTransform: 'uppercase' }}>Net ROI</Typography>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: ACCENT_BLUE, mt: 0.5 }}>409%</Typography>
+                    </Box>
+                  </Box>
                 </CardContent>
               </Card>
 
-              <Box sx={{ mb: 4 }}>
+              <Box sx={{ mb: 4, width: '100%' }}>
                 <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>AI Maturity Score & Ladder</Typography>
                 <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5, mb: 3 }}>Tracks organizational AI evolution toward autonomous execution.</Typography>
                 
-                <Grid container spacing={2} disableEqualOverflow>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, width: '100%' }}>
                   {maturityLadder.map((mat: any, idx: number) => {
                     const levelNumber = mat.level_number || mat.levelNumber || idx + 1;
                     const levelName = mat.level_name || mat.levelName;
                     const isActive = mat.status === 'Active';
                     
                     return (
-                      <Grid item xs={12} sm={6} md={3} key={idx}>
+                      <Box key={idx} sx={{ width: '100%' }}>
                         <Card sx={{ 
                           borderRadius: 3.5, 
                           border: isActive ? `1px solid ${ACCENT_BLUE}` : '1px solid rgba(0,0,0,0.08)', 
                           boxShadow: isActive ? '0 4px 16px rgba(0,102,204,0.15)' : 'none', 
-                          height: '100%' 
+                          height: '100%',
+                          width: '100%'
                         }}>
                           <CardContent sx={{ p: 3, display: 'flex', flexDirection: 'column', height: '100%' }}>
                             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
@@ -589,10 +582,10 @@ export default function ExecutiveDashboard() {
                             <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', flexGrow: 1 }}>{mat.description}</Typography>
                           </CardContent>
                         </Card>
-                      </Grid>
+                      </Box>
                     );
                   })}
-                </Grid>
+                </Box>
               </Box>
             </Box>
           )}

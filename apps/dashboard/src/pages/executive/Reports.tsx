@@ -31,22 +31,22 @@ export default function Reports() {
   };
 
   return (
-    <Box className="page-enter page-content" sx={{ bgcolor: '#F4F6FA', minHeight: '100vh', p: { xs: 1, md: 1.5 } }}>
-      <Box sx={{ width: '100%', animation: 'fadeUp 0.4s ease both' }}>
+    <Box className="page-enter" sx={{ bgcolor: '#F4F6FA', minHeight: '100vh', p: 0 }}>
+      <Box sx={{ width: '100%', animation: 'fadeUp 0.4s ease both', px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 } }}>
         
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Box>
             <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
-              Board-Ready Reports
+              Executive Reports
             </Typography>
             <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
-              Automatically compiled documents and insights
+              Exportable board-ready PDF & CSV summaries
             </Typography>
           </Box>
           <Button 
             variant="contained" 
             disableElevation
-            startIcon={<AutoAwesomeIcon fontSize="small" />}
+            startIcon={<PictureAsPdfIcon fontSize="small" />}
             sx={{ 
               bgcolor: ACCENT_BLUE, 
               '&:hover': { bgcolor: '#16437E' },
@@ -60,9 +60,9 @@ export default function Reports() {
           </Button>
         </Box>
 
-        <Grid container spacing={2}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)' }, gap: 2, width: '100%' }}>
           {mockReports.map((report) => (
-            <Grid item xs={12} md={6} lg={4} key={report.id}>
+            <Box key={report.id} sx={{ width: '100%' }}>
               <Card sx={standardCardSx}>
                 <CardContent sx={{ flexGrow: 1, p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
@@ -92,9 +92,9 @@ export default function Reports() {
                   </IconButton>
                 </Box>
               </Card>
-            </Grid>
+            </Box>
           ))}
-        </Grid>
+        </Box>
 
       </Box>
     </Box>

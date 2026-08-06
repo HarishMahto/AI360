@@ -426,9 +426,9 @@ export default function EmployeeDashboard() {
         )}
 
         {activeTab === 2 && (
-          <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
-            <Grid container spacing={2} disableEqualOverflow>
-              <Grid item xs={12} md={6}>
+          <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, width: '100%' }}>
+              <Box sx={{ width: '100%' }}>
                 <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
                   <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Prompt Coach</Typography>
                   <TextField fullWidth value={vaguePrompt} onChange={(e) => setVaguePrompt(e.target.value)} placeholder="Enter vague prompt..." sx={{ mb: 2 }} />
@@ -444,8 +444,8 @@ export default function EmployeeDashboard() {
                     </Box>
                   )}
                 </Card>
-              </Grid>
-              <Grid item xs={12} md={6}>
+              </Box>
+              <Box sx={{ width: '100%' }}>
                 <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
                   <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Token Optimizer</Typography>
                   <TableContainer sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', mb: 3 }}>
@@ -470,17 +470,17 @@ export default function EmployeeDashboard() {
                     ))}
                   </Stack>
                 </Card>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </Box>
         )}
 
         {activeTab === 3 && (
-          <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
-            <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3 }}>
+          <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
+            <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, width: '100%' }}>
               <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Model Recommendations</Typography>
-              <TableContainer sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)' }}>
-                <Table>
+              <TableContainer sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', width: '100%' }}>
+                <Table sx={{ width: '100%' }}>
                   <TableHead>
                     <TableRow sx={{ bgcolor: '#F0F4F8' }}>
                       <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#4B5563' }}>Context</TableCell>
@@ -504,15 +504,15 @@ export default function EmployeeDashboard() {
         )}
 
         {activeTab === 4 && (
-          <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
+          <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
             <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
               <TextField size="small" placeholder="Search prompts..." value={searchHistory} onChange={(e) => setSearchHistory(e.target.value)} sx={{ width: 300 }} />
               <Button variant="contained" sx={{ bgcolor: BRAND_COLOR }}>Publish to Marketplace</Button>
             </Box>
-            <Grid container spacing={2} disableEqualOverflow>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)' }, gap: 2, width: '100%' }}>
               {(marketplaceData || promptsList).map((p: any) => (
-                <Grid item xs={12} md={4} key={p.id}>
-                  <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Box key={p.id} sx={{ width: '100%' }}>
+                  <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%', display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 0.5 }}>{p.title}</Typography>
                     <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mb: 1.5 }}>By {p.author}</Typography>
                     <Typography sx={{ fontSize: '0.8125rem', color: '#1A1D2E', mb: 2, flexGrow: 1, fontStyle: 'italic' }}>"{p.content}"</Typography>
@@ -521,16 +521,16 @@ export default function EmployeeDashboard() {
                       <Typography sx={{ fontSize: '0.75rem', color: '#059669' }}>{p.hoursSaved}h saved</Typography>
                     </Stack>
                   </Card>
-                </Grid>
+                </Box>
               ))}
-            </Grid>
+            </Box>
           </Box>
         )}
 
         {activeTab === 5 && (
-          <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
-            <Grid container spacing={2} disableEqualOverflow>
-              <Grid item xs={12} md={6}>
+          <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, width: '100%' }}>
+              <Box sx={{ width: '100%' }}>
                 <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
                   <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Learning Coach</Typography>
                   <Stack spacing={2}>
@@ -542,23 +542,23 @@ export default function EmployeeDashboard() {
                     ))}
                   </Stack>
                 </Card>
-              </Grid>
-              <Grid item xs={12} md={6}>
+              </Box>
+              <Box sx={{ width: '100%' }}>
                 <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
                   <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Achievements</Typography>
-                  <Grid container spacing={2} disableEqualOverflow>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, width: '100%' }}>
                     {[{ title: 'Prompt Master', desc: 'Maintained 80+ score', earned: true }, { title: 'Token Optimizer', desc: 'Saved 50k tokens', earned: false }].map((badge, idx) => (
-                      <Grid item xs={12} sm={6} key={idx}>
+                      <Box key={idx} sx={{ width: '100%' }}>
                         <Box sx={{ p: 2, borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', opacity: badge.earned ? 1 : 0.5 }}>
                           <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E' }}>{badge.title}</Typography>
                           <Typography sx={{ fontSize: '0.75rem', color: '#4B5563' }}>{badge.desc}</Typography>
                         </Box>
-                      </Grid>
+                      </Box>
                     ))}
-                  </Grid>
+                  </Box>
                 </Card>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </Box>
         )}
 

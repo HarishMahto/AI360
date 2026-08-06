@@ -25,19 +25,19 @@ export default function Forecast() {
   const sectionTitleSx = { fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em' };
 
   return (
-    <Box className="page-enter page-content" sx={{ p: { xs: 1, md: 1.5 }, width: '100%', bgcolor: '#F4F6FA', minHeight: '100vh' }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
-          Section 11.3: FinOps OLS Cost & Usage Forecast
-        </Typography>
-        <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
-          Predictive analytics on usage and spend using OLS regression.
-        </Typography>
-      </Box>
-      
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Card sx={cardSx}>
+    <Box className="page-enter" sx={{ p: 0, width: '100%', bgcolor: '#F4F6FA', minHeight: '100vh' }}>
+      <Box sx={{ px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 }, width: '100%' }}>
+        <Box sx={{ background: 'linear-gradient(135deg, rgba(31,90,166,0.05) 0%, rgba(31,90,166,0.03) 100%)', borderRadius: '12px', p: 2.5, mb: 3, border: '1px solid rgba(31,90,166,0.09)' }}>
+          <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
+            Section 11.3: FinOps OLS Cost & Usage Forecast
+          </Typography>
+          <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
+            Predictive analytics on usage and spend using OLS regression.
+          </Typography>
+        </Box>
+        
+        <Box sx={{ width: '100%' }}>
+          <Card sx={{ ...cardSx, width: '100%' }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
               <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1} flexWrap="wrap" gap={1}>
                 <Typography sx={sectionTitleSx}>
@@ -54,7 +54,7 @@ export default function Forecast() {
                 {olsEngineResult.roadmapNote}
               </Typography>
 
-              <Box sx={{ height: 380 }}>
+              <Box sx={{ height: 380, width: '100%' }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartPoints} margin={{ top: 20, right: 0, left: -20, bottom: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(31,90,166,0.09)" />
@@ -65,15 +65,16 @@ export default function Forecast() {
                       formatter={(value: number) => [`$${value}`, '']}
                     />
                     <Legend iconType="circle" wrapperStyle={{ fontSize: '13px', paddingTop: '10px', color: '#4B5563' }} />
-                    <Line type="monotone" dataKey="ActualCost" stroke="#1F5AA6" strokeWidth={3} name="Historical Spend ($)" dot={{ r: 4, fill: '#1F5AA6', strokeWidth: 0 }} />
-                    <Line type="monotone" dataKey="ProjectedCost" stroke="#D97706" strokeWidth={2} strokeDasharray="5 5" name="OLS Projected Spend ($)" dot={{ r: 3, fill: '#D97706', strokeWidth: 0 }} />
+                    <Line type="monotone" dataKey="Actual" stroke="#1F5AA6" strokeWidth={3} dot={{ r: 4 }} name="Historical Actuals ($)" />
+                    <Line type="monotone" dataKey="OLS (Trend)" stroke="#059669" strokeWidth={2} strokeDasharray="5 5" dot={false} name="OLS Line of Best Fit ($)" />
+                    <Line type="monotone" dataKey="OLS Forecast" stroke="#D97706" strokeWidth={3} strokeDasharray="3 3" dot={{ r: 5 }} name="OLS Projected Runway ($)" />
                   </LineChart>
                 </ResponsiveContainer>
               </Box>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 }

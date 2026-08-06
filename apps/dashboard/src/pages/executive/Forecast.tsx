@@ -37,8 +37,8 @@ export default function Forecast() {
   const standardCardSx = { borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' } };
 
   return (
-    <Box className="page-enter page-content" sx={{ bgcolor: '#F4F6FA', minHeight: '100vh', p: { xs: 1, md: 1.5 } }}>
-      <Box sx={{ width: '100%', animation: 'fadeUp 0.4s ease both' }}>
+    <Box className="page-enter" sx={{ bgcolor: '#F4F6FA', minHeight: '100vh', p: 0 }}>
+      <Box sx={{ width: '100%', animation: 'fadeUp 0.4s ease both', px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 } }}>
         
         <Box sx={{ mb: 4 }}>
           <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
@@ -49,22 +49,20 @@ export default function Forecast() {
           </Typography>
         </Box>
 
-        <Grid container spacing={2} sx={{ mb: 4 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)' }, gap: 2, mb: 4, width: '100%' }}>
           {kpis.map((kpi: any, idx: number) => (
-            <Grid item xs={12} md={4} key={idx}>
-              <Card sx={{ ...standardCardSx, borderTop: `3px solid ${ACCENT_BLUE}` }}>
-                <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                  <Typography sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', mb: 1 }}>
-                    {kpi.label}
-                  </Typography>
-                  <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>
-                    {kpi.value}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+            <Card key={idx} sx={{ ...standardCardSx, width: '100%', borderTop: `3px solid ${ACCENT_BLUE}` }}>
+              <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+                <Typography sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', mb: 1 }}>
+                  {kpi.label}
+                </Typography>
+                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>
+                  {kpi.value}
+                </Typography>
+              </CardContent>
+            </Card>
           ))}
-        </Grid>
+        </Box>
 
         <Card sx={standardCardSx}>
           <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>

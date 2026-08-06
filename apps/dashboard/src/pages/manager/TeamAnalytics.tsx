@@ -54,29 +54,33 @@ export default function TeamAnalytics() {
   const labelCapsSx = { fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF' };
 
   return (
-    <Box className="page-enter page-content" sx={{ p: { xs: 1, md: 1.5 }, width: '100%', bgcolor: '#F4F6FA', minHeight: '100vh' }}>
-      <Box sx={{ background: 'linear-gradient(135deg, rgba(31,90,166,0.05) 0%, rgba(31,90,166,0.03) 100%)', borderRadius: '12px', p: 2.5, mb: 3, border: '1px solid rgba(31,90,166,0.09)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
-            Team Analytics
-          </Typography>
-          <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
-            Detailed breakdown of AI adoption, usage patterns, and top users.
-          </Typography>
+    <Box className="page-enter" sx={{ p: 0, width: '100%', bgcolor: '#F4F6FA', minHeight: '100vh' }}>
+      <Box sx={{ px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 }, width: '100%' }}>
+        <Box sx={{ background: 'linear-gradient(135deg, rgba(31,90,166,0.05) 0%, rgba(31,90,166,0.03) 100%)', borderRadius: '12px', p: 2.5, mb: 3, border: '1px solid rgba(31,90,166,0.09)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box>
+            <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
+              Team Analytics
+            </Typography>
+            <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
+              Track adoption, token usage, and top performers across your team
+            </Typography>
+          </Box>
+          <ButtonGroup size="small" sx={{ 
+            bgcolor: '#FFFFFF', 
+            borderRadius: 2, 
+            p: 0.5, 
+            border: '1px solid rgba(31,90,166,0.09)',
+            '& .MuiButton-root': { border: 'none', color: '#4B5563', borderRadius: 1.5, textTransform: 'none', fontWeight: 500, fontSize: '0.75rem', px: 2 },
+            '& .Mui-active': { bgcolor: '#1F5AA6', color: '#FFFFFF', fontWeight: 600 }
+          }}>
+            <Button className={period === '7d' ? 'Mui-active' : ''} onClick={() => setPeriod('7d')}>7 Days</Button>
+            <Button className={period === '30d' ? 'Mui-active' : ''} onClick={() => setPeriod('30d')}>30 Days</Button>
+            <Button className={period === '90d' ? 'Mui-active' : ''} onClick={() => setPeriod('90d')}>90 Days</Button>
+          </ButtonGroup>
         </Box>
-        <ButtonGroup variant="outlined" size="small" sx={{ 
-          '& .MuiButton-root': { borderColor: 'rgba(31,90,166,0.16)', color: '#1A1D2E', textTransform: 'none', fontWeight: 500, '&:hover': { bgcolor: '#F0F4F8' } },
-          '& .Mui-active': { bgcolor: '#1F5AA6 !important', color: '#FFF !important', borderColor: '#1F5AA6 !important' }
-        }}>
-          <Button className={period === '7d' ? 'Mui-active' : ''} onClick={() => setPeriod('7d')}>7 Days</Button>
-          <Button className={period === '30d' ? 'Mui-active' : ''} onClick={() => setPeriod('30d')}>30 Days</Button>
-          <Button className={period === '90d' ? 'Mui-active' : ''} onClick={() => setPeriod('90d')}>90 Days</Button>
-        </ButtonGroup>
-      </Box>
-      
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ ...cardSx, borderTop: '3px solid #1F5AA6' }}>
+        
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)' }, gap: 2, mb: 3, width: '100%' }}>
+          <Card sx={{ ...cardSx, width: '100%', borderTop: '3px solid #1F5AA6' }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                 <Typography sx={labelCapsSx}>
@@ -90,10 +94,8 @@ export default function TeamAnalytics() {
               <Typography sx={{ fontSize: '0.75rem', color: '#059669', mt: 0.5 }}>{activeUsersGrowth}</Typography>
             </CardContent>
           </Card>
-        </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ ...cardSx, borderTop: '3px solid #059669' }}>
+          <Card sx={{ ...cardSx, width: '100%', borderTop: '3px solid #059669' }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                 <Typography sx={labelCapsSx}>
@@ -109,10 +111,8 @@ export default function TeamAnalytics() {
               </Box>
             </CardContent>
           </Card>
-        </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ ...cardSx, borderTop: '3px solid #D97706' }}>
+          <Card sx={{ ...cardSx, width: '100%', borderTop: '3px solid #D97706' }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                 <Typography sx={labelCapsSx}>
@@ -126,15 +126,13 @@ export default function TeamAnalytics() {
               <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5 }}>Estimated cost: {estimatedCost}</Typography>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={8}>
-          <Card sx={{ ...cardSx, borderTop: '3px solid #7C3AED' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '8fr 4fr' }, gap: 2, width: '100%' }}>
+          <Card sx={{ ...cardSx, width: '100%', borderTop: '3px solid #7C3AED' }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 2.5 } }}>
               <Typography sx={{ ...sectionTitleSx, mb: 2 }}>Usage Trends</Typography>
-              <Box sx={{ height: 320 }}>
+              <Box sx={{ height: 320, width: '100%' }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={usageData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(31,90,166,0.09)" />
@@ -153,68 +151,62 @@ export default function TeamAnalytics() {
               </Box>
             </CardContent>
           </Card>
-        </Grid>
 
-        <Grid item xs={12} md={4}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Card sx={{ ...cardSx, borderTop: '3px solid #1F5AA6' }}>
-                <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
-                  <Box sx={{ p: 3, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
-                    <Typography sx={sectionTitleSx}>Top Users</Typography>
-                  </Box>
-                  <List disablePadding>
-                    {topUsers.map((user: any, idx: number) => (
-                      <ListItem key={user.id} sx={{ px: 2.5, py: 1.5, borderBottom: idx < topUsers.length - 1 ? '1px solid rgba(31,90,166,0.09)' : 'none', '&:hover': { bgcolor: '#F0F4F8' } }}>
-                        <ListItemAvatar sx={{ minWidth: 44 }}>
-                          <Avatar sx={{ width: 32, height: 32, bgcolor: '#F0F4F8', color: '#1A1D2E', fontSize: '0.8125rem', fontWeight: 600 }}>
-                            {user.avatar}
-                          </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText 
-                          primary={user.name} 
-                          secondary={user.role} 
-                          primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1A1D2E' }}
-                          secondaryTypographyProps={{ fontSize: '0.75rem', color: '#4B5563' }}
-                        />
-                        <Chip label={`Score: ${user.score}`} size="small" sx={{ height: 22, fontSize: '10px', fontWeight: 700, borderRadius: '5px', bgcolor: 'rgba(31,90,166,0.08)', color: '#1F5AA6' }} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </CardContent>
-              </Card>
-            </Grid>
-            
-            <Grid item xs={12}>
-              <Card sx={{ ...cardSx, borderTop: '3px solid #60A5FA' }}>
-                <CardContent sx={{ p: 3, '&:last-child': { pb: 2.5 } }}>
-                  <Typography sx={{ ...sectionTitleSx, mb: 2 }}>Model Distribution</Typography>
-                  <Box sx={{ height: 180 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={mockModelData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={60}
-                          outerRadius={80}
-                          paddingAngle={2}
-                          dataKey="value"
-                        >
-                          {mockModelData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 4px 16px rgba(31,90,166,0.10)' }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
+          <Stack spacing={2} sx={{ width: '100%' }}>
+            <Card sx={{ ...cardSx, width: '100%', borderTop: '3px solid #1F5AA6' }}>
+              <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+                <Box sx={{ p: 3, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
+                  <Typography sx={sectionTitleSx}>Top Users</Typography>
+                </Box>
+                <List disablePadding>
+                  {topUsers.map((user: any, idx: number) => (
+                    <ListItem key={user.id} sx={{ px: 2.5, py: 1.5, borderBottom: idx < topUsers.length - 1 ? '1px solid rgba(31,90,166,0.09)' : 'none', '&:hover': { bgcolor: '#F0F4F8' } }}>
+                      <ListItemAvatar sx={{ minWidth: 44 }}>
+                        <Avatar sx={{ width: 32, height: 32, bgcolor: '#F0F4F8', color: '#1A1D2E', fontSize: '0.8125rem', fontWeight: 600 }}>
+                          {user.avatar}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText 
+                        primary={user.name} 
+                        secondary={user.role} 
+                        primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1A1D2E' }}
+                        secondaryTypographyProps={{ fontSize: '0.75rem', color: '#4B5563' }}
+                      />
+                      <Chip label={`Score: ${user.score}`} size="small" sx={{ height: 22, fontSize: '10px', fontWeight: 700, borderRadius: '5px', bgcolor: 'rgba(31,90,166,0.08)', color: '#1F5AA6' }} />
+                    </ListItem>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
+
+            <Card sx={{ ...cardSx, width: '100%', borderTop: '3px solid #60A5FA' }}>
+              <CardContent sx={{ p: 3, '&:last-child': { pb: 2.5 } }}>
+                <Typography sx={{ ...sectionTitleSx, mb: 2 }}>Model Distribution</Typography>
+                <Box sx={{ height: 180, width: '100%' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={mockModelData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={2}
+                        dataKey="value"
+                      >
+                        {mockModelData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 4px 16px rgba(31,90,166,0.10)' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </Box>
+              </CardContent>
+            </Card>
+          </Stack>
+        </Box>
+      </Box>
     </Box>
   );
 }

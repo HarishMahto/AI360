@@ -20,15 +20,15 @@ export default function Analytics() {
   ];
 
   return (
-    <Box className="page-enter page-content" sx={{ p: { xs: 1, md: 1.5 }, width: '100%', minHeight: '100vh', bgcolor: '#F4F6FA' }}>
-      <Box sx={{ background: 'linear-gradient(135deg, rgba(31,90,166,0.05) 0%, rgba(5,150,105,0.03) 100%)', borderRadius: 3, p: 3, mb: 3, border: '1px solid rgba(31,90,166,0.09)' }}>
-        <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>Analytics</Typography>
-        <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>Track growth and token consumption</Typography>
-      </Box>
+    <Box className="page-enter" sx={{ p: 0, width: '100%', minHeight: '100vh', bgcolor: '#F4F6FA' }}>
+      <Box sx={{ px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 }, width: '100%' }}>
+        <Box sx={{ background: 'linear-gradient(135deg, rgba(31,90,166,0.05) 0%, rgba(5,150,105,0.03) 100%)', borderRadius: 3, p: 3, mb: 3, border: '1px solid rgba(31,90,166,0.09)' }}>
+          <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>Analytics</Typography>
+          <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>Track growth and token consumption</Typography>
+        </Box>
 
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, borderTop: '3px solid #1F5AA6' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)' }, gap: 2, mb: 3, width: '100%' }}>
+          <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, borderTop: '3px solid #1F5AA6' }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
               <Box sx={{ position: 'absolute', top: 16, right: 16, width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: alpha('#1F5AA6', 0.1) }}>
                 <TrendingUp fontSize="small" sx={{ color: '#1F5AA6' }}/>
@@ -38,9 +38,8 @@ export default function Analytics() {
               <Typography sx={{ fontSize: '0.75rem', color: '#059669', mt: 0.5 }}>+15% this month</Typography>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, borderTop: '3px solid #60A5FA' }}>
+          
+          <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, borderTop: '3px solid #60A5FA' }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
               <Box sx={{ position: 'absolute', top: 16, right: 16, width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: alpha('#60A5FA', 0.1) }}>
                 <Speed fontSize="small" sx={{ color: '#60A5FA' }}/>
@@ -50,9 +49,8 @@ export default function Analytics() {
               <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5 }}>72% saved via optimization</Typography>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, borderTop: '3px solid #D97706' }}>
+
+          <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, borderTop: '3px solid #D97706' }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
               <Box sx={{ position: 'absolute', top: 16, right: 16, width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: alpha('#D97706', 0.1) }}>
                 <AccessTime fontSize="small" sx={{ color: '#D97706' }}/>
@@ -62,14 +60,12 @@ export default function Analytics() {
               <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5 }}>Equivalent to 5.3 work days</Typography>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={8}>
-          <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, p: 3, height: '100%' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '8fr 4fr' }, gap: 2, mb: 3, width: '100%' }}>
+          <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, p: 3, height: '100%' }}>
             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em', mb: 2 }}>Growth Trend</Typography>
-            <Box sx={{ height: 320 }}>
+            <Box sx={{ height: 320, width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={trendData}>
                   <defs>
@@ -87,9 +83,8 @@ export default function Analytics() {
               </ResponsiveContainer>
             </Box>
           </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, p: 3, height: '100%' }}>
+
+          <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, p: 3, height: '100%' }}>
             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em', mb: 2 }}>Coaching Tips</Typography>
             <Stack spacing={2}>
               <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#F0F4F8', borderLeft: `3px solid ${BRAND_COLOR}` }}>
@@ -106,13 +101,13 @@ export default function Analytics() {
               </Box>
             </Stack>
           </Card>
-        </Grid>
+        </Box>
 
-        <Grid item xs={12}>
-          <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, p: 3 }}>
+        <Box sx={{ width: '100%' }}>
+          <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'all 0.22s ease', '&:hover': { boxShadow: '0 6px 24px rgba(31,90,166,0.10)', borderColor: 'rgba(31,90,166,0.16)' }, p: 3 }}>
             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em', mb: 2 }}>Usage Summary</Typography>
-            <TableContainer sx={{ borderRadius: 2, border: '1px solid rgba(31,90,166,0.09)' }}>
-              <Table>
+            <TableContainer sx={{ width: '100%', borderRadius: 2, border: '1px solid rgba(31,90,166,0.09)' }}>
+              <Table sx={{ width: '100%' }}>
                 <TableHead>
                   <TableRow sx={{ bgcolor: '#F0F4F8' }}>
                     <TableCell sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF' }}>Period</TableCell>
@@ -141,8 +136,8 @@ export default function Analytics() {
               </Table>
             </TableContainer>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 }

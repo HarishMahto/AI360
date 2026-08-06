@@ -44,21 +44,23 @@ export default function Recommendations() {
   const sectionTitleSx = { fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em' };
 
   return (
-    <Box className="page-enter page-content" sx={{ p: { xs: 1, md: 1.5 }, width: '100%', bgcolor: '#F4F6FA', minHeight: '100vh' }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
-          Efficiency Recommendations
-        </Typography>
-        <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
-          AI-driven insights to improve adoption, reduce costs, and maximize productivity across your teams.
-        </Typography>
-      </Box>
-      
-      <Grid container spacing={2}>
+    <Box className="page-enter" sx={{ p: 0, width: '100%', bgcolor: '#F4F6FA', minHeight: '100vh' }}>
+      <Box sx={{ px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 }, width: '100%' }}>
+        <Box sx={{ background: 'linear-gradient(135deg, rgba(31,90,166,0.05) 0%, rgba(31,90,166,0.03) 100%)', borderRadius: '12px', p: 2.5, mb: 3, border: '1px solid rgba(31,90,166,0.09)' }}>
+          <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A1D2E' }}>
+            Efficiency Recommendations
+          </Typography>
+          <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mt: 0.5 }}>
+            AI-driven insights to improve adoption, reduce costs, and maximize productivity across your teams.
+          </Typography>
+        </Box>
+        
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
         {recommendationsList.map((rec: any, index: number) => (
-          <Grid item xs={12} key={rec.id}>
+          <Box key={rec.id} sx={{ width: '100%' }}>
             <Card sx={{ 
               ...cardSx,
+              width: '100%',
               display: 'flex', 
               overflow: 'hidden',
               animation: 'fadeUp 0.4s ease both',
@@ -103,9 +105,10 @@ export default function Recommendations() {
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
+          </Box>
         ))}
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 }
