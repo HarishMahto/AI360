@@ -1,0 +1,100 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper Security Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function isAdmin() {
+      return isAuthenticated() && (getUserData().role == "ADMIN" || request.auth.token.role == "ADMIN");
+    }
+    function isExecutive() {
+      return isAuthenticated() && (getUserData().role == "EXECUTIVE" || request.auth.token.role == "EXECUTIVE" || isAdmin());
+    }
+    function isManager() {
+      return isAuthenticated() && (getUserData().role == "MANAGER" || request.auth.token.role == "MANAGER" || isExecutive());
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 1. USERS COLLECTION (/users/{userId})
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isOwner(userId);
+    }
+
+    // 2. ORGANIZATIONS COLLECTION (/organizations/{orgId})
+    match /organizations/{orgId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // 3. DEPARTMENTS COLLECTION (/departments/{deptId})
+    match /departments/{deptId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isManager();
+    }
+
+    // 4. TEAMS COLLECTION (/teams/{teamId})
+    match /teams/{teamId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isManager();
+    }
+
+    // 5. USAGE & TELEMETRY COLLECTION (/usage/{docId})
+    match /usage/{docId} {
+      allow read: if isManager() || isOwner(resource.data.userId);
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    // 6. PROMPT HISTORY COLLECTION (/promptHistory/{docId})
+    match /promptHistory/{docId} {
+      allow read: if isManager() || isOwner(resource.data.userId) || resource.data.isMarketplaceTemplate == true;
+      allow create, update: if isAuthenticated() && (isOwner(request.resource.data.userId) || isAdmin());
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+
+    // 7. EMPLOYEE ANALYTICS COLLECTION (/employeeAnalytics/{docId})
+    match /employeeAnalytics/{docId} {
+      allow read: if isManager() || isOwner(resource.data.userId);
+      allow write: if isAdmin();
+    }
+
+    // 8. DEPARTMENT ANALYTICS COLLECTION (/departmentAnalytics/{docId})
+    match /departmentAnalytics/{docId} {
+      allow read: if isManager();
+      allow write: if isAdmin();
+    }
+
+    // 9. FORECASTS COLLECTION (/forecasts/{docId})
+    match /forecasts/{docId} {
+      allow read: if isManager();
+      allow write: if isAdmin();
+    }
+
+    // 10. RECOMMENDATIONS COLLECTION (/recommendations/{docId})
+    match /recommendations/{docId} {
+      allow read: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow create, delete: if isAdmin();
+    }
+
+    // 11. NOTIFICATIONS COLLECTION (/notifications/{docId})
+    match /notifications/{docId} {
+      allow read, update: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isAuthenticated();
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+    
+    // DEFAULT DENY ALL OTHER PATHS
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

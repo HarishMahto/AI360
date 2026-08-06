@@ -1,0 +1,29 @@
+{
+  "name": "ai360",
+  "version": "1.0.0",
+  "description": "AI360 – Enterprise AI Productivity, Governance & FinOps Platform",
+  "private": true,
+  "workspaces": [
+    "apps/dashboard",
+    "apps/vscode-extension",
+    "packages/shared-types"
+  ],
+  "scripts": {
+    "dev:dashboard": "npm run dev --workspace=apps/dashboard",
+    "dev:extension": "npm run watch --workspace=apps/vscode-extension",
+    "build:dashboard": "npm run build --workspace=apps/dashboard",
+    "build:extension": "npm run build --workspace=apps/vscode-extension",
+    "build:types": "npm run build --workspace=packages/shared-types",
+    "build": "npm run build:types && npm run build:dashboard && npm run build:extension",
+    "test:dashboard": "npm run test --workspace=apps/dashboard",
+    "lint": "npm run lint --workspaces --if-present",
+    "type-check": "npm run type-check --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}
