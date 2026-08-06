@@ -513,4 +513,85 @@ export function useSessionSummary() {
   });
 }
 
+export function useToggleFavoritePrompt() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (promptId: string) => api.toggleFavoritePrompt(promptId).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['promptHistory'] }),
+  });
+}
+
+export function useSaveThenPublishPrompt() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ title, promptText, category }: { title: string; promptText: string; category?: string }) => {
+      const saved = await api.savePromptHistory(title, promptText, category);
+      return api.publishToMarketplace(saved.data.id).then((r) => r.data);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['promptHistory'] });
+      qc.invalidateQueries({ queryKey: ['promptMarketplace'] });
+    },
+  });
+}
+
+// ─── Licenses ─────────────────────────────────────────────────────────────────
+
+export function useUnusedLicenses() {
+  return useQuery({
+    queryKey: ['finops', 'unusedLicenses'] as const,
+    queryFn: () => api.getUnusedLicenses().then((r) => r.data).catch(() => null),
+    staleTime: 60_000,
+    retry: false,
+  });
+}
+
+export function useReallocateLicense() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (seatId: string) => api.reallocateLicense(seatId).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['finops', 'unusedLicenses'] }),
+  });
+}
+
+export function useReallocateAllInactiveLicenses() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.reallocateAllInactiveLicenses().then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['finops', 'unusedLicenses'] }),
+  });
+}
+
+// ─── Reports & Executive Actions ──────────────────────────────────────────────
+
+export function useReportsList(scope: string) {
+  return useQuery({
+    queryKey: ['reports', 'list', scope] as const,
+    queryFn: () => api.getReportsList(scope).then((r) => r.data).catch(() => null),
+    staleTime: 60_000,
+    retry: false,
+  });
+}
+
+export function useGenerateReport() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ type, format }: { type: string; format: string }) => api.generateReport(type, format).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['reports', 'list'] }),
+  });
+}
+
+export function useApproveInitiative() {
+  return useMutation({
+    mutationFn: ({ initiativeId, title }: { initiativeId: string; title: string }) =>
+      api.approveInitiative(initiativeId, title).then((r) => r.data),
+  });
+}
+
+export function useEnableAutoSwitching() {
+  return useMutation({
+    mutationFn: () => api.enableAutoSwitching().then((r) => r.data),
+  });
+}
+
 

@@ -24,15 +24,23 @@ def test_team_benchmarks_endpoint(client):
     assert backend_team["coaching_signal"] is None
 
 def test_maturity_score_endpoint(client):
-    """Test Section 11.5.3 AI Maturity Score endpoint."""
+    """
+    Test Section 11.5.3 AI Maturity Score endpoint.
+    maturity_index/current_level are now derived from the real team-benchmark average
+    (see AnalyticsService.get_organization_maturity_score) instead of a hardcoded 86/4.
+    In this test environment there's no live departmentAnalytics data, so
+    get_team_benchmarks() falls back to its specification scores (92, 88, 84, 67),
+    averaging to 83 -> level 3 "Productive".
+    """
     response = client.get("/analytics/maturity-score")
     assert response.status_code == 200, response.text
     data = response.json()
-    assert data["current_level"] == 4
-    assert data["current_level_name"] == "AI Native"
-    assert data["maturity_index"] == 86
+    assert data["current_level"] == 3
+    assert data["current_level_name"] == "Productive"
+    assert data["maturity_index"] == 83
     assert len(data["ladder"]) == 4
-    assert data["ladder"][3]["status"] == "Active"
+    assert data["ladder"][2]["status"] == "Active"
+    assert data["ladder"][3]["status"] == "Upcoming"
 
 def test_prompt_privacy_layer_endpoint(client):
     """Test Section 11.5.4 AI Prompt Privacy Layer endpoint."""

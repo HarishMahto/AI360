@@ -16,8 +16,12 @@ def mock_db():
 
 @pytest.fixture
 def mock_user():
+    # user_id matches the demo seed data owner used throughout
+    # domains/prompt_intelligence/employee_engine.py ("user_employee_1" is the
+    # default param value in several of its methods) — prompt history/marketplace
+    # are now scoped per-user, so tests must authenticate as that seed data's owner.
     return CurrentUser(
-        user_id="test_user_123",
+        user_id="user_employee_1",
         email="test@acme.com",
         role=UserRole.ADMIN,
         organization_id="org_123",

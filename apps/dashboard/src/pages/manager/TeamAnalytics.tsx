@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, List, ListItem, ListItemAvatar, Avatar, ListItemText, LinearProgress, Chip, CircularProgress, ButtonGroup, Button } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, List, ListItem, ListItemAvatar, Avatar, ListItemText, LinearProgress, Chip, CircularProgress, ButtonGroup, Button, Stack } from '@mui/material';
 import { Groups, TrendingUp, Assessment } from '@mui/icons-material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, PieChart, Pie } from 'recharts';
 import { useTeamAnalytics } from '../../api/hooks';
@@ -30,8 +30,8 @@ const mockModelData = [
 const COLORS = ['#1F5AA6', '#059669', '#D97706', '#7C3AED'];
 
 export default function TeamAnalytics() {
-  const { data, isLoading } = useTeamAnalytics();
   const [period, setPeriod] = useState('7d');
+  const { data, isLoading } = useTeamAnalytics({ period });
 
   if (isLoading) {
     return (
@@ -186,7 +186,7 @@ export default function TeamAnalytics() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={mockModelData}
+                        data={data?.modelDistribution || mockModelData}
                         cx="50%"
                         cy="50%"
                         innerRadius={60}
@@ -194,11 +194,12 @@ export default function TeamAnalytics() {
                         paddingAngle={2}
                         dataKey="value"
                       >
-                        {mockModelData.map((entry, index) => (
+                        {(data?.modelDistribution || mockModelData).map((entry: any, index: number) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                       <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 4px 16px rgba(31,90,166,0.10)' }} />
+                      <Legend iconType="circle" wrapperStyle={{ fontSize: '11px' }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </Box>

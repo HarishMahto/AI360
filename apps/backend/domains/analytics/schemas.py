@@ -40,6 +40,8 @@ class ExecutiveDashboardResponse(BaseModel):
     forecast_projections: dict
     savings_estimate_usd: float
     executive_kpis: dict
+    total_cost_savings_usd: float = 0.0
+    spend_by_provider: list = []
 
 class AggregateRequest(BaseModel):
     target_date: Optional[str] = None  # YYYY-MM-DD

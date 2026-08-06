@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import {
   Box, Grid, Typography, Chip, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Avatar, Divider, Stack,
-  Button, LinearProgress, CircularProgress, Card, CardContent
+  Button, LinearProgress, CircularProgress, Card, CardContent, Snackbar, Alert
 } from '@mui/material';
 
 const TAB_NAME_MAP: Record<string, number> = {
@@ -14,13 +14,16 @@ const TAB_NAME_MAP: Record<string, number> = {
   'license-detection': 4,
   benchmarks: 5,
 };
-import { TrendingUp, Speed, AttachMoney, ShowChart, Groups } from '@mui/icons-material';
+import { TrendingUp, Speed, AttachMoney, ShowChart, Groups, SwapHoriz } from '@mui/icons-material';
 import {
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   AreaChart, Area
 } from 'recharts';
-import { useManagerDashboard, useCostAdvisor, useTeamBenchmarks, useSmartSuggestions } from '../../api/hooks';
+import {
+  useManagerDashboard, useCostAdvisor, useTeamBenchmarks, useSmartSuggestions,
+  useUnusedLicenses, useReallocateLicense, useReallocateAllInactiveLicenses,
+} from '../../api/hooks';
 
 const MOCK_DATA = {
   today_spend_usd: 1245.50,
@@ -52,11 +55,6 @@ const MOCK_DATA = {
     { rank: 4, name: 'David Kim', role: 'Frontend Dev', requests: 890, cost: 290.8, score: 88, efficiency: '90%' },
     { rank: 5, name: 'Anita Patel', role: 'UX Designer', requests: 420, cost: 150.3, score: 85, efficiency: '88%' }
   ],
-  unused_licenses: [
-    { id: 1, name: 'John Doe', email: 'john.doe@company.com', dept: 'Marketing', lastActive: '34 days ago', seatCost: '$30/mo' },
-    { id: 2, name: 'Jane Smith', email: 'jane.smith@company.com', dept: 'Sales', lastActive: '42 days ago', seatCost: '$30/mo' },
-    { id: 3, name: 'Robert Johnson', email: 'robert.j@company.com', dept: 'HR', lastActive: '60 days ago', seatCost: '$30/mo' }
-  ],
   top_prompt_templates: [
     { title: 'SAP Prompt', uses: 520, hoursSaved: 1100, efficiency: '98%', author: 'DevOps Team', rating: 5.0 },
     { title: 'Spring Boot Architecture Spec', uses: 340, hoursSaved: 780, efficiency: '95%', author: 'Architecture Guild', rating: 4.9 },
@@ -73,6 +71,12 @@ const MOCK_DATA = {
   ]
 };
 
+const FALLBACK_UNUSED_LICENSES = [
+  { id: '1', name: 'John Doe', email: 'john.doe@company.com', department: 'Marketing', last_active: '34 days ago', seat_cost_usd: 30, status: 'unused' },
+  { id: '2', name: 'Jane Smith', email: 'jane.smith@company.com', department: 'Sales', last_active: '42 days ago', seat_cost_usd: 30, status: 'unused' },
+  { id: '3', name: 'Robert Johnson', email: 'robert.j@company.com', department: 'HR', last_active: '60 days ago', seat_cost_usd: 30, status: 'unused' },
+];
+
 export default function ManagerDashboard() {
   const { data: serverData, isLoading } = useManagerDashboard();
   const { data: costAdvisorData } = useCostAdvisor();
@@ -81,6 +85,13 @@ export default function ManagerDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTabKey = searchParams.get('tab') || 'overview';
   const activeTab = TAB_NAME_MAP[currentTabKey] ?? 0;
+
+  // License detection
+  const { data: unusedLicensesData, isLoading: licensesLoading } = useUnusedLicenses();
+  const reallocateLicenseMutation = useReallocateLicense();
+  const reallocateAllMutation = useReallocateAllInactiveLicenses();
+  const [reallocatingId, setReallocatingId] = useState<string | null>(null);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
 
   if (isLoading) {
     return (
@@ -426,7 +437,23 @@ export default function ManagerDashboard() {
                 <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Unused License Detection</Typography>
                 <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>Seats inactive for 30+ days costing ${stats.unused_licenses_cost_savings}/month</Typography>
               </Box>
-              <Button variant="contained" size="small" sx={{ bgcolor: '#FF3B30', textTransform: 'none', borderRadius: 2 }}>Reallocate All Inactive Seats</Button>
+              <Button
+                variant="contained"
+                size="small"
+                disabled={reallocateAllMutation.isPending}
+                sx={{ bgcolor: '#FF3B30', textTransform: 'none', borderRadius: 2 }}
+                onClick={() => {
+                  reallocateAllMutation.mutate(undefined, {
+                    onSuccess: (res: any) => {
+                      const count = res?.reallocated_count ?? 0;
+                      setSnackbar({ open: true, message: `${count} seat${count === 1 ? '' : 's'} reallocated successfully.`, severity: 'success' });
+                    },
+                    onError: () => setSnackbar({ open: true, message: 'Could not reallocate seats — please try again.', severity: 'error' }),
+                  });
+                }}
+              >
+                {reallocateAllMutation.isPending ? <CircularProgress size={16} sx={{ mr: 1, color: '#fff' }} /> : null}Reallocate All Inactive Seats
+              </Button>
             </Box>
             <TableContainer sx={{ width: '100%' }}>
               <Table sx={{ width: '100%' }}>
@@ -437,18 +464,58 @@ export default function ManagerDashboard() {
                     <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Department</TableCell>
                     <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Last Active</TableCell>
                     <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Seat Cost</TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Status</TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73' }}>Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {stats.unused_licenses.map((lic) => (
+                  {licensesLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                        <CircularProgress size={24} />
+                      </TableCell>
+                    </TableRow>
+                  ) : (((unusedLicensesData as any[]) || FALLBACK_UNUSED_LICENSES).length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center" sx={{ py: 4, color: '#6E6E73', fontSize: '0.8125rem' }}>
+                        No unused licenses detected. Nice work keeping seats utilized.
+                      </TableCell>
+                    </TableRow>
+                  ) : ((unusedLicensesData as any[]) || FALLBACK_UNUSED_LICENSES).map((lic: any) => (
                     <TableRow key={lic.id} sx={{ '&:hover': { bgcolor: '#F5F5F7' } }}>
                       <TableCell sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{lic.name}</TableCell>
                       <TableCell sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>{lic.email}</TableCell>
-                      <TableCell sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>{lic.dept}</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.8125rem', color: '#FF3B30', fontWeight: 600 }}>{lic.lastActive}</TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>{lic.seatCost}</TableCell>
+                      <TableCell sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>{lic.department}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.8125rem', color: '#FF3B30', fontWeight: 600 }}>{lic.last_active}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>${lic.seat_cost_usd}/mo</TableCell>
+                      <TableCell align="right" sx={{ px: 2 }}>
+                        <Chip
+                          label={lic.status === 'reallocated' ? 'Reallocated' : 'Unused'}
+                          size="small"
+                          sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: lic.status === 'reallocated' ? 'rgba(52,199,89,0.10)' : 'rgba(255,59,48,0.10)', color: lic.status === 'reallocated' ? '#1A7F37' : '#FF3B30' }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={reallocatingId === lic.id && reallocateLicenseMutation.isPending ? <CircularProgress size={14} /> : <SwapHoriz fontSize="small" />}
+                          disabled={lic.status === 'reallocated' || (reallocateLicenseMutation.isPending && reallocatingId === lic.id)}
+                          sx={{ textTransform: 'none', borderRadius: 1.5, fontSize: '0.75rem' }}
+                          onClick={() => {
+                            setReallocatingId(lic.id);
+                            reallocateLicenseMutation.mutate(lic.id, {
+                              onSuccess: () => setSnackbar({ open: true, message: `Seat for ${lic.name} reallocated successfully.`, severity: 'success' }),
+                              onError: () => setSnackbar({ open: true, message: `Could not reallocate seat for ${lic.name}.`, severity: 'error' }),
+                              onSettled: () => setReallocatingId(null),
+                            });
+                          }}
+                        >
+                          Reallocate
+                        </Button>
+                      </TableCell>
                     </TableRow>
-                  ))}
+                  )))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -514,6 +581,9 @@ export default function ManagerDashboard() {
         </Box>
       )}
 
+      <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert severity={snackbar.severity} onClose={() => setSnackbar(s => ({ ...s, open: false }))} sx={{ width: '100%' }}>{snackbar.message}</Alert>
+      </Snackbar>
     </Box>
   );
 }

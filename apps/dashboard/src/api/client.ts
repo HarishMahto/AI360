@@ -84,10 +84,6 @@ export const api = {
   // Forecast
   getForecast: (params?: object) => apiClient.get('/forecast', { params }),
 
-  // Reports
-  downloadReport: (type: string, format: string, params?: object) =>
-    apiClient.get(`/reports/${type}`, { params: { format, ...params }, responseType: 'blob' }),
-
   // Section 10.2 Employee Dashboard AI Engine & Firebase
   getPromptCoach: (prompt: string, model = 'gemini-1.5-flash') => apiClient.post('/prompt/coach', { prompt, model }),
   getModelRecommendations: (currentModel = 'GPT-5 (general use)', taskType = 'Summarization') =>
@@ -101,6 +97,22 @@ export const api = {
   publishToMarketplace: (promptId: string) => apiClient.post(`/prompt/marketplace/${promptId}/publish`),
   getLearningCoachTips: () => apiClient.get('/prompt/learning-coach'),
   getSessionSummary: () => apiClient.get('/prompt/session-summary'),
+
+  // Licenses
+  getUnusedLicenses: () => apiClient.get('/finops/licenses/unused'),
+  reallocateLicense: (seatId: string) => apiClient.post(`/finops/licenses/${seatId}/reallocate`),
+  reallocateAllInactiveLicenses: () => apiClient.post('/finops/licenses/reallocate-all'),
+
+  // Reports
+  getReportsList: (scope: string) => apiClient.get('/reports', { params: { scope } }),
+  downloadReport: (type: string, format: string, params?: object) =>
+    apiClient.get(`/reports/${type}`, { params: { format, ...params }, responseType: 'blob' }),
+  generateReport: (type: string, format: string) => apiClient.post(`/reports/${type}/generate`, { format }),
+
+  // Executive actions
+  approveInitiative: (initiativeId: string, title: string) =>
+    apiClient.post('/recommendations/executive/approve', { initiative_id: initiativeId, title }),
+  enableAutoSwitching: () => apiClient.post('/recommendations/executive/enable-auto-switching'),
 
   // Health
   health: () => apiClient.get('/health'),

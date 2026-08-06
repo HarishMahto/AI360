@@ -15,11 +15,11 @@ const mockSpendData = [
 ];
 
 const mockChargebackData = [
-  { id: 1, team: 'Engineering', spend: 3200, status: 'Billed' },
-  { id: 2, team: 'Marketing', spend: 1100, status: 'Pending' },
-  { id: 3, team: 'Sales', spend: 850, status: 'Billed' },
-  { id: 4, team: 'HR', spend: 300, status: 'Billed' },
-  { id: 5, team: 'Design', spend: 350, status: 'Pending' },
+  { id: 1, team: 'Engineering', owner: 'Sarah Jenkins', spend: 3200, budget: 3840, variance: 640, status: 'Billed' },
+  { id: 2, team: 'Marketing', owner: 'Marcus Chen', spend: 1100, budget: 1320, variance: -120, status: 'Pending' },
+  { id: 3, team: 'Sales', owner: 'Elena Rodriguez', spend: 850, budget: 1020, variance: 170, status: 'Billed' },
+  { id: 4, team: 'HR', owner: 'David Kim', spend: 300, budget: 360, variance: 60, status: 'Billed' },
+  { id: 5, team: 'Design', owner: 'Anita Patel', spend: 350, budget: 420, variance: -30, status: 'Pending' },
 ];
 
 export default function AIFinOps() {
@@ -134,24 +134,30 @@ export default function AIFinOps() {
                       <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', py: 1.5 }}>Owner</TableCell>
                       <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', py: 1.5 }}>Budget</TableCell>
                       <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', py: 1.5 }}>Actual Spend</TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', py: 1.5, px: 3 }}>Variance</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', py: 1.5 }}>Variance</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', py: 1.5, px: 3 }}>Billing Status</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {chargebackData.map((row: any) => (
                       <TableRow key={row.id} sx={{ '&:hover': { bgcolor: '#F0F4F8' }, '&:last-child td': { border: 0 } }}>
                         <TableCell sx={{ fontSize: '0.8125rem', py: 1.375, px: 3, borderBottom: '1px solid rgba(31,90,166,0.09)', color: '#1A1D2E', fontWeight: 500 }}>{row.team}</TableCell>
-                        <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.09)', color: '#4B5563' }}>${row.spend.toLocaleString()}</TableCell>
+                        <TableCell sx={{ fontSize: '0.8125rem', py: 1.375, borderBottom: '1px solid rgba(31,90,166,0.09)', color: '#4B5563' }}>{row.owner}</TableCell>
+                        <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, borderBottom: '1px solid rgba(31,90,166,0.09)', color: '#4B5563' }}>${(row.budget ?? row.spend).toLocaleString()}</TableCell>
+                        <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.09)', color: '#1A1D2E', fontWeight: 600 }}>${row.spend.toLocaleString()}</TableCell>
+                        <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.09)', fontWeight: 700, color: row.variance >= 0 ? '#059669' : '#DC2626' }}>
+                          {row.variance >= 0 ? '+' : '-'}${Math.abs(row.variance).toLocaleString()}
+                        </TableCell>
                         <TableCell align="center" sx={{ py: 1.375, px: 3, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
-                          <Chip 
-                            label={row.status} 
-                            size="small" 
-                            sx={{ 
-                              height: 22, 
-                              fontSize: '10px', 
-                              fontWeight: 700, 
-                              borderRadius: '5px', 
-                              bgcolor: row.status === 'Billed' ? 'rgba(5,150,105,0.1)' : 'rgba(217,119,6,0.1)', 
+                          <Chip
+                            label={row.status}
+                            size="small"
+                            sx={{
+                              height: 22,
+                              fontSize: '10px',
+                              fontWeight: 700,
+                              borderRadius: '5px',
+                              bgcolor: row.status === 'Billed' ? 'rgba(5,150,105,0.1)' : 'rgba(217,119,6,0.1)',
                               color: row.status === 'Billed' ? '#059669' : '#D97706'
                             }}
                           />

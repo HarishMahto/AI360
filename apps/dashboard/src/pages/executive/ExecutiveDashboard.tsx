@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Box, Grid, Typography, Chip, Stack, LinearProgress, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, IconButton, Avatar, Divider, Paper, Button, Card, CardContent
+  TableHead, TableRow, IconButton, Avatar, Divider, Paper, Button, Card, CardContent, Snackbar, Alert
 } from '@mui/material';
 
 const TAB_NAME_MAP: Record<string, number> = {
@@ -17,14 +17,25 @@ import {
   TrendingUp, Groups, AttachMoney, EmojiEvents, AutoAwesome as AIIcon, MoreVert, Savings,
   Psychology, Speed, Assessment, Lightbulb, WorkspacePremium, ArrowForward, Layers, ChevronRight, ShowChart
 } from '@mui/icons-material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, LineChart, Line } from 'recharts';
-import { useExecutiveDashboard, useMaturityScore, useOLSRegression } from '../../api/hooks';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, LineChart, Line, PieChart, Pie } from 'recharts';
+import {
+  useExecutiveDashboard, useMaturityScore, useOLSRegression, useDepartmentAnalytics, useForecast,
+  useROICalculator, useApproveInitiative, useEnableAutoSwitching
+} from '../../api/hooks';
 import { MATURITY_LADDER } from '../../engines';
 
 const ACCENT_BLUE = '#0066CC';
 const SUCCESS_GREEN = '#34C759';
 const WARNING_ORANGE = '#FF9500';
 const DANGER_RED = '#FF3B30';
+
+const DEMO_SPEND_BY_PROVIDER = [
+  { name: 'OpenAI', value: 145000, color: '#10A37F' },
+  { name: 'Anthropic', value: 85000, color: '#D97757' },
+  { name: 'Google', value: 50000, color: '#4285F4' }
+];
+const PROVIDER_COLORS: Record<string, string> = { OpenAI: '#10A37F', Anthropic: '#D97757', Google: '#4285F4' };
+const PROVIDER_FALLBACK_COLORS = ['#10A37F', '#D97757', '#4285F4', '#7C3AED', '#D97706'];
 
 const DEMO_DEPT_RANKINGS = [
   { rank: 1, dept: 'Engineering', spend: '$124,000', users: 450, adoption: '94%', efficiency: 92, hoursSaved: 14200, roi: '450%', maturity: 'Stage 5 (Leader)' },
@@ -55,6 +66,8 @@ export default function ExecutiveDashboard() {
   const { data: serverData } = useExecutiveDashboard();
   const { data: maturityData } = useMaturityScore();
   const olsForecast = useOLSRegression().data!;
+  const { data: deptData } = useDepartmentAnalytics();
+  const { data: forecastApiData } = useForecast();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTabKey = searchParams.get('tab') || 'overview';
   const activeTab = TAB_NAME_MAP[currentTabKey] ?? 0;
@@ -62,8 +75,10 @@ export default function ExecutiveDashboard() {
   const maturityLadder: any[] = (maturityData as any)?.ladder || MATURITY_LADDER;
   const maturityIndex: number = (maturityData as any)?.maturity_index || 86;
   const [selectedDrilldown, setSelectedDrilldown] = useState<'spend' | 'hours' | 'rankings' | 'forecast' | 'recommendations'>('spend');
+  const [approvedRecs, setApprovedRecs] = useState(new Set<string>());
+  const [snack, setSnack] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
 
-  const stats = serverData || {
+  const stats: any = serverData || {
     total_spend_usd: 280000,
     active_users: 1240,
     roi_estimate: 420,
@@ -71,6 +86,60 @@ export default function ExecutiveDashboard() {
     total_hours_saved: 28500,
     total_cost_savings_usd: 1425000
   };
+
+  // Real fields (executive_kpis.active_users/total_users, roi_metrics.hours_saved) fall back to the
+  // legacy flat literals above so the page still renders sensibly before the backend contract lands.
+  const totalHoursSaved: number = stats.total_hours_saved ?? stats?.roi_metrics?.hours_saved ?? 28500;
+  const activeUsers: number = stats?.executive_kpis?.active_users ?? stats.active_users ?? 1240;
+  const totalUsers: number = stats?.executive_kpis?.total_users ?? stats.total_users ?? 0;
+  const adoptionPct: number = totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 88;
+
+  // Single source of truth for every ROI/net-value figure shown on this page (Overview KPI, ROI tab, FinOps tab).
+  const roi = useROICalculator(totalHoursSaved, 50, stats.total_spend_usd ?? 280000).data!;
+
+  // /analytics/department returns either a bare array or { department, rankings }; normalize once here
+  // so all 3 consumers below (overview widget, roi-spend table, rankings tab) get a real array.
+  const deptRankings: any[] = Array.isArray(deptData) ? deptData : (deptData as any)?.rankings?.length ? (deptData as any).rankings : DEMO_DEPT_RANKINGS;
+
+  const spendByProviderRaw = (stats as any)?.spend_by_provider;
+  const spendByProviderData = (Array.isArray(spendByProviderRaw) && spendByProviderRaw.length > 0 ? spendByProviderRaw : DEMO_SPEND_BY_PROVIDER)
+    .map((p: any, idx: number) => ({
+      name: p.name,
+      value: p.value,
+      color: p.color || PROVIDER_COLORS[p.name] || PROVIDER_FALLBACK_COLORS[idx % PROVIDER_FALLBACK_COLORS.length],
+    }));
+
+  const approveInitiativeMutation = useApproveInitiative();
+  const enableAutoSwitchingMutation = useEnableAutoSwitching();
+
+  const handleApproveInitiative = () => {
+    setApprovedRecs((prev) => new Set(prev).add('sales-prompts'));
+    approveInitiativeMutation.mutate(
+      { initiativeId: 'sales-prompts', title: 'Invest $50K in Sales Team Prompts' },
+      {
+        onSuccess: () => setSnack({ open: true, message: 'Initiative approved and routed for execution.', severity: 'success' }),
+        onError: () => setSnack({ open: true, message: 'Approved locally, but the server request failed.', severity: 'error' }),
+      }
+    );
+  };
+
+  const handleEnableAutoSwitching = () => {
+    setApprovedRecs((prev) => new Set(prev).add('auto-switch'));
+    enableAutoSwitchingMutation.mutate(undefined, {
+      onSuccess: () => setSnack({ open: true, message: 'Auto-switching enabled organization-wide.', severity: 'success' }),
+      onError: () => setSnack({ open: true, message: 'Enabled locally, but the server request failed.', severity: 'error' }),
+    });
+  };
+
+  // Real drill-down: KPI cards route to the roi-spend tab and set which sub-section to focus;
+  // once that tab is showing, scroll the relevant section (spend chart vs. time-saved table) into view.
+  const spendSectionRef = useRef<HTMLDivElement>(null);
+  const hoursSectionRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (activeTab !== 1) return;
+    const target = selectedDrilldown === 'hours' ? hoursSectionRef.current : selectedDrilldown === 'spend' ? spendSectionRef.current : null;
+    target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [activeTab, selectedDrilldown]);
 
   return (
     <Box className="page-enter" sx={{ px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 }, width: '100%', bgcolor: '#F0F5F3', minHeight: '100vh', overflow: 'hidden' }}>
@@ -137,9 +206,9 @@ export default function ExecutiveDashboard() {
                 </Box>
               </Box>
               <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: SUCCESS_GREEN, fontVariantNumeric: 'tabular-nums' }}>
-                {stats.roi_estimate}% ROI
+                {roi.netROIPercentage}% ROI
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: SUCCESS_GREEN, mt: 0.5 }}>$1.42M Net Value</Typography>
+              <Typography sx={{ fontSize: '0.75rem', color: SUCCESS_GREEN, mt: 0.5 }}>${(roi.businessValueGenerated / 1_000_000).toFixed(2)}M Net Value</Typography>
             </CardContent>
           </Card>
 
@@ -154,9 +223,9 @@ export default function ExecutiveDashboard() {
                 </Box>
               </Box>
               <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
-                28,500h
+                {totalHoursSaved.toLocaleString()}h
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>Equivalent to 3,560 days</Typography>
+              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>Equivalent to {Math.round(totalHoursSaved / 8).toLocaleString()} days</Typography>
             </CardContent>
           </Card>
 
@@ -171,9 +240,9 @@ export default function ExecutiveDashboard() {
                 </Box>
               </Box>
               <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
-                1,240
+                {activeUsers.toLocaleString()}
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>88% org adoption</Typography>
+              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>{adoptionPct}% org adoption</Typography>
             </CardContent>
           </Card>
 
@@ -209,7 +278,7 @@ export default function ExecutiveDashboard() {
                     </Box>
                     <Box sx={{ height: 320, width: '100%' }}>
                       <ResponsiveContainer>
-                        <AreaChart data={DEMO_TREND_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <AreaChart data={stats?.spendTrend || DEMO_TREND_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                           <defs>
                             <linearGradient id="valCreatedGrad" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="5%" stopColor={SUCCESS_GREEN} stopOpacity={0.2} />
@@ -243,21 +312,25 @@ export default function ExecutiveDashboard() {
                     <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mb: 3 }}>Ranked by adoption & efficiency</Typography>
 
                     <Stack spacing={2}>
-                      {DEMO_DEPT_RANKINGS.slice(0, 4).map((d) => (
-                        <Box key={d.rank} sx={{ p: 2, borderRadius: 2, border: '1px solid rgba(0,0,0,0.06)', bgcolor: '#F5F5F7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Stack direction="row" spacing={2} alignItems="center">
-                            <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#AEAEB2', width: 20 }}>{d.rank}</Typography>
-                            <Box>
-                              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>{d.dept}</Typography>
-                              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{d.users} Users • {d.adoption} Adoption</Typography>
+                      {deptRankings.slice(0, 4).map((d: any, idx: number) => {
+                        const rank = d.rank ?? idx + 1;
+                        const adoptionLabel = d.adoption ?? (typeof d.adoption_pct === 'number' ? `${d.adoption_pct}%` : '—');
+                        return (
+                          <Box key={d.dept || rank} sx={{ p: 2, borderRadius: 2, border: '1px solid rgba(0,0,0,0.06)', bgcolor: '#F5F5F7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Stack direction="row" spacing={2} alignItems="center">
+                              <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#AEAEB2', width: 20 }}>{rank}</Typography>
+                              <Box>
+                                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>{d.dept}</Typography>
+                                <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{d.users} Users • {adoptionLabel} Adoption</Typography>
+                              </Box>
+                            </Stack>
+                            <Box sx={{ textAlign: 'right' }}>
+                              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: SUCCESS_GREEN }}>{d.roi ?? '—'} ROI</Typography>
+                              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{(d.hoursSaved ?? 0).toLocaleString()}h</Typography>
                             </Box>
-                          </Stack>
-                          <Box sx={{ textAlign: 'right' }}>
-                            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: SUCCESS_GREEN }}>{d.roi} ROI</Typography>
-                            <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{d.hoursSaved.toLocaleString()}h</Typography>
                           </Box>
-                        </Box>
-                      ))}
+                        );
+                      })}
                     </Stack>
                   </CardContent>
                 </Card>
@@ -270,7 +343,7 @@ export default function ExecutiveDashboard() {
                     <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mb: 3 }}>Projected future AI spend</Typography>
                     <Box sx={{ height: 320 }}>
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={DEMO_FORECAST_DATA} margin={{ left: -20, bottom: 0 }}>
+                        <BarChart data={forecastApiData?.forecastData || DEMO_FORECAST_DATA} margin={{ left: -20, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAEAEA" />
                           <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} dy={10} />
                           <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} tickFormatter={(val) => `$${val/1000}k`} />
@@ -325,15 +398,51 @@ export default function ExecutiveDashboard() {
                   <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
                     <CardContent sx={{ p: 4 }}>
                       <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>TOTAL ORG ROI</Typography>
-                      <Typography sx={{ fontSize: '3rem', fontWeight: 700, letterSpacing: '-0.03em', color: SUCCESS_GREEN, my: 1 }}>420%</Typography>
+                      <Typography sx={{ fontSize: '3rem', fontWeight: 700, letterSpacing: '-0.03em', color: SUCCESS_GREEN, my: 1 }}>{roi.netROIPercentage}%</Typography>
                       <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', lineHeight: 1.6 }}>
-                        For every $1.00 spent on AI API access, the organization generates $4.20 in equivalent manual developer & analyst time saved.
+                        For every $1.00 spent on AI API access, the organization generates ${(roi.businessValueGenerated / (roi.aiCostIncurred || 1)).toFixed(2)} in equivalent manual developer & analyst time saved.
                       </Typography>
                     </CardContent>
                   </Card>
                 </Box>
 
-                <Box sx={{ width: '100%' }}>
+                <Box ref={spendSectionRef} sx={{ width: '100%' }}>
+                  <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Provider-Level Spend Breakdown</Typography>
+                      <Box sx={{ height: 200, width: '100%' }}>
+                        <ResponsiveContainer>
+                          <PieChart>
+                            <Pie
+                              data={spendByProviderData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={60}
+                              outerRadius={80}
+                              paddingAngle={5}
+                              dataKey="value"
+                            >
+                              {spendByProviderData.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }} formatter={(value: number) => `$${(value / 1000).toFixed(0)}k`} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </Box>
+                      <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap" mt={2}>
+                        {spendByProviderData.map((entry: any) => (
+                          <Box key={entry.name} sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: entry.color, mr: 1 }} />
+                            <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{entry.name}</Typography>
+                          </Box>
+                        ))}
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Box>
+
+                <Box ref={hoursSectionRef} sx={{ width: '100%', gridColumn: { md: '1 / -1' } }}>
                   <TableContainer component={Paper} elevation={0} sx={{ minHeight: 400, borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', width: '100%' }}>
                     <Table sx={{ width: '100%' }}>
                       <TableHead>
@@ -346,13 +455,13 @@ export default function ExecutiveDashboard() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {DEMO_DEPT_RANKINGS.map((row) => (
+                        {deptRankings.map((row: any) => (
                           <TableRow key={row.dept} sx={{ '&:hover': { bgcolor: '#F5F5F7' }, '&:last-child td': { border: 0 } }}>
                             <TableCell sx={{ fontSize: '0.8125rem', fontWeight: 500, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{row.dept}</TableCell>
-                            <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{row.spend}</TableCell>
-                            <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{row.hoursSaved.toLocaleString()}h</TableCell>
-                            <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: SUCCESS_GREEN, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>${(row.hoursSaved * 50).toLocaleString()}</TableCell>
-                            <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: ACCENT_BLUE, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{row.roi}</TableCell>
+                            <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{row.spend ?? '—'}</TableCell>
+                            <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{(row.hoursSaved ?? 0).toLocaleString()}h</TableCell>
+                            <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: SUCCESS_GREEN, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>${((row.hoursSaved ?? 0) * 50).toLocaleString()}</TableCell>
+                            <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: ACCENT_BLUE, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{row.roi ?? '—'}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -383,27 +492,32 @@ export default function ExecutiveDashboard() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {DEMO_DEPT_RANKINGS.map((d) => (
-                      <TableRow key={d.rank} sx={{ '&:hover': { bgcolor: '#F5F5F7' }, '&:last-child td': { border: 0 } }}>
-                        <TableCell sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                          <Stack direction="row" spacing={2} alignItems="center">
-                            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#AEAEB2', width: 20 }}>{d.rank}</Typography>
-                            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{d.dept}</Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{d.users}</TableCell>
-                        <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                          <Chip label={d.adoption} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE }} />
-                        </TableCell>
-                        <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                          <Chip label={`${d.efficiency}/100`} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(52,199,89,0.10)', color: '#1A7F37' }} />
-                        </TableCell>
-                        <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                          <Chip label={d.maturity} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: '#EAEAEA', color: '#1D1D1F' }} />
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: SUCCESS_GREEN, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{d.roi}</TableCell>
-                      </TableRow>
-                    ))}
+                    {deptRankings.map((d: any, idx: number) => {
+                      const rank = d.rank ?? idx + 1;
+                      const adoptionLabel = d.adoption ?? (typeof d.adoption_pct === 'number' ? `${d.adoption_pct}%` : '—');
+                      const maturityLabel = d.maturity_stage ?? d.maturity ?? '—';
+                      return (
+                        <TableRow key={d.dept || rank} sx={{ '&:hover': { bgcolor: '#F5F5F7' }, '&:last-child td': { border: 0 } }}>
+                          <TableCell sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                            <Stack direction="row" spacing={2} alignItems="center">
+                              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#AEAEB2', width: 20 }}>{rank}</Typography>
+                              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{d.dept}</Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{d.users}</TableCell>
+                          <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                            <Chip label={adoptionLabel} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE }} />
+                          </TableCell>
+                          <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                            <Chip label={`${d.efficiency}/100`} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(52,199,89,0.10)', color: '#1A7F37' }} />
+                          </TableCell>
+                          <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                            <Chip label={maturityLabel} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: '#EAEAEA', color: '#1D1D1F' }} />
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: SUCCESS_GREEN, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{d.roi ?? '—'}</TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -424,7 +538,7 @@ export default function ExecutiveDashboard() {
                       <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 3 }}>Quarterly Budget Projection (2026)</Typography>
                       <Box sx={{ flexGrow: 1, minHeight: 0, width: '100%' }}>
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={DEMO_FORECAST_DATA} margin={{ left: -20, bottom: 0 }}>
+                          <BarChart data={forecastApiData?.forecastData || DEMO_FORECAST_DATA} margin={{ left: -20, bottom: 0 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAEAEA" />
                             <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} dy={10} />
                             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} tickFormatter={(val) => `$${val/1000}k`} />
@@ -482,7 +596,9 @@ export default function ExecutiveDashboard() {
                         <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', my: 1.5, lineHeight: 1.5 }}>
                           Sales team adoption is currently at 65% (vs 94% in Engineering). Investing $50K in targeted prompt templates and sales enablement coaching will lift adoption to 88%, adding an estimated $320,000 in accelerated deal closure velocity.
                         </Typography>
-                        <Button variant="contained" size="small" disableElevation sx={{ bgcolor: ACCENT_BLUE, textTransform: 'none', borderRadius: 2 }}>Approve $50K Initiative</Button>
+                        <Button variant="contained" size="small" disableElevation sx={{ bgcolor: ACCENT_BLUE, textTransform: 'none', borderRadius: 2 }} onClick={handleApproveInitiative}>
+                          {approvedRecs.has('sales-prompts') ? 'Approved!' : 'Approve $50K Initiative'}
+                        </Button>
                       </Box>
                     </Stack>
                   </CardContent>
@@ -499,7 +615,9 @@ export default function ExecutiveDashboard() {
                         <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', my: 1.5, lineHeight: 1.5 }}>
                           Currently, 40% of document summarization requests use high-cost models. Enforcing auto-switch to faster models for summarization tasks will reduce annual API spend by $35,000.
                         </Typography>
-                        <Button variant="outlined" size="small" sx={{ borderColor: 'rgba(0,0,0,0.12)', color: '#1D1D1F', textTransform: 'none', borderRadius: 2 }}>Enable Auto-Switching</Button>
+                        <Button variant="outlined" size="small" sx={{ borderColor: 'rgba(0,0,0,0.12)', color: '#1D1D1F', textTransform: 'none', borderRadius: 2 }} onClick={handleEnableAutoSwitching}>
+                          {approvedRecs.has('auto-switch') ? 'Enabled!' : 'Enable Auto-Switching'}
+                        </Button>
                       </Box>
                     </Stack>
                   </CardContent>
@@ -532,19 +650,19 @@ export default function ExecutiveDashboard() {
                   <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(4, 1fr)' }, gap: 2, width: '100%' }}>
                     <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#FAFAFA', border: '1px solid rgba(0,0,0,0.04)', width: '100%' }}>
                       <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', textTransform: 'uppercase' }}>Hours Saved</Typography>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F', mt: 0.5 }}>28,500 hrs</Typography>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F', mt: 0.5 }}>{roi.hoursSaved.toLocaleString()} hrs</Typography>
                     </Box>
                     <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#FAFAFA', border: '1px solid rgba(0,0,0,0.04)', width: '100%' }}>
                       <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', textTransform: 'uppercase' }}>Hourly Rate</Typography>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F', mt: 0.5 }}>$50.00 / hr</Typography>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F', mt: 0.5 }}>${roi.hourlyCostRate.toFixed(2)} / hr</Typography>
                     </Box>
                     <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(52,199,89,0.04)', border: '1px solid rgba(52,199,89,0.1)', width: '100%' }}>
                       <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: SUCCESS_GREEN, textTransform: 'uppercase' }}>Value Generated</Typography>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: SUCCESS_GREEN, mt: 0.5 }}>$1,425,000</Typography>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: SUCCESS_GREEN, mt: 0.5 }}>${roi.businessValueGenerated.toLocaleString()}</Typography>
                     </Box>
                     <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(0,102,204,0.04)', border: '1px solid rgba(0,102,204,0.1)', width: '100%' }}>
                       <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: ACCENT_BLUE, textTransform: 'uppercase' }}>Net ROI</Typography>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: ACCENT_BLUE, mt: 0.5 }}>409%</Typography>
+                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: ACCENT_BLUE, mt: 0.5 }}>{roi.netROIPercentage}%</Typography>
                     </Box>
                   </Box>
                 </CardContent>
@@ -590,6 +708,11 @@ export default function ExecutiveDashboard() {
             </Box>
           )}
         </Box>
+        <Snackbar open={snack.open} autoHideDuration={6000} onClose={() => setSnack({ ...snack, open: false })}>
+          <Alert onClose={() => setSnack({ ...snack, open: false })} severity={snack.severity} sx={{ width: '100%' }}>
+            {snack.message}
+          </Alert>
+        </Snackbar>
       </Box>
   );
 }

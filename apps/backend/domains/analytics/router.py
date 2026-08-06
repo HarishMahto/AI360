@@ -105,11 +105,12 @@ async def get_employee_analytics(
 @router.get("/analytics/team", summary="Get team-level telemetry and usage distributions")
 async def get_team_analytics(
     team_id: str = "engineering_team",
+    period: str = "30d",
     current_user: CurrentUser = Depends(get_current_user),
     db = Depends(get_firestore)
 ):
     service = AnalyticsService(db)
-    return {"data": service.get_granular_team_analytics(team_id)}
+    return {"data": service.get_granular_team_analytics(team_id, period)}
 
 
 @router.get("/analytics/department", summary="Get department rankings and efficiency metrics")

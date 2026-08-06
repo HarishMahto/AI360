@@ -11,11 +11,11 @@ const WARNING_ORANGE = '#D97706';
 const DANGER_RED = '#DC2626';
 
 const defaultMockData = [
-  { dept: 'Engineering', efficiency: 95, users: 120 },
-  { dept: 'Marketing', efficiency: 88, users: 45 },
-  { dept: 'Sales', efficiency: 82, users: 80 },
-  { dept: 'HR', efficiency: 75, users: 20 },
-  { dept: 'Support', efficiency: 91, users: 150 },
+  { dept: 'Engineering', efficiency: 95, users: 120, maturity: 'Stage 5 (Leader)' },
+  { dept: 'Marketing', efficiency: 88, users: 45, maturity: 'Stage 4 (Advanced)' },
+  { dept: 'Sales', efficiency: 82, users: 80, maturity: 'Stage 3 (Developing)' },
+  { dept: 'HR', efficiency: 75, users: 20, maturity: 'Stage 3 (Developing)' },
+  { dept: 'Support', efficiency: 91, users: 150, maturity: 'Stage 4 (Advanced)' },
 ];
 
 export default function DeptRankings() {
@@ -74,6 +74,7 @@ export default function DeptRankings() {
                 <TableCell sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5 }}>Department</TableCell>
                 <TableCell sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5 }}>Active Users</TableCell>
                 <TableCell sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5 }}>Efficiency Score</TableCell>
+                <TableCell sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5 }}>Maturity Stage</TableCell>
                 <TableCell sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', borderBottom: '1px solid rgba(31,90,166,0.09)', py: 1.5 }}>Status</TableCell>
               </TableRow>
             </TableHead>
@@ -93,7 +94,14 @@ export default function DeptRankings() {
                     <TableCell sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>{row.users || 0}</TableCell>
                     <TableCell sx={{ fontSize: '0.8125rem', fontWeight: 600, py: 1.5, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>{eff}/100</TableCell>
                     <TableCell sx={{ py: 1.5, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
-                      <Chip 
+                      <Chip
+                        label={row.maturity_stage ?? row.maturity ?? '—'}
+                        size="small"
+                        sx={{ height: 22, fontSize: '10px', fontWeight: 700, borderRadius: '5px', bgcolor: '#F0F4F8', color: '#1A1D2E' }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5, borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
+                      <Chip
                         label={statusChip.label}
                         size="small"
                         sx={{ 
