@@ -30,7 +30,7 @@ export const QueryKeys = {
 export function useEmployeeDashboard() {
   return useQuery({
     queryKey: QueryKeys.employeeDashboard,
-    queryFn: () => api.getEmployeeDashboard().then((r) => r.data).catch(() => null),
+    queryFn: () => api.getEmployeeDashboard().then((r) => r.data),
     staleTime: 60_000,
     retry: false,
   });
@@ -39,7 +39,7 @@ export function useEmployeeDashboard() {
 export function useManagerDashboard() {
   return useQuery({
     queryKey: QueryKeys.managerDashboard,
-    queryFn: () => api.getManagerDashboard().then((r) => r.data).catch(() => null),
+    queryFn: () => api.getManagerDashboard().then((r) => r.data),
     staleTime: 60_000,
     retry: false,
   });
@@ -48,7 +48,7 @@ export function useManagerDashboard() {
 export function useExecutiveDashboard() {
   return useQuery({
     queryKey: QueryKeys.executiveDashboard,
-    queryFn: () => api.getExecutiveDashboard().then((r) => r.data).catch(() => null),
+    queryFn: () => api.getExecutiveDashboard().then((r) => r.data),
     staleTime: 2 * 60_000,
     retry: false,
   });
@@ -57,7 +57,7 @@ export function useExecutiveDashboard() {
 export function useAdminDashboard() {
   return useQuery({
     queryKey: ['dashboard', 'admin'] as const,
-    queryFn: () => api.getExecutiveDashboard().then((r) => r.data).catch(() => null),
+    queryFn: () => api.getExecutiveDashboard().then((r) => r.data),
     staleTime: 2 * 60_000,
     retry: false,
   });
@@ -68,7 +68,7 @@ export function useAdminDashboard() {
 export function useChatHistory(params?: { page?: number; pageSize?: number; category?: string }) {
   return useQuery({
     queryKey: QueryKeys.chatHistory(params),
-    queryFn: () => api.getChatHistory(params).then((r) => r.data).catch(() => null),
+    queryFn: () => api.getChatHistory(params).then((r) => r.data),
     staleTime: 30_000,
     retry: false,
   });
@@ -111,7 +111,7 @@ export function useClassifyPrompt() {
 export function useEmployeeAnalytics(params?: { period?: '7d' | '30d' | '90d' }) {
   return useQuery({
     queryKey: QueryKeys.employeeAnalytics(params),
-    queryFn: () => api.getEmployeeAnalytics(params).then((r) => r.data.data).catch(() => null),
+    queryFn: () => api.getEmployeeAnalytics(params).then((r) => r.data.data),
     staleTime: 5 * 60_000,
     retry: false,
   });
@@ -120,7 +120,7 @@ export function useEmployeeAnalytics(params?: { period?: '7d' | '30d' | '90d' })
 export function useTeamAnalytics(params?: object) {
   return useQuery({
     queryKey: QueryKeys.teamAnalytics(params),
-    queryFn: () => api.getTeamAnalytics(params).then((r) => r.data.data).catch(() => null),
+    queryFn: () => api.getTeamAnalytics(params).then((r) => r.data.data),
     staleTime: 5 * 60_000,
     retry: false,
   });
@@ -129,7 +129,7 @@ export function useTeamAnalytics(params?: object) {
 export function useDepartmentAnalytics(params?: object) {
   return useQuery({
     queryKey: QueryKeys.departmentAnalytics(params),
-    queryFn: () => api.getDepartmentAnalytics(params).then((r) => r.data.data).catch(() => null),
+    queryFn: () => api.getDepartmentAnalytics(params).then((r) => r.data.data),
     staleTime: 5 * 60_000,
     retry: false,
   });
@@ -138,7 +138,7 @@ export function useDepartmentAnalytics(params?: object) {
 export function useOrgAnalytics(params?: object) {
   return useQuery({
     queryKey: QueryKeys.orgAnalytics(params),
-    queryFn: () => api.getOrgAnalytics(params).then((r) => r.data.data).catch(() => null),
+    queryFn: () => api.getOrgAnalytics(params).then((r) => r.data.data),
     staleTime: 5 * 60_000,
     retry: false,
   });
@@ -149,7 +149,7 @@ export function useOrgAnalytics(params?: object) {
 export function useRecommendations() {
   return useQuery({
     queryKey: QueryKeys.recommendations,
-    queryFn: () => api.getRecommendations().then((r) => r.data.data).catch(() => null),
+    queryFn: () => api.getRecommendations().then((r) => r.data.data),
     staleTime: 10 * 60_000,
     retry: false,
   });
@@ -158,7 +158,7 @@ export function useRecommendations() {
 export function useForecast(params?: { period?: '7d' | '30d' | '90d' }) {
   return useQuery({
     queryKey: QueryKeys.forecast(params),
-    queryFn: () => api.getForecast(params).then((r) => r.data.data).catch(() => null),
+    queryFn: () => api.getForecast(params).then((r) => r.data.data),
     staleTime: 60 * 60_000,
     retry: false,
   });
@@ -169,20 +169,18 @@ export function useForecast(params?: { period?: '7d' | '30d' | '90d' }) {
 export function useCostAdvisor() {
   return useQuery({
     queryKey: ['finops', 'costAdvisor'] as const,
-    queryFn: () => api.getCostAdvisor().then((r) => r.data).catch(() => MORNING_COST_ADVISOR),
+    queryFn: () => api.getCostAdvisor().then((r) => r.data),
     staleTime: 5 * 60_000,
     retry: false,
-    initialData: MORNING_COST_ADVISOR,
   });
 }
 
 export function useTeamBenchmarks() {
   return useQuery({
     queryKey: ['analytics', 'teamBenchmarks'] as const,
-    queryFn: () => api.getTeamBenchmarks().then((r) => r.data).catch(() => TEAM_BENCHMARKS),
+    queryFn: () => api.getTeamBenchmarks().then((r) => r.data),
     staleTime: 5 * 60_000,
     retry: false,
-    initialData: TEAM_BENCHMARKS,
   });
 }
 
@@ -190,20 +188,9 @@ export function useMaturityScore() {
   return useQuery({
     queryKey: ['analytics', 'maturityScore'] as const,
     queryFn: () =>
-      api.getMaturityScore().then((r) => r.data).catch(() => ({
-        current_level: 4,
-        current_level_name: 'AI Native',
-        maturity_index: 86,
-        ladder: MATURITY_LADDER,
-      })),
+      api.getMaturityScore().then((r) => r.data),
     staleTime: 5 * 60_000,
     retry: false,
-    initialData: {
-      current_level: 4,
-      current_level_name: 'AI Native',
-      maturity_index: 86,
-      ladder: MATURITY_LADDER,
-    },
   });
 }
 
@@ -228,10 +215,9 @@ export function useLeaderboards() {
           'Most Improved': data.most_improved.map((u: any) => ({ ...u, scoreOrMetric: u.score_or_metric, badgeTitle: u.badge_title, avatarBg: u.avatar_bg, changeStatus: u.change_status })),
           'Most Efficient': data.most_efficient.map((u: any) => ({ ...u, scoreOrMetric: u.score_or_metric, badgeTitle: u.badge_title, avatarBg: u.avatar_bg, changeStatus: u.change_status })),
         };
-      }).catch(() => LEADERBOARD_RANKINGS),
+      }),
     staleTime: 5 * 60_000,
     retry: false,
-    initialData: LEADERBOARD_RANKINGS,
   });
 }
 
@@ -250,10 +236,9 @@ export function useROICalculator(hoursSaved = 1250, hourlyCostRate = 60, aiCostI
           netROIPercentage: data.net_roi_percentage,
           formulaString: data.formula_string,
         };
-      }).catch(() => calculateROI(hoursSaved, hourlyCostRate, aiCostIncurred)),
+      }),
     staleTime: 5 * 60_000,
     retry: false,
-    initialData: calculateROI(hoursSaved, hourlyCostRate, aiCostIncurred),
   });
 }
 
@@ -276,10 +261,9 @@ export function useOLSRegression(historicalCosts: number[] = [1200, 1450, 1580, 
           })),
           roadmapNote: data.roadmap_note,
         };
-      }).catch(() => generateOLSForecast(historicalCosts)),
+      }),
     staleTime: 10 * 60_000,
     retry: false,
-    initialData: generateOLSForecast(historicalCosts),
   });
 }
 
@@ -295,10 +279,9 @@ export function useSmartSuggestions(department = 'Engineering') {
           learningRecommendations: d.learning_recommendations.map((l: any) => ({ course: l.course, skillTarget: l.skill_target, duration: l.duration })),
           departmentRecommendations: d.department_recommendations.map((dep: any) => ({ targetTeam: dep.target_team, advice: dep.advice, projectedImpact: dep.projected_impact })),
         };
-      }).catch(() => getSmartRecommendations(department)),
+      }),
     staleTime: 5 * 60_000,
     retry: false,
-    initialData: getSmartRecommendations(department),
   });
 }
 
@@ -315,7 +298,7 @@ export function useModelRouting() {
           latencyMs: d.latency_ms,
           costSavingsPercent: d.cost_savings_percent,
         };
-      }).catch(() => getModelRecommendation(taskOrPrompt)),
+      }),
   });
 }
 
@@ -357,10 +340,9 @@ export function usePromptCoach(prompt = 'Write Java API', model = 'gemini-1.5-fl
             savingsLabel: d.token_optimizer.savings_label,
           },
         };
-      }).catch(() => fallbackPromptCoach(prompt)),
+      }),
     staleTime: 60_000,
     retry: false,
-    initialData: fallbackPromptCoach(prompt),
   });
 }
 
@@ -382,10 +364,9 @@ export function useModelRecommendations(currentModel = 'GPT-5 (general use)', ta
           targetModel: item.target_model,
           isReversible: item.is_reversible,
         }))
-      ).catch(() => fallbackModelRecommendations()),
+      ),
     staleTime: 5 * 60_000,
     retry: false,
-    initialData: fallbackModelRecommendations(),
   });
 }
 
@@ -412,18 +393,9 @@ export function usePromptHistory(query?: string, favoriteOnly = false) {
           hoursSaved: item.hours_saved,
           createdAt: item.created_at,
         }))
-      ).catch(() => {
-        let items = fallbackPromptHistory();
-        if (favoriteOnly) items = items.filter((i) => i.isFavorite);
-        if (query && query.trim()) {
-          const q = query.toLowerCase();
-          items = items.filter((i) => i.title.toLowerCase().includes(q) || i.promptText.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
-        }
-        return items;
-      }),
+      ),
     staleTime: 30_000,
     retry: false,
-    initialData: fallbackPromptHistory(),
   });
 }
 
@@ -451,14 +423,9 @@ export function usePromptMarketplace(category?: string) {
           description: item.description,
           promptTemplate: item.prompt_template,
         }))
-      ).catch(() => {
-        const list = fallbackMarketplace();
-        if (category && category !== 'ALL') return list.filter((x) => x.category.toUpperCase() === category.toUpperCase());
-        return list;
-      }),
+      ),
     staleTime: 2 * 60_000,
     retry: false,
-    initialData: fallbackMarketplace(),
   });
 }
 
@@ -483,10 +450,9 @@ export function useLearningCoachTips() {
           scoreTrajectory: d.score_trajectory,
           tips: d.tips.map((t: any) => ({ tip: t.tip, description: t.description, targetWeakness: t.target_weakness })),
         };
-      }).catch(() => fallbackLearningCoach()),
+      }),
     staleTime: 5 * 60_000,
     retry: false,
-    initialData: fallbackLearningCoach(),
   });
 }
 
@@ -506,10 +472,9 @@ export function useSessionSummary() {
         return {
           snapshots: d.snapshots.map((s: any) => ({ period: s.period, prompts: s.prompts, tokens: s.tokens, cost: s.cost, hoursSaved: s.hours_saved })),
         };
-      }).catch(() => fallbackSessionSummary()),
+      }),
     staleTime: 60_000,
     retry: false,
-    initialData: fallbackSessionSummary(),
   });
 }
 
@@ -540,7 +505,7 @@ export function useSaveThenPublishPrompt() {
 export function useUnusedLicenses() {
   return useQuery({
     queryKey: ['finops', 'unusedLicenses'] as const,
-    queryFn: () => api.getUnusedLicenses().then((r) => r.data).catch(() => null),
+    queryFn: () => api.getUnusedLicenses().then((r) => r.data),
     staleTime: 60_000,
     retry: false,
   });
@@ -567,7 +532,7 @@ export function useReallocateAllInactiveLicenses() {
 export function useReportsList(scope: string) {
   return useQuery({
     queryKey: ['reports', 'list', scope] as const,
-    queryFn: () => api.getReportsList(scope).then((r) => r.data).catch(() => null),
+    queryFn: () => api.getReportsList(scope).then((r) => r.data),
     staleTime: 60_000,
     retry: false,
   });

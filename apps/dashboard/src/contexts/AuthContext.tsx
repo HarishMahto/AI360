@@ -120,9 +120,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
       localStorage.setItem('ai360_token', access_token);
-    } catch {
-      // Fallback for seamless offline/demo operation
-      loginAsDemoUser(fallbackRole);
+    } catch (err) {
+      throw err;
     }
   };
 
@@ -138,46 +137,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithEmail = async (email: string, password: string, selectedRole: UserRole = 'EMPLOYEE') => {
-    const lowerEmail = email.toLowerCase().trim();
-    if (lowerEmail.includes('employee')) {
-      loginAsDemoUser('EMPLOYEE');
-      return;
-    } else if (lowerEmail.includes('manager')) {
-      loginAsDemoUser('MANAGER');
-      return;
-    } else if (lowerEmail.includes('exec') || lowerEmail.includes('executive')) {
-      loginAsDemoUser('EXECUTIVE');
-      return;
-    } else if (lowerEmail.includes('admin')) {
-      loginAsDemoUser('ADMIN');
-      return;
-    }
-
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      await exchangeToken(cred.user, selectedRole);
-    } catch {
-      // Fallback to chosen role
-      loginAsDemoUser(selectedRole);
-    }
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    await exchangeToken(cred.user, selectedRole);
   };
 
   const signUpWithEmail = async (email: string, password: string, selectedRole: UserRole = 'EMPLOYEE') => {
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      await exchangeToken(cred.user, selectedRole);
-    } catch {
-      loginAsDemoUser(selectedRole);
-    }
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await exchangeToken(cred.user, selectedRole);
   };
 
   const signInWithGoogle = async (selectedRole: UserRole = 'EMPLOYEE') => {
-    try {
-      const cred = await signInWithPopup(auth, googleProvider);
-      await exchangeToken(cred.user, selectedRole);
-    } catch {
-      loginAsDemoUser(selectedRole);
-    }
+    const cred = await signInWithPopup(auth, googleProvider);
+    await exchangeToken(cred.user, selectedRole);
   };
 
   const signOut = async () => {
