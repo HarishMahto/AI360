@@ -5,10 +5,24 @@
   },
   "hosting": {
     "public": "apps/dashboard/dist",
+    "predeploy": [
+      "npm run build:dashboard"
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "headers": [
+      {
+        "source": "**/index.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=0, no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
     ],
     "rewrites": [
       {

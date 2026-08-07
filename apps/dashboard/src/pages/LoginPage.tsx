@@ -93,10 +93,103 @@ export default function LoginPage() {
         justifyContent: 'center',
         position: 'relative',
         overflow: 'hidden',
-        background: 'linear-gradient(180deg, #A8DAFF 0%, #C4E6FF 35%, #E2F2FF 70%, #F4F9FF 100%)',
+        background: 'linear-gradient(180deg, #93C5FD 0%, #BFDBFE 30%, #DBEAFE 65%, #EFF6FF 100%)',
         p: 2,
       }}
     >
+      {/* Animated Glowing Gradient Orbs */}
+      <Box
+        component={motion.div}
+        animate={{
+          x: [0, 50, -30, 0],
+          y: [0, -40, 40, 0],
+          scale: [1, 1.25, 0.9, 1],
+        }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        sx={{
+          position: 'absolute',
+          top: '-10%',
+          left: '10%',
+          width: 500,
+          height: 500,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(99, 102, 241, 0) 70%)',
+          filter: 'blur(70px)',
+          pointerEvents: 'none',
+        }}
+      />
+      <Box
+        component={motion.div}
+        animate={{
+          x: [0, -60, 40, 0],
+          y: [0, 50, -30, 0],
+          scale: [1, 1.2, 0.95, 1],
+        }}
+        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+        sx={{
+          position: 'absolute',
+          bottom: '5%',
+          right: '5%',
+          width: 550,
+          height: 550,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(56, 189, 248, 0) 70%)',
+          filter: 'blur(80px)',
+          pointerEvents: 'none',
+        }}
+      />
+      <Box
+        component={motion.div}
+        animate={{
+          x: [0, 40, -50, 0],
+          y: [0, -30, 30, 0],
+          scale: [0.9, 1.15, 1, 0.9],
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+        sx={{
+          position: 'absolute',
+          top: '25%',
+          right: '20%',
+          width: 400,
+          height: 400,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, rgba(168, 85, 247, 0) 70%)',
+          filter: 'blur(65px)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Floating Glowing AI Particles */}
+      {Array.from({ length: 14 }).map((_, i) => (
+        <Box
+          key={i}
+          component={motion.div}
+          animate={{
+            y: [0, -35 - (i % 4) * 12, 0],
+            x: [0, (i % 2 === 0 ? 25 : -25), 0],
+            opacity: [0.2 + (i % 5) * 0.12, 0.8, 0.2 + (i % 5) * 0.12],
+            scale: [1, 1.35, 1],
+          }}
+          transition={{
+            duration: 4.5 + (i % 5) * 1.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: i * 0.35,
+          }}
+          sx={{
+            position: 'absolute',
+            top: `${12 + (i * 7) % 75}%`,
+            left: `${8 + (i * 7.5) % 84}%`,
+            width: 6 + (i % 3) * 4,
+            height: 6 + (i % 3) * 4,
+            borderRadius: '50%',
+            bgcolor: i % 3 === 0 ? '#2563EB' : i % 3 === 1 ? '#7C3AED' : '#0284C7',
+            boxShadow: i % 3 === 0 ? '0 0 14px rgba(37, 99, 235, 0.8)' : i % 3 === 1 ? '0 0 14px rgba(124, 58, 237, 0.8)' : '0 0 14px rgba(2, 132, 199, 0.8)',
+            pointerEvents: 'none',
+          }}
+        />
+      ))}
+
       {/* Background Radial Light Effect */}
       <Box
         sx={{
@@ -111,7 +204,7 @@ export default function LoginPage() {
         }}
       />
 
-      {/* Bottom Background Soft Clouds Graphic */}
+      {/* Bottom Background Animated Soft Clouds Wave */}
       <Box
         sx={{
           position: 'absolute',
@@ -119,29 +212,44 @@ export default function LoginPage() {
           left: 0,
           right: 0,
           width: '100%',
-          height: { xs: 120, sm: 160, md: 200 },
+          height: { xs: '26vh', sm: '32vh', md: '38vh', lg: '44vh' },
+          maxHeight: 420,
+          minHeight: 180,
           pointerEvents: 'none',
           zIndex: 0,
           overflow: 'hidden',
         }}
       >
-        <svg viewBox="0 0 1440 220" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%', display: 'block' }}>
-          {/* Back cloud layer */}
-          <path
-            d="M0,150 C180,110 380,130 540,90 C700,50 900,85 1060,65 C1220,45 1360,100 1440,110 L1440,220 L0,220 Z"
-            fill="rgba(255, 255, 255, 0.45)"
-          />
-          {/* Mid cloud layer */}
-          <path
-            d="M-50,165 C140,120 300,105 470,125 C640,145 820,95 1000,105 C1180,115 1340,75 1490,130 L1490,220 L-50,220 Z"
-            fill="rgba(255, 255, 255, 0.75)"
-          />
-          {/* Foreground cloud layer */}
-          <path
-            d="M0,185 C200,135 350,155 560,125 C770,95 920,135 1120,115 C1320,95 1400,145 1440,155 L1440,220 L0,220 Z"
-            fill="#FFFFFF"
-          />
-        </svg>
+        <Box
+          component={motion.div}
+          animate={{ x: [0, -35, 0] }}
+          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+          sx={{ width: '110%', height: '100%', ml: '-5%' }}
+        >
+          <svg
+            viewBox="0 0 1440 220"
+            preserveAspectRatio="none"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ width: '100%', height: '100%', display: 'block' }}
+          >
+            {/* Back cloud layer */}
+            <path
+              d="M0,150 C180,110 380,130 540,90 C700,50 900,85 1060,65 C1220,45 1360,100 1440,110 L1440,220 L0,220 Z"
+              fill="rgba(255, 255, 255, 0.45)"
+            />
+            {/* Mid cloud layer */}
+            <path
+              d="M-50,165 C140,120 300,105 470,125 C640,145 820,95 1000,105 C1180,115 1340,75 1490,130 L1490,220 L-50,220 Z"
+              fill="rgba(255, 255, 255, 0.75)"
+            />
+            {/* Foreground cloud layer */}
+            <path
+              d="M0,185 C200,135 350,155 560,125 C770,95 920,135 1120,115 C1320,95 1400,145 1440,155 L1440,220 L0,220 Z"
+              fill="#FFFFFF"
+            />
+          </svg>
+        </Box>
       </Box>
 
       {/* Floating Centered Glass Card Container */}
@@ -168,44 +276,59 @@ export default function LoginPage() {
           alignItems: 'center',
         }}
       >
-        {/* Top Logo Container (Increased Size) */}
-        <Box
-          component={motion.div}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
-          sx={{
-            width: 72,
-            height: 72,
-            borderRadius: '20px',
-            bgcolor: '#FFFFFF',
-            boxShadow: '0 6px 20px rgba(0,70,150,0.10), 0 2px 6px rgba(0,0,0,0.04)',
-            border: '1px solid rgba(0,0,0,0.06)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mb: 2.5,
-          }}
-        >
-          <Box component="img" src="/logo.png" alt="AI360 Logo" sx={{ width: 48, height: 48, borderRadius: '12px', objectFit: 'cover' }} />
-        </Box>
-
-        {/* Dynamic Header (Subtitle removed as requested) */}
-        <AnimatePresence mode="wait">
+        {/* Dynamic Header with Logo on the left, text bottom-aligned with logo */}
+        <Box sx={{ width: '100%', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start', gap: 2, mb: 3 }}>
+          {/* Logo (Increased Size, placed to the left of the heading) */}
           <Box
             component={motion.div}
-            key={isSignUp ? 'signup-head' : 'signin-head'}
-            initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
-            transition={{ duration: 0.2 }}
-            sx={{ textAlign: 'center', mb: 3, width: '100%' }}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+            sx={{
+              width: 80,
+              height: 80,
+              flexShrink: 0,
+              borderRadius: '22px',
+              bgcolor: '#FFFFFF',
+              boxShadow: '0 6px 20px rgba(0,70,150,0.10), 0 2px 6px rgba(0,0,0,0.04)',
+              border: '1px solid rgba(0,0,0,0.06)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <Typography sx={{ fontSize: '1.65rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#111827', lineHeight: 1.2 }}>
-              {isSignUp ? 'Create an account' : 'Sign in with email'}
-            </Typography>
+            <Box component="img" src="/logo.png" alt="AI360 Logo" sx={{ width: 64, height: 64, borderRadius: '14px', objectFit: 'cover' }} />
           </Box>
-        </AnimatePresence>
+
+          <AnimatePresence mode="wait">
+            <Box
+              component={motion.div}
+              key={isSignUp ? 'signup-head' : 'signin-head'}
+              initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+              transition={{ duration: 0.2 }}
+              sx={{ textAlign: 'left' }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: '"Poppins", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+                  fontSize: '2.75rem',
+                  fontWeight: 600,
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.2,
+                  whiteSpace: 'nowrap',
+                  background: 'linear-gradient(135deg, #111827 0%, #2563EB 100%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                {isSignUp ? 'Create an account' : 'Sign in with email'}
+              </Typography>
+            </Box>
+          </AnimatePresence>
+        </Box>
 
         {/* Role Selector Segment */}
         <Box sx={{ width: '100%', p: '3px', bgcolor: 'rgba(0,0,0,0.04)', borderRadius: '12px', display: 'flex', mb: 3 }}>

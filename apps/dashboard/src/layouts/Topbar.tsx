@@ -34,18 +34,15 @@ export default function Topbar({ title, subtitle, collapsed = false }: TopbarPro
 
   return (
     <AppBar
-      position="fixed"
+      position="sticky"
       elevation={0}
       sx={{
         top: 0,
-        right: 0,
-        left: { xs: 0, md: `${sidebarWidth}px` },
-        width: { xs: '100%', md: `calc(100% - ${sidebarWidth}px)` },
-        transition: 'left 0.3s ease, width 0.3s ease',
-        zIndex: 1100,
+        width: '100%',
+        zIndex: 1050,
         backgroundColor: 'rgba(255,255,255,0.95)',
         backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(0,0,0,0.09)',
+        borderBottom: '1px solid #E5E7EB',
         boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
         px: { xs: 2, md: 3.5 },
         py: 0,
@@ -70,13 +67,7 @@ export default function Topbar({ title, subtitle, collapsed = false }: TopbarPro
         {/* RIGHT: GATEWAY STATUS, NOTIFICATIONS & USER PROFILE */}
         <Stack direction="row" spacing={2.5} alignItems="center">
           
-          {/* Active Status Pill */}
-          <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1, px: 2, py: 0.875, borderRadius: '20px', bgcolor: 'rgba(5,150,105,0.08)', border: '1px solid rgba(5,150,105,0.18)' }}>
-            <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#059669', animation: 'pulse 2s infinite' }} />
-            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#059669', letterSpacing: '-0.01em' }}>
-              Gateway Active
-            </Typography>
-          </Box>
+
 
           {/* Notifications */}
           <Tooltip title="Notifications">

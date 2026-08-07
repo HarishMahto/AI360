@@ -56,7 +56,6 @@ import {
   History,
   Send,
 } from '@mui/icons-material';
-import { alpha } from '@mui/material/styles';
 import {
   useEmployeeDashboard,
   useSendChat,
@@ -207,34 +206,77 @@ export default function EmployeeDashboard() {
         {/* Tab Content */}
         {activeTab === 0 && (
           <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
-            {/* Stat Cards Row - 100% Full Screen Width */}
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(6, 1fr)' }, gap: 2, mb: 2, width: '100%' }}>
+            {/* ── Stat Cards Row ── */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(6, 1fr)' }, gap: 1.5, mb: 2, width: '100%' }}>
               {[
-                { label: 'TODAYS PROMPTS', value: todayPrompts.toString(), sub: '+12% vs avg', subColor: '#059669', accent: '#1F5AA6', icon: <TrendingUp fontSize="small" sx={{ color: '#1F5AA6' }}/> },
-                { label: 'TODAYS COST', value: `$${todayCost}`, sub: '72% saved via optimization', subColor: '#059669', accent: '#60A5FA', icon: <MonetizationOn fontSize="small" sx={{ color: '#60A5FA' }}/> },
-                { label: 'PROMPT QUALITY SCORE', value: `${avgScore}/100`, sub: 'Clarity, Context & Specificity', subColor: '#4B5563', accent: '#D97706', icon: <WorkspacePremium fontSize="small" sx={{ color: '#D97706' }}/> },
-                { label: 'HOURS SAVED', value: `${totalHoursSaved}h`, sub: 'Equivalent to 35% boost', subColor: '#1F5AA6', accent: '#6B46C1', icon: <AccessTime fontSize="small" sx={{ color: '#6B46C1' }}/> },
-                { label: 'MID-DAY SNAPSHOT', value: midDay.prompts.toString(), sub: `${midDay.cost} • ${midDay.hoursSaved}h saved`, subColor: '#059669', accent: '#059669', icon: <Speed fontSize="small" sx={{ color: '#059669' }}/> },
-                { label: 'END-OF-DAY SUMMARY', value: endOfDay.prompts.toString(), sub: `Tokens: ${endOfDay.tokens || 'N/A'} • ${endOfDay.hoursSaved}h saved`, subColor: '#1F5AA6', accent: '#0284C7', icon: <History fontSize="small" sx={{ color: '#0284C7' }}/> }
+                {
+                  label: 'Todays Prompts', value: todayPrompts.toString(), sub: '+12% vs average',
+                  subColor: '#059669', accent: '#1F5AA6',
+                  icon: <TrendingUp sx={{ fontSize: 18, color: '#1F5AA6' }} />, iconBg: 'rgba(31,90,166,0.08)',
+                },
+                {
+                  label: 'Todays Cost', value: `$${todayCost}`, sub: '72% saved via optimization',
+                  subColor: '#059669', accent: '#0284C7',
+                  icon: <MonetizationOn sx={{ fontSize: 18, color: '#0284C7' }} />, iconBg: 'rgba(2,132,199,0.08)',
+                },
+                {
+                  label: 'Prompt Quality', value: `${avgScore}/100`, sub: 'Clarity, Context & Specificity',
+                  subColor: '#6B7280', accent: '#D97706',
+                  icon: <WorkspacePremium sx={{ fontSize: 18, color: '#D97706' }} />, iconBg: 'rgba(217,119,6,0.08)',
+                },
+                {
+                  label: 'Hours Saved', value: `${totalHoursSaved}h`, sub: 'Equivalent to 35% boost',
+                  subColor: '#1F5AA6', accent: '#7C3AED',
+                  icon: <AccessTime sx={{ fontSize: 18, color: '#7C3AED' }} />, iconBg: 'rgba(124,58,237,0.08)',
+                },
+                {
+                  label: 'Mid-Day Snapshot', value: midDay.prompts.toString(), sub: `${midDay.cost} · ${midDay.hoursSaved}h saved`,
+                  subColor: '#059669', accent: '#059669',
+                  icon: <Speed sx={{ fontSize: 18, color: '#059669' }} />, iconBg: 'rgba(5,150,105,0.08)',
+                },
+                {
+                  label: 'End-of-Day', value: endOfDay.prompts.toString(), sub: `${endOfDay.hoursSaved}h saved today`,
+                  subColor: '#1F5AA6', accent: '#0284C7',
+                  icon: <History sx={{ fontSize: 18, color: '#0284C7' }} />, iconBg: 'rgba(2,132,199,0.08)',
+                },
               ].map((stat, i) => (
-                <Card key={i} sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', transition: 'box-shadow 0.25s ease, border-color 0.25s ease', borderTop: `3px solid ${stat.accent}`, '&:hover': { boxShadow: '0 4px 16px rgba(31,90,166,0.09)', borderColor: 'rgba(31,90,166,0.24)' } }}>
-                  <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
-                    <Box sx={{ position: 'absolute', top: 16, right: 16, width: 36, height: 36, borderRadius: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: alpha(stat.accent, 0.1) }}>
-                      {stat.icon}
-                    </Box>
-                    <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4B5563', mb: 1 }}>{stat.label}</Typography>
-                    <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1A1D2E', fontVariantNumeric: 'tabular-nums' }}>{stat.value}</Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: stat.subColor, mt: 0.5 }}>{stat.sub}</Typography>
-                  </CardContent>
-                </Card>
+                <Box
+                  key={i}
+                  sx={{
+                    bgcolor: '#FFFFFF',
+                    borderRadius: '12px',
+                    border: '1px solid #E5E7EB',
+                    p: 2.5,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
+                    cursor: 'default',
+                    borderTop: `3px solid ${stat.accent}`,
+                    '&:hover': {
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.07)',
+                      borderColor: '#D1D5DB',
+                    },
+                  }}
+                >
+                  <Box sx={{ width: 32, height: 32, borderRadius: '8px', bgcolor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.75 }}>
+                    {stat.icon}
+                  </Box>
+                  <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', mb: 0.5 }}>{stat.label}</Typography>
+                  <Typography sx={{ fontSize: '1.625rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#111827', fontVariantNumeric: 'tabular-nums', lineHeight: 1.15, mb: 0.375 }}>{stat.value}</Typography>
+                  <Typography sx={{ fontSize: '0.72rem', color: stat.subColor, fontWeight: 500 }}>{stat.sub}</Typography>
+                </Box>
               ))}
             </Box>
 
-            {/* Productivity Trend & Session Summary Row - 100% Full Screen Width */}
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' }, gap: 2, width: '100%' }}>
-              <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
-                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Productivity Trend</Typography>
-                <Box sx={{ height: 320, width: '100%' }}>
+            {/* ── Productivity Trend & Session Summary ── */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' }, gap: 1.5, width: '100%' }}>
+              {/* Productivity Trend */}
+              <Box sx={{ bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', p: 3, height: '100%' }}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
+                  <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#111827' }}>Productivity Trend</Typography>
+                  <Chip label="This Week" size="small" sx={{ bgcolor: '#F3F4F6', color: '#6B7280', fontSize: '0.7rem', fontWeight: 500, border: 'none' }} />
+                </Stack>
+                <Box sx={{ height: 300, width: '100%' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={[
                       { day: 'Mon', hours: 2.1 },
@@ -247,30 +289,43 @@ export default function EmployeeDashboard() {
                     ]}>
                       <defs>
                         <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#1F5AA6" stopOpacity={0.25} />
+                          <stop offset="5%" stopColor="#1F5AA6" stopOpacity={0.15} />
                           <stop offset="95%" stopColor="#1F5AA6" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2EAE6" />
-                      <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#4B5563' }} dy={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#4B5563' }} dx={-10} />
-                      <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid rgba(31,90,166,0.2)', boxShadow: '0 4px 16px rgba(31,90,166,0.12)' }} />
-                      <Area type="monotone" dataKey="hours" stroke="#1F5AA6" strokeWidth={3} fillOpacity={1} fill="url(#colorHours)" />
+                      <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#F3F4F6" />
+                      <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dx={-10} />
+                      <Tooltip
+                        contentStyle={{
+                          borderRadius: '8px',
+                          background: '#FFFFFF',
+                          border: '1px solid #E5E7EB',
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                          fontSize: '0.8125rem',
+                          color: '#111827',
+                        }}
+                        labelStyle={{ color: '#6B7280', fontWeight: 600, marginBottom: 2 }}
+                      />
+                      <Area type="monotone" dataKey="hours" stroke="#1F5AA6" strokeWidth={2} fillOpacity={1} fill="url(#colorHours)" dot={false} activeDot={{ r: 5, fill: '#1F5AA6', strokeWidth: 2, stroke: '#fff' }} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </Box>
-              </Card>
+              </Box>
 
-              <Card sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
-                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Session Summary</Typography>
-                <TableContainer sx={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: 'none' }}>
+              {/* Session Summary */}
+              <Box sx={{ bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', p: 3, height: '100%' }}>
+                <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#111827', mb: 3 }}>Session Summary</Typography>
+                <TableContainer sx={{ borderRadius: '8px', border: '1px solid #F3F4F6', overflow: 'hidden' }}>
                   <Table>
                     <TableHead>
-                      <TableRow sx={{ bgcolor: '#F0F4F8' }}>
-                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }}>Period</TableCell>
-                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }} align="center">Prompts</TableCell>
-                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }} align="center">Cost</TableCell>
-                        <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#4B5563', borderBottom: '1px solid rgba(31,90,166,0.12)', py: 1.25, px: 2 }} align="right">Saved</TableCell>
+                      <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                        {['Period', 'Prompts', 'Cost', 'Saved'].map((h, hi) => (
+                          <TableCell key={h} align={hi === 0 ? 'left' : hi === 3 ? 'right' : 'center'}
+                            sx={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', borderBottom: '1px solid #F3F4F6', py: 1.25, px: 2 }}>
+                            {h}
+                          </TableCell>
+                        ))}
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -278,71 +333,182 @@ export default function EmployeeDashboard() {
                         { period: 'Mid-day', prompts: 34, tokens: '—', cost: '$1.32', hoursSaved: 2.3 },
                         { period: 'End-of-day', prompts: 43, tokens: '8,300', cost: '$1.80', hoursSaved: 2.8 }
                       ]).map((snap: any, i: number) => (
-                        <TableRow key={i} sx={{ '&:hover': { bgcolor: '#F4F6FA' }, ...(i === 1 ? { '&:last-child td': { border: 0 } } : {}) }}>
-                          <TableCell sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>{snap.period}</TableCell>
-                          <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>{snap.prompts}</TableCell>
-                          <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)' }}>{typeof snap.cost === 'string' ? snap.cost : `$${snap.cost}`}</TableCell>
-                          <TableCell align="right" sx={{ fontSize: '0.8125rem', py: 1.375, px: 2, borderBottom: '1px solid rgba(31,90,166,0.08)', color: '#059669', fontWeight: 600 }}>{snap.hoursSaved}h</TableCell>
+                        <TableRow key={i} sx={{ '&:hover': { bgcolor: '#F9FAFB' }, transition: 'background 0.15s ease', ...(i === 1 ? { '&:last-child td': { border: 0 } } : {}) }}>
+                          <TableCell sx={{ fontSize: '0.8125rem', py: 1.5, px: 2, borderBottom: '1px solid #F3F4F6', color: '#374151', fontWeight: 500 }}>
+                            {snap.period}
+                          </TableCell>
+                          <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, px: 2, borderBottom: '1px solid #F3F4F6', color: '#111827', fontWeight: 600 }}>{snap.prompts}</TableCell>
+                          <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, px: 2, borderBottom: '1px solid #F3F4F6', color: '#374151' }}>{typeof snap.cost === 'string' ? snap.cost : `$${snap.cost}`}</TableCell>
+                          <TableCell align="right" sx={{ py: 1.5, px: 2, borderBottom: '1px solid #F3F4F6' }}>
+                            <Chip label={`${snap.hoursSaved}h`} size="small" sx={{ bgcolor: 'rgba(5,150,105,0.08)', color: '#059669', fontWeight: 600, fontSize: '0.72rem', height: 20 }} />
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
-              </Card>
+                <Box sx={{ mt: 2.5, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.25 }}>
+                  {[
+                    { label: 'Total Prompts', value: `${endOfDay.prompts}`, color: '#1F5AA6', bg: 'rgba(31,90,166,0.06)' },
+                    { label: 'Total Saved', value: `${endOfDay.hoursSaved}h`, color: '#059669', bg: 'rgba(5,150,105,0.06)' },
+                  ].map((q, qi) => (
+                    <Box key={qi} sx={{ p: 1.5, borderRadius: '8px', bgcolor: q.bg, textAlign: 'center' }}>
+                      <Typography sx={{ fontSize: '1.0625rem', fontWeight: 700, color: q.color, letterSpacing: '-0.02em' }}>{q.value}</Typography>
+                      <Typography sx={{ fontSize: '0.67rem', color: '#6B7280', fontWeight: 500, mt: 0.25 }}>{q.label}</Typography>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
             </Box>
           </Box>
         )}
 
         {activeTab === 1 && (
           <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
-            <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', display: 'flex', flexDirection: 'column', height: 600 }}>
-              <Box sx={{ p: 2.5, borderBottom: '1px solid rgba(31,90,166,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E' }}>AI Chat Workspace</Typography>
-                <FormControl size="small" sx={{ minWidth: 200 }}>
-                  <InputLabel>Model</InputLabel>
-                  <Select value={selectedModel} label="Model" onChange={(e) => setSelectedModel(e.target.value)} sx={{ borderRadius: 2 }}>
-                    <MenuItem value="gpt-4o-mini">GPT-4o-Mini</MenuItem>
-                    <MenuItem value="gpt-4o">GPT-4o</MenuItem>
-                    <MenuItem value="gemini-1.5-flash">Gemini 1.5 Flash</MenuItem>
-                    <MenuItem value="gemini-1.5-pro">Gemini 1.5 Pro</MenuItem>
-                    <MenuItem value="claude-3-5-sonnet">Claude 3.5 Sonnet</MenuItem>
+            <Box
+              sx={{
+                bgcolor: '#FFFFFF',
+                borderRadius: '12px',
+                border: '1px solid #E5E7EB',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                display: 'flex',
+                flexDirection: 'column',
+                height: 660,
+                overflow: 'hidden',
+              }}
+            >
+              {/* ── Header ── */}
+              <Box sx={{ px: 3, py: 2, borderBottom: '1px solid #F3F4F6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: '#FAFAFA' }}>
+                <Box>
+                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#111827', lineHeight: 1.3 }}>AI Chat Workspace</Typography>
+                  <Stack direction="row" alignItems="center" spacing={0.75} mt={0.25}>
+                    <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#059669' }} />
+                    <Typography sx={{ fontSize: '0.7rem', color: '#6B7280' }}>Gateway Active</Typography>
+                  </Stack>
+                </Box>
+                <FormControl size="small">
+                  <Select
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    sx={{
+                      borderRadius: '8px',
+                      fontSize: '0.8125rem',
+                      fontWeight: 500,
+                      color: '#374151',
+                      bgcolor: '#FFFFFF',
+                      minWidth: 180,
+                      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E5E7EB' },
+                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D1D5DB' },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1F5AA6', borderWidth: '1px' },
+                    }}
+                  >
+                    <MenuItem value="gpt-4o-mini" sx={{ fontSize: '0.8125rem' }}>GPT-4o Mini</MenuItem>
+                    <MenuItem value="gpt-4o" sx={{ fontSize: '0.8125rem' }}>GPT-4o</MenuItem>
+                    <MenuItem value="gemini-1.5-flash" sx={{ fontSize: '0.8125rem' }}>Gemini 1.5 Flash</MenuItem>
+                    <MenuItem value="gemini-1.5-pro" sx={{ fontSize: '0.8125rem' }}>Gemini 1.5 Pro</MenuItem>
+                    <MenuItem value="claude-3-5-sonnet" sx={{ fontSize: '0.8125rem' }}>Claude 3.5 Sonnet</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
-              <Box sx={{ flexGrow: 1, p: 3, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+              {/* ── Messages ── */}
+              <Box sx={{
+                flexGrow: 1, px: 3, py: 2.5, overflowY: 'auto',
+                display: 'flex', flexDirection: 'column', gap: 2,
+                bgcolor: '#FAFAFA',
+                '&::-webkit-scrollbar': { width: 4 },
+                '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
+                '&::-webkit-scrollbar-thumb': { bgcolor: '#E5E7EB', borderRadius: 2 },
+              }}>
                 {chatMessages.map((msg) => (
-                  <Box key={msg.id} sx={{ display: 'flex', gap: 2, flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row' }}>
-                    <Box sx={{ p: 2, borderRadius: 2, bgcolor: msg.sender === 'user' ? 'rgba(31,90,166,0.08)' : '#F0F4F8', color: '#1A1D2E', maxWidth: '80%' }}>
-                      <Typography sx={{ fontSize: '0.875rem' }}>{msg.text}</Typography>
-                      <Stack direction="row" spacing={1} mt={1}>
-                        <Chip label={msg.model} size="small" sx={{ height: 20, fontSize: '0.65rem' }} />
-                        {msg.score && <Chip label={`Score: ${msg.score}/100`} size="small" sx={{ height: 20, fontSize: '0.65rem', bgcolor: 'rgba(5,150,105,0.10)', color: '#059669' }} />}
-                        {msg.cost && <Typography sx={{ fontSize: '0.65rem', color: '#4B5563', mt: 0.5 }}>{msg.cost}</Typography>}
+                  <Box key={msg.id} sx={{ display: 'flex', gap: 1.5, flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row', alignItems: 'flex-start' }}>
+                    {/* Avatar */}
+                    <Box sx={{
+                      width: 30, height: 30, borderRadius: '8px', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      bgcolor: msg.sender === 'user' ? '#1F5AA6' : '#F3F4F6',
+                      border: msg.sender === 'ai' ? '1px solid #E5E7EB' : 'none',
+                    }}>
+                      {msg.sender === 'user'
+                        ? <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: '#fff', letterSpacing: '0.02em' }}>YOU</Typography>
+                        : <Typography sx={{ fontSize: '0.6rem', fontWeight: 700, color: '#1F5AA6', letterSpacing: '0.02em' }}>AI</Typography>
+                      }
+                    </Box>
+                    {/* Bubble */}
+                    <Box sx={{
+                      maxWidth: '76%',
+                      p: 1.75,
+                      borderRadius: msg.sender === 'user' ? '12px 3px 12px 12px' : '3px 12px 12px 12px',
+                      bgcolor: msg.sender === 'user' ? '#1F5AA6' : '#FFFFFF',
+                      border: msg.sender === 'ai' ? '1px solid #E5E7EB' : 'none',
+                      boxShadow: msg.sender === 'ai' ? '0 1px 3px rgba(0,0,0,0.04)' : 'none',
+                    }}>
+                      <Typography sx={{ fontSize: '0.875rem', color: msg.sender === 'user' ? '#FFFFFF' : '#1F2937', lineHeight: 1.6 }}>{msg.text}</Typography>
+                      <Stack direction="row" spacing={0.75} mt={1} flexWrap="wrap" useFlexGap>
+                        <Chip label={msg.model} size="small" sx={{ height: 18, fontSize: '0.62rem', fontWeight: 500, bgcolor: msg.sender === 'user' ? 'rgba(255,255,255,0.2)' : '#F3F4F6', color: msg.sender === 'user' ? '#fff' : '#6B7280', border: 'none' }} />
+                        {msg.score && <Chip label={`Score ${msg.score}/100`} size="small" sx={{ height: 18, fontSize: '0.62rem', fontWeight: 600, bgcolor: 'rgba(5,150,105,0.1)', color: '#059669', border: 'none' }} />}
+                        {msg.cost && <Typography sx={{ fontSize: '0.62rem', color: msg.sender === 'user' ? 'rgba(255,255,255,0.7)' : '#9CA3AF', alignSelf: 'center' }}>{msg.cost}</Typography>}
                       </Stack>
                     </Box>
                   </Box>
                 ))}
+                {sendChatMutation.isPending && (
+                  <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+                    <Box sx={{ width: 30, height: 30, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#F3F4F6', border: '1px solid #E5E7EB' }}>
+                      <Typography sx={{ fontSize: '0.6rem', fontWeight: 700, color: '#1F5AA6' }}>AI</Typography>
+                    </Box>
+                    <Box sx={{ p: 1.75, borderRadius: '3px 12px 12px 12px', bgcolor: '#FFFFFF', border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CircularProgress size={12} sx={{ color: '#1F5AA6' }} />
+                      <Typography sx={{ fontSize: '0.8rem', color: '#9CA3AF' }}>Processing your request...</Typography>
+                    </Box>
+                  </Box>
+                )}
               </Box>
-              <Box sx={{ p: 2, borderTop: '1px solid rgba(31,90,166,0.12)' }}>
-                <TextField
-                  fullWidth
-                  placeholder="Type a message..."
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendChatMessage()}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleSendChatMessage} disabled={!chatInput.trim() || sendChatMutation.isPending} sx={{ color: BRAND_COLOR }}>
-                          {sendChatMutation.isPending ? <CircularProgress size={20} /> : <Send />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                    sx: { borderRadius: 2 }
-                  }}
-                />
+
+              {/* ── Input Bar ── */}
+              <Box sx={{ px: 3, py: 2, borderTop: '1px solid #F3F4F6', bgcolor: '#FFFFFF' }}>
+                <Box sx={{ display: 'flex', gap: 1.25, alignItems: 'center' }}>
+                  <TextField
+                    fullWidth
+                    placeholder="Type a message..."
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSendChatMessage()}
+                    size="small"
+                    InputProps={{
+                      sx: {
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        bgcolor: '#F9FAFB',
+                        color: '#111827',
+                        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E5E7EB' },
+                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D1D5DB' },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1F5AA6', borderWidth: '1px' },
+                        '& input::placeholder': { color: '#9CA3AF', opacity: 1 },
+                      }
+                    }}
+                  />
+                  <IconButton
+                    onClick={handleSendChatMessage}
+                    disabled={!chatInput.trim() || sendChatMutation.isPending}
+                    sx={{
+                      width: 38, height: 38, borderRadius: '8px',
+                      bgcolor: chatInput.trim() ? '#1F5AA6' : '#F3F4F6',
+                      color: chatInput.trim() ? '#fff' : '#9CA3AF',
+                      transition: 'all 0.15s ease',
+                      flexShrink: 0,
+                      '&:hover': { bgcolor: chatInput.trim() ? '#1A4F96' : '#E9EAEB' },
+                      '&.Mui-disabled': { bgcolor: '#F3F4F6', color: '#D1D5DB' },
+                    }}
+                  >
+                    {sendChatMutation.isPending ? <CircularProgress size={16} sx={{ color: '#9CA3AF' }} /> : <Send sx={{ fontSize: 16 }} />}
+                  </IconButton>
+                </Box>
+                <Typography sx={{ fontSize: '0.65rem', color: '#D1D5DB', mt: 1, textAlign: 'center' }}>
+                  Powered by AI360 Gateway · Press Enter to send
+                </Typography>
               </Box>
-            </Card>
+            </Box>
           </Box>
         )}
 
@@ -429,7 +595,7 @@ export default function EmployeeDashboard() {
                         <TableCell sx={{ fontSize: '0.8125rem', color: '#1A1D2E' }}>{rec.signal}</TableCell>
                         <TableCell><Chip label={rec.recommendation} size="small" sx={{ bgcolor: 'rgba(31,90,166,0.10)', color: BRAND_COLOR, fontWeight: 500 }} /></TableCell>
                         <TableCell align="right" sx={{ fontSize: '0.8125rem', color: '#059669', fontWeight: 600 }}>{rec.estimatedSaving}</TableCell>
-                        <TableCell align="right">
+                        <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
                           <Button size="small" variant="contained" onClick={() => { setSelectedModel(rec.targetModel || 'gemini-1.5-flash'); setSnackbar({ open: true, message: `Switched active model to ${rec.recommendation}`, severity: 'success' }); }} sx={{ mr: 1, bgcolor: BRAND_COLOR }}>Apply</Button>
                           <Button size="small" variant="outlined" onClick={() => setDismissedRecs(prev => new Set(prev).add(idx))} sx={{ color: '#1A1D2E', borderColor: 'rgba(31,90,166,0.2)' }}>Dismiss</Button>
                         </TableCell>
@@ -444,8 +610,8 @@ export default function EmployeeDashboard() {
 
         {activeTab === 4 && (
           <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
-            <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
-              <TextField size="small" placeholder="Search prompts..." value={searchHistory} onChange={(e) => setSearchHistory(e.target.value)} sx={{ width: 300 }} />
+            <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+              <TextField size="small" placeholder="Search prompts..." value={searchHistory} onChange={(e) => setSearchHistory(e.target.value)} sx={{ width: { xs: '100%', sm: 300 } }} />
               <Button variant="contained" sx={{ bgcolor: BRAND_COLOR }} onClick={() => { setPublishTitle(''); setPublishCategory('Coding'); setPublishContent(chatInput || ''); setPublishDialogOpen(true); }}>Publish to Marketplace</Button>
             </Box>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)' }, gap: 2, width: '100%' }}>
@@ -537,8 +703,8 @@ export default function EmployeeDashboard() {
           <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
             <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3 }}>
               <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Prompt History</Typography>
-              <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
-                <TextField size="small" placeholder="Search history..." value={historyQuery} onChange={(e) => setHistoryQuery(e.target.value)} sx={{ width: 300 }} />
+              <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+                <TextField size="small" placeholder="Search history..." value={historyQuery} onChange={(e) => setHistoryQuery(e.target.value)} sx={{ width: { xs: '100%', sm: 300 } }} />
                 <Button variant={historyFavoriteOnly ? 'contained' : 'outlined'} sx={historyFavoriteOnly ? { bgcolor: BRAND_COLOR } : {}} onClick={() => setHistoryFavoriteOnly(!historyFavoriteOnly)}>Favorites</Button>
               </Box>
               <List>

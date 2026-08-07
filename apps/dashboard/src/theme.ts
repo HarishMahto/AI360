@@ -2,24 +2,24 @@
 import { createTheme, alpha } from '@mui/material/styles';
 
 const palette = {
-  accent:      '#2C7A7B', // Serene Ghibli Teal
-  accentHover: '#234E52', // Deep Forest Teal
-  accentSoft:  'rgba(44, 122, 123, 0.08)',
-  teal:        '#319795', // Meadow Stream Teal
-  violet:      '#6B46C1', // Sky Sunset Violet
-  amber:       '#D69E2E', // Calcifer Gold
-  success:     '#38A169', // Totoro Meadow Green
-  warning:     '#DD6B20', // Terracotta Sun
-  danger:      '#E53E3E', // Crimson Blossom
-  text1:       '#1A2F29', // Deep Forest Charcoal
-  text2:       '#4A655D', // Sage Slate
-  text3:       '#839D95', // Soft Mist Sage
-  bg:          '#F0F5F3', // Ghibli Mist Meadow Haze Background
-  surface:     '#FFFFFF', // Crisp White Workspace Paper
-  surface2:    '#E8F0EC', // Soft Sage Grey
-  surface3:    '#DCE7E1', // Medium Sage Mist
-  border:      'rgba(43, 108, 93, 0.12)',
-  borderStrong:'rgba(43, 108, 93, 0.24)',
+  accent:      '#1F5AA6',
+  accentHover: '#184785',
+  accentSoft:  'rgba(31, 90, 166, 0.08)',
+  teal:        '#0284C7',
+  violet:      '#7C3AED',
+  amber:       '#D97706',
+  success:     '#059669',
+  warning:     '#D97706',
+  danger:      '#DC2626',
+  text1:       '#111827',
+  text2:       '#4B5563',
+  text3:       '#9CA3AF',
+  bg:          '#FAFAFA',
+  surface:     '#FFFFFF',
+  surface2:    '#F9FAFB',
+  surface3:    '#F3F4F6',
+  border:      '#E5E7EB',
+  borderStrong:'#D1D5DB',
 };
 
 export const appTheme = createTheme({
@@ -35,26 +35,26 @@ export const appTheme = createTheme({
     divider:    palette.border,
   },
   typography: {
-    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     fontWeightLight:   300,
     fontWeightRegular: 400,
     fontWeightMedium:  500,
     fontWeightBold:    700,
-    h1: { fontSize: '2rem',   fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.15 },
-    h2: { fontSize: '1.6rem', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.2 },
-    h3: { fontSize: '1.3rem', fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1.25 },
-    h4: { fontSize: '1.1rem', fontWeight: 600, letterSpacing: '-0.01em', lineHeight: 1.3 },
-    h5: { fontSize: '0.95rem',fontWeight: 600, letterSpacing: '-0.005em' },
+    h1: { fontSize: '2rem',   fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.2 },
+    h2: { fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.25 },
+    h3: { fontSize: '1.25rem',fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1.3 },
+    h4: { fontSize: '1.1rem', fontWeight: 600, letterSpacing: '-0.01em', lineHeight: 1.35 },
+    h5: { fontSize: '0.9375rem',fontWeight: 600, letterSpacing: '-0.005em' },
     h6: { fontSize: '0.875rem',fontWeight: 600 },
     subtitle1: { fontSize: '0.875rem', fontWeight: 500, color: palette.text2 },
     subtitle2: { fontSize: '0.8rem',   fontWeight: 500, color: palette.text2 },
     body1: { fontSize: '0.875rem', lineHeight: 1.55 },
     body2: { fontSize: '0.8125rem', lineHeight: 1.5, color: palette.text2 },
-    caption: { fontSize: '0.71rem', fontWeight: 500, letterSpacing: '0.04em', color: palette.text3 },
-    overline: { fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' },
+    caption: { fontSize: '0.72rem', fontWeight: 500, letterSpacing: '0.03em', color: palette.text3 },
+    overline: { fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' },
     button: { fontWeight: 600, fontSize: '0.8125rem', textTransform: 'none', letterSpacing: '0.01em' },
   },
-  shape: { borderRadius: 0 }, // Square edge workspace default
+  shape: { borderRadius: 12 },
   shadows: [
     'none',
     '0 1px 2px rgba(43,108,93,0.04)',
