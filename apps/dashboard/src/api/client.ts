@@ -22,15 +22,37 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: handle 401 globally
+// Response interceptor: handle 401 globally and fallback to localhost on failure
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
+    // Handle Unauthorized
     if (error.response?.status === 401) {
       localStorage.removeItem('ai360_token');
       localStorage.removeItem('ai360_demo_role');
       window.location.href = '/login';
+      return Promise.reject(error);
     }
+
+    // Fallback to localhost if Vercel backend fails (Network Error or 500+)
+    const originalRequest = error.config;
+    const isServerError = !error.response || error.response.status >= 500;
+
+    if (isServerError && originalRequest && !(originalRequest as any)._retry) {
+      const currentBaseUrl = originalRequest.baseURL || apiClient.defaults.baseURL;
+      
+      if (currentBaseUrl && currentBaseUrl.includes('vercel.app')) {
+        console.warn('Backend connection failed. Falling back to localhost:8000...');
+        (originalRequest as any)._retry = true;
+        
+        const fallbackUrl = 'http://localhost:8000';
+        apiClient.defaults.baseURL = fallbackUrl;
+        originalRequest.baseURL = fallbackUrl;
+        
+        return apiClient(originalRequest);
+      }
+    }
+
     return Promise.reject(error);
   }
 );
