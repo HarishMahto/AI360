@@ -30,7 +30,7 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.backend_cors_origins.split(",")]
 
     # ─── Firebase Admin SDK ────────────────────────────────────────────────────
-    firebase_project_id: str = Field(default="", alias="FIREBASE_PROJECT_ID")
+    firebase_project_id: str = Field(default="ai360-c1b0b", alias="FIREBASE_PROJECT_ID")
     firebase_private_key_id: str = Field(default="", alias="FIREBASE_PRIVATE_KEY_ID")
     firebase_private_key: str = Field(default="", alias="FIREBASE_PRIVATE_KEY")
     firebase_client_email: str = Field(default="", alias="FIREBASE_CLIENT_EMAIL")
