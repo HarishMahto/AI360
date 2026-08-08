@@ -36,14 +36,12 @@ export default function Topbar({ title, subtitle, collapsed = false }: TopbarPro
     <AppBar
       position="sticky"
       elevation={0}
+      className="nav-3d-gradient"
       sx={{
         top: 0,
         width: '100%',
         zIndex: 1050,
-        backgroundColor: 'rgba(255,255,255,0.95)',
         backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid #E5E7EB',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
         px: { xs: 2, md: 3.5 },
         py: 0,
         margin: 0,
@@ -54,11 +52,11 @@ export default function Topbar({ title, subtitle, collapsed = false }: TopbarPro
         
         {/* LEFT: TITLE & SUBTITLE */}
         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1A1D2E', lineHeight: 1.25, letterSpacing: '-0.015em' }}>
+          <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF', lineHeight: 1.25, letterSpacing: '-0.015em' }}>
             {title}
           </Typography>
           {subtitle && (
-            <Typography sx={{ fontSize: '0.875rem', color: '#4B5563', mt: 0.5, lineHeight: 1.2, fontWeight: 400 }}>
+            <Typography sx={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.8)', mt: 0.5, lineHeight: 1.2, fontWeight: 400 }}>
               {subtitle}
             </Typography>
           )}
@@ -77,10 +75,10 @@ export default function Topbar({ title, subtitle, collapsed = false }: TopbarPro
                 width: 44,
                 height: 44,
                 borderRadius: '12px',
-                color: '#4B5563',
-                bgcolor: 'rgba(0,0,0,0.03)',
-                border: '1px solid rgba(0,0,0,0.06)',
-                '&:hover': { bgcolor: '#F0F4F8', color: '#1A1D2E', borderColor: 'rgba(31,90,166,0.2)' },
+                color: '#FFFFFF',
+                bgcolor: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.2)', color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.3)' },
                 transition: 'all 0.2s ease',
               }}
             >
@@ -101,11 +99,11 @@ export default function Topbar({ title, subtitle, collapsed = false }: TopbarPro
                 p: 0.75,
                 pr: 2,
                 borderRadius: '24px',
-                bgcolor: 'rgba(31,90,166,0.06)',
-                border: '1px solid rgba(31,90,166,0.12)',
+                bgcolor: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.2)',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                '&:hover': { bgcolor: 'rgba(31,90,166,0.12)', borderColor: 'rgba(31,90,166,0.25)' }
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.3)' }
               }}
             >
               <Avatar
@@ -115,18 +113,18 @@ export default function Topbar({ title, subtitle, collapsed = false }: TopbarPro
                   height: 40,
                   fontSize: '15px',
                   fontWeight: 700,
-                  bgcolor: '#1F5AA6',
-                  color: '#FFFFFF',
-                  boxShadow: '0 2px 6px rgba(31,90,166,0.3)',
+                  bgcolor: 'rgba(255,255,255,0.9)',
+                  color: '#916496',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
                 }}
               >
                 {authUser?.displayName?.[0]?.toUpperCase() || 'U'}
               </Avatar>
               <Box sx={{ display: { xs: 'none', md: 'block' }, textAlign: 'left' }}>
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1A1D2E', lineHeight: 1.2 }}>
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2 }}>
                   {authUser?.displayName || 'User'}
                 </Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', lineHeight: 1.2 }}>
+                <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.8)', lineHeight: 1.2 }}>
                   {authUser?.email?.split('@')[0] || 'Member'}
                 </Typography>
               </Box>
@@ -154,8 +152,10 @@ export default function Topbar({ title, subtitle, collapsed = false }: TopbarPro
               <ListItemText
                 primary={n.title}
                 secondary={n.desc}
-                primaryTypographyProps={{ sx: { fontSize: '13px', fontWeight: 500, color: '#1A1D23', mb: 0.25 } }}
-                secondaryTypographyProps={{ sx: { fontSize: '12px', color: '#6B7280' } }}
+                sx={{
+                  '& .MuiListItemText-primary': { fontSize: '13px', fontWeight: 500, color: '#1A1D23', mb: 0.25 },
+                  '& .MuiListItemText-secondary': { fontSize: '12px', color: '#6B7280' }
+                }}
               />
               <Typography sx={{ color: '#9CA3AF', ml: 1, flexShrink: 0, fontSize: '11px' }}>{n.time}</Typography>
             </ListItem>

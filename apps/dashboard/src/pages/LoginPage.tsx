@@ -29,11 +29,13 @@ const ROLE_ROUTES: Record<UserRole, string> = {
   EXECUTIVE: '/dashboard/executive',
 };
 
+// Real Firebase Auth accounts (created in the ai360-c1b0b project) — clicking a link
+// below signs in for real against Firebase and lands on that role's dashboard.
 const DEMO_ACCOUNTS = [
-  { role: 'EMPLOYEE' as UserRole, label: 'Employee', email: 'employee@ai360.io', color: '#2563EB' },
-  { role: 'MANAGER' as UserRole, label: 'Manager', email: 'manager@ai360.io', color: '#0D9488' },
-  { role: 'EXECUTIVE' as UserRole, label: 'Executive', email: 'executive@ai360.io', color: '#7C3AED' },
-  { role: 'ADMIN' as UserRole, label: 'Admin', email: 'admin@ai360.io', color: '#D97706' },
+  { role: 'EMPLOYEE' as UserRole, label: 'Employee', email: 'employee@ai360.io', password: 'Employee@AI360', color: '#2563EB' },
+  { role: 'MANAGER' as UserRole, label: 'Manager', email: 'manager.demo@ai360.io', password: 'Manager@AI360', color: '#0D9488' },
+  { role: 'EXECUTIVE' as UserRole, label: 'Executive', email: 'executive@ai360.io', password: 'Executive@AI360', color: '#7C3AED' },
+  { role: 'ADMIN' as UserRole, label: 'Admin', email: 'admin@ai360.io', password: 'Admin@AI360', color: '#D97706' },
 ];
 
 export default function LoginPage() {
@@ -44,10 +46,11 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isExiting, setIsExiting] = useState(false);
+  const [demoLoadingRole, setDemoLoadingRole] = useState<UserRole | null>(null);
 
   const { control, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: 'employee@ai360.io', password: 'Password123' },
+    defaultValues: { email: 'employee@ai360.io', password: 'Employee@AI360' },
   });
 
   if (!isLoading && isAuthenticated && role) {
@@ -75,12 +78,20 @@ export default function LoginPage() {
     }
   };
 
-  const handleDemoLink = (demoRole: UserRole, email: string) => {
+  const handleDemoLink = async (demoRole: UserRole, email: string, password: string) => {
+    setAuthError(null);
     setSelectedRole(demoRole);
     setValue('email', email);
-    setValue('password', 'Password123');
-    loginAsDemoUser(demoRole);
-    navigateWithTransition(ROLE_ROUTES[demoRole]);
+    setValue('password', password);
+    setDemoLoadingRole(demoRole);
+    try {
+      await signInWithEmail(email, password, demoRole);
+      navigateWithTransition(ROLE_ROUTES[demoRole]);
+    } catch (err: any) {
+      setAuthError(err?.message ?? 'Demo sign-in failed.');
+    } finally {
+      setDemoLoadingRole(null);
+    }
   };
 
   return (
@@ -403,13 +414,15 @@ export default function LoginPage() {
                       placeholder="name@company.com"
                       fullWidth
                       variant="standard"
-                      InputProps={{
-                        disableUnderline: true,
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <EmailIcon sx={{ fontSize: 18, color: '#9CA3AF' }} />
-                          </InputAdornment>
-                        ),
+                      slotProps={{
+                        input: {
+                          disableUnderline: true,
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <EmailIcon sx={{ fontSize: 18, color: '#9CA3AF' }} />
+                            </InputAdornment>
+                          ),
+                        }
                       }}
                       sx={{
                         '& .MuiInput-root': { fontSize: '14px', color: '#111827', py: 0.75 }
@@ -458,20 +471,22 @@ export default function LoginPage() {
                       placeholder="••••••••"
                       fullWidth
                       variant="standard"
-                      InputProps={{
-                        disableUnderline: true,
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <LockIcon sx={{ fontSize: 18, color: '#9CA3AF' }} />
-                          </InputAdornment>
-                        ),
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton size="small" onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: '#9CA3AF', mr: 0.5 }}>
-                              {showPassword ? <VisibilityOffIcon sx={{ fontSize: 18 }} /> : <VisibilityIcon sx={{ fontSize: 18 }} />}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
+                      slotProps={{
+                        input: {
+                          disableUnderline: true,
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <LockIcon sx={{ fontSize: 18, color: '#9CA3AF' }} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton size="small" onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: '#9CA3AF', mr: 0.5 }}>
+                                {showPassword ? <VisibilityOffIcon sx={{ fontSize: 18 }} /> : <VisibilityIcon sx={{ fontSize: 18 }} />}
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }
                       }}
                       sx={{
                         '& .MuiInput-root': { fontSize: '14px', color: '#111827', py: 0.75 }
@@ -615,17 +630,19 @@ export default function LoginPage() {
                   component="button"
                   type="button"
                   underline="hover"
-                  onClick={() => handleDemoLink(demo.role, demo.email)}
+                  disabled={demoLoadingRole !== null}
+                  onClick={() => handleDemoLink(demo.role, demo.email, demo.password)}
                   sx={{
                     fontSize: '12.5px',
                     fontWeight: 600,
                     color: demo.color,
-                    cursor: 'pointer',
+                    cursor: demoLoadingRole !== null ? 'default' : 'pointer',
+                    opacity: demoLoadingRole !== null && demoLoadingRole !== demo.role ? 0.4 : 1,
                     transition: 'all 0.15s ease',
-                    '&:hover': { opacity: 0.75 }
+                    '&:hover': { opacity: demoLoadingRole !== null ? undefined : 0.75 }
                   }}
                 >
-                  {demo.label}
+                  {demoLoadingRole === demo.role ? 'Signing in…' : demo.label}
                 </Link>
               </Box>
             ))}

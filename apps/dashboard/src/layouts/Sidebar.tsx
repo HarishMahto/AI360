@@ -192,22 +192,18 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
           overflowX: 'hidden',
           overflowY: 'hidden',
           transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)',
-          background: '#FFFFFF',
-          borderRight: '1px solid #E5E7EB',
-          color: '#111827',
+          borderRight: '1px solid rgba(0,0,0,0.1)',
+          color: '#FFFFFF',
           position: 'relative',
           zIndex: 100,
+          background: 'linear-gradient(270deg, #916496, #ab82b0, #734c78, #b895bd, #916496) !important',
+          backgroundSize: '600% 600% !important',
+          animation: 'navGradientMove 10s ease infinite !important',
+          boxShadow: '0px 10px 25px -5px rgba(145, 100, 150, 0.4), 0px 8px 10px -6px rgba(145, 100, 150, 0.2), inset 0px -4px 0px rgba(0,0,0,0.2), inset 0px 2px 0px rgba(255,255,255,0.4) !important',
         },
       }}
     >
-      {/* ── Subtle Animated Background Orbs ── */}
-      <Box sx={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
-        {/* Very soft pastel orbs that complement the blue accent */}
-        <SoftOrb top="-8%"  left="10%"  size={220} color="radial-gradient(circle, rgba(31,90,166,0.08), transparent)"  duration={16} delay={0} />
-        <SoftOrb top="35%"  left="-20%" size={200} color="radial-gradient(circle, rgba(99,102,241,0.07), transparent)" duration={20} delay={3} />
-        <SoftOrb top="65%"  left="30%"  size={180} color="radial-gradient(circle, rgba(2,132,199,0.07), transparent)"  duration={14} delay={6} />
-        <SoftOrb top="88%"  left="-10%" size={160} color="radial-gradient(circle, rgba(31,90,166,0.06), transparent)"  duration={18} delay={2} />
-      </Box>
+      {/* ── Subtle Animated Background Orbs (Removed for 3D Gradient) ── */}
 
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', zIndex: 1 }}>
 
@@ -219,7 +215,7 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
             justifyContent: collapsed ? 'center' : 'flex-start',
             height: 70,
             px: collapsed ? 0 : 2.25,
-            borderBottom: '1px solid #F3F4F6',
+            borderBottom: '1px solid rgba(255,255,255,0.1)',
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -228,11 +224,11 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
               sx={{
                 width: 36, height: 36,
                 borderRadius: '10px',
-                bgcolor: '#F8F9FA',
-                border: '1px solid #E5E7EB',
+                bgcolor: 'rgba(255,255,255,0.9)',
+                border: '1px solid rgba(255,255,255,0.2)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0, overflow: 'hidden',
-                boxShadow: '0 1px 4px rgba(31,90,166,0.1)',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
               }}
             >
               <Box
@@ -251,10 +247,10 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
                   exit={{ opacity: 0, x: -6 }}
                   transition={{ duration: 0.18 }}
                 >
-                  <Typography sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                  <Typography sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
                     AI360
                   </Typography>
-                  <Typography sx={{ fontSize: '0.58rem', fontWeight: 600, color: '#9CA3AF', letterSpacing: '0.1em', textTransform: 'uppercase', mt: 0.2 }}>
+                  <Typography sx={{ fontSize: '0.58rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', mt: 0.2 }}>
                     Enterprise
                   </Typography>
                 </motion.div>
@@ -268,7 +264,7 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
           flex: 1, overflowY: 'auto', overflowX: 'hidden', py: 0.5,
           '&::-webkit-scrollbar': { width: 3 },
           '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
-          '&::-webkit-scrollbar-thumb': { bgcolor: '#E5E7EB', borderRadius: 2 },
+          '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.2)', borderRadius: 2 },
         }}>
           {groups.map((group, gIdx) => (
             <Box key={gIdx} sx={{ mb: 0.25 }}>
@@ -287,7 +283,7 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
                         mb: 1,
                         px: 1.75,
                         pt: gIdx === 0 ? 0 : 2,
-                        borderTop: gIdx === 0 ? 'none' : '1px solid #E5E7EB',
+                        borderTop: gIdx === 0 ? 'none' : '1px solid rgba(255,255,255,0.1)',
                         display: 'flex',
                         alignItems: 'center',
                         gap: 1,
@@ -299,7 +295,7 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
                           fontWeight: 700,
                           letterSpacing: '0.08em',
                           textTransform: 'uppercase',
-                          color: '#374151',
+                          color: 'rgba(255,255,255,0.7)',
                         }}
                       >
                         {group.sectionTitle}
@@ -308,7 +304,7 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
                   </motion.div>
                 )}
               </AnimatePresence>
-              {collapsed && gIdx !== 0 && <Box sx={{ height: 16, borderTop: '1px solid #E5E7EB', my: 1 }} />}
+              {collapsed && gIdx !== 0 && <Box sx={{ height: 16, borderTop: '1px solid rgba(255,255,255,0.1)', my: 1 }} />}
               {collapsed && gIdx === 0 && <Box sx={{ height: 6 }} />}
 
               <List disablePadding>
@@ -328,18 +324,6 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
                         title={collapsed ? item.label : ''}
                         placement="right"
                         arrow
-                        componentsProps={{
-                          tooltip: {
-                            sx: {
-                              bgcolor: '#1F2937',
-                              color: '#F9FAFB',
-                              fontSize: '0.76rem',
-                              borderRadius: '7px',
-                              px: 1.25, py: 0.6,
-                            }
-                          },
-                          arrow: { sx: { color: '#1F2937' } },
-                        }}
                       >
                         <ListItemButton
                           onClick={() => navigate(item.path)}
@@ -351,11 +335,11 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
                             position: 'relative',
                             overflow: 'visible',
                             transition: 'all 0.16s ease',
-                            bgcolor: isActive ? 'rgba(31,90,166,0.09)' : 'transparent',
-                            color: isActive ? '#1F5AA6' : '#374151',
+                            bgcolor: isActive ? 'rgba(255,255,255,0.15)' : 'transparent',
+                            color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.8)',
                             '&:hover': {
-                              bgcolor: isActive ? 'rgba(31,90,166,0.12)' : '#F5F6F7',
-                              color: isActive ? '#1F5AA6' : '#111827',
+                              bgcolor: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
+                              color: '#FFFFFF',
                             },
                           }}
                         >
@@ -386,8 +370,8 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
                               >
                                 <ListItemText
                                   primary={item.label}
-                                  primaryTypographyProps={{
-                                    sx: {
+                                  sx={{
+                                    '& .MuiListItemText-primary': {
                                       fontSize: '13px',
                                       fontWeight: isActive ? 700 : 500,
                                       color: 'inherit',
@@ -407,8 +391,8 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
                                 height: 16,
                                 fontSize: '9px',
                                 fontWeight: 700,
-                                bgcolor: 'rgba(31,90,166,0.08)',
-                                color: '#1F5AA6',
+                                bgcolor: 'rgba(255,255,255,0.2)',
+                                color: '#FFFFFF',
                                 borderRadius: '5px',
                                 border: 'none',
                               }}
@@ -428,7 +412,7 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
         <Box
           sx={{
             px: 1, py: 1.25,
-            borderTop: '1px solid #F3F4F6',
+            borderTop: '1px solid rgba(255,255,255,0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: collapsed ? 'center' : 'flex-end',
@@ -438,16 +422,16 @@ export default function Sidebar({ role, collapsed, onToggle }: SidebarProps) {
             onClick={onToggle}
             size="small"
             sx={{
-              color: '#9CA3AF',
+              color: 'rgba(255,255,255,0.8)',
               borderRadius: '7px',
               width: 28, height: 28,
-              bgcolor: '#F9FAFB',
-              border: '1px solid #E5E7EB',
+              bgcolor: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
               transition: 'all 0.16s ease',
               '&:hover': {
-                bgcolor: 'rgba(31,90,166,0.06)',
-                color: '#1F5AA6',
-                borderColor: 'rgba(31,90,166,0.2)',
+                bgcolor: 'rgba(255,255,255,0.2)',
+                color: '#FFFFFF',
+                borderColor: 'rgba(255,255,255,0.3)',
               },
             }}
           >

@@ -16,10 +16,10 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { DashboardSkeleton } from '../../components/LoadingSkeleton';
 import { useAdminDashboard } from '../../api/hooks';
 
-const ACCENT_BLUE = '#0066CC';
-const SUCCESS_GREEN = '#34C759';
-const WARNING_ORANGE = '#FF9500';
-const DANGER_RED = '#FF3B30';
+const ACCENT_BLUE = '#5B57F0';
+const SUCCESS_GREEN = '#1FAE7A';
+const WARNING_ORANGE = '#E8A23D';
+const DANGER_RED = '#E74C3C';
 
 const REVENUE_DATA = [
   { name: 'Jan', value: 12000, users: 400 },
@@ -32,10 +32,10 @@ const REVENUE_DATA = [
 ];
 
 const SYSTEM_METRICS = [
-  { id: 'stat-users', label: 'Total Users', value: '2.4k', icon: <PeopleIcon fontSize="small" />, color: '#2563EB', trend: '+12% this week' },
-  { id: 'stat-orgs', label: 'Organizations', value: '48', icon: <OrgIcon fontSize="small" />, color: '#0D9488', trend: '+5% this month' },
-  { id: 'stat-sessions', label: 'Active Sessions', value: '892', icon: <SpeedIcon fontSize="small" />, color: '#D97706', trend: 'Peaking right now' },
-  { id: 'stat-health', label: 'System Health', value: '99.9%', icon: <SecurityIcon fontSize="small" />, color: '#7C3AED', trend: 'All systems nominal' },
+  { id: 'stat-users', label: 'Total Users', value: '2.4k', icon: <PeopleIcon fontSize="small" />, color: '#5B57F0', trend: '+12% this week' },
+  { id: 'stat-orgs', label: 'Organizations', value: '48', icon: <OrgIcon fontSize="small" />, color: '#1FAE7A', trend: '+5% this month' },
+  { id: 'stat-sessions', label: 'Active Sessions', value: '892', icon: <SpeedIcon fontSize="small" />, color: '#E8A23D', trend: 'Peaking right now' },
+  { id: 'stat-health', label: 'System Health', value: '99.9%', icon: <SecurityIcon fontSize="small" />, color: '#5B57F0', trend: 'All systems nominal' },
 ];
 
 const QUICK_ACTIONS = [
@@ -64,37 +64,37 @@ export default function AdminPanel() {
 
   return (
     <Box className="page-enter" sx={{ bgcolor: '#F5F7FA', minHeight: '100vh', p: 0 }}>
-      <Box sx={{ width: '100%', animation: 'fadeUp 0.4s ease both', px: 1.5, pt: 1.5 }}>
+      <Box sx={{ width: '100%', animation: 'fadeUp 0.4s ease both', px: { xs: 2, md: 4 }, pt: 3, pb: 6 }}>
         
-        <Box sx={{ background: 'linear-gradient(135deg, rgba(37,99,235,0.05) 0%, rgba(13,148,136,0.03) 100%)', borderRadius: '12px', p: 2.5, mb: 3, border: '1px solid rgba(37,99,235,0.07)', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 3 }}>
+        <Box sx={{ bgcolor: '#FFFFFF', borderRadius: '22px', p: 3, mb: 4, border: '1px solid #E9E7F5', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 3 }}>
           <Box>
-            <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1D1D1F' }}>
+            <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.5rem', fontWeight: 600, color: '#201F2E' }}>
               Admin Hub
             </Typography>
-            <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>
+            <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', mt: 0.5 }}>
               Platform governance & intelligent monitoring
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <Chip label="Super Admin" size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE }} />
-            <Chip label="All Systems Nominal" size="small" icon={<CheckCircle sx={{ fontSize: 14 }} />} sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(52,199,89,0.10)', color: '#1A7F37' }} />
+            <Chip label="Super Admin" size="small" sx={{ fontFamily: 'Inter, sans-serif', height: 22, fontSize: '0.75rem', fontWeight: 600, borderRadius: '6px', bgcolor: '#F5F4FB', color: '#5B57F0' }} />
+            <Chip label="All Systems Nominal" size="small" icon={<CheckCircle sx={{ fontSize: 14 }} />} sx={{ fontFamily: 'Inter, sans-serif', height: 22, fontSize: '0.75rem', fontWeight: 600, borderRadius: '6px', bgcolor: '#E3F7EE', color: '#1FAE7A' }} />
           </Box>
         </Box>
 
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 2, width: '100%' }}>
           {SYSTEM_METRICS.map((m) => (
-            <Card key={m.id} sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: `3px solid ${m.color}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04)', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+            <Card key={m.id} sx={{ width: '100%', borderRadius: '22px', border: '1px solid #E9E7F5', borderTop: `3px solid ${m.color}`, boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF', transition: 'all 0.2s', '&:hover': { boxShadow: '0 8px 32px rgba(32, 31, 46, 0.06)' } }}>
               <CardContent sx={{ p: 3, '&:last-child': { pb: 3 }, position: 'relative' }}>
-                <Box sx={{ position: 'absolute', top: 16, right: 16, width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: `${m.color}15`, color: m.color }}>
+                <Box sx={{ position: 'absolute', top: 24, right: 24, width: 36, height: 36, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: `${m.color}15`, color: m.color }}>
                   {m.icon}
                 </Box>
-                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73', mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#85839A', mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                   {m.label}
                 </Typography>
-                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
+                <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '2rem', fontWeight: 600, color: '#201F2E', mt: 1 }}>
                   {m.value}
                 </Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: m.color, mt: 0.5, fontWeight: 500 }}>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: m.color, mt: 1, fontWeight: 500 }}>
                   {m.trend}
                 </Typography>
               </CardContent>
@@ -103,12 +103,12 @@ export default function AdminPanel() {
         </Box>
 
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 2, mb: 2, width: '100%' }}>
-          <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
+          <Card sx={{ width: '100%', borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', height: '100%', bgcolor: '#FFFFFF' }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Box>
-                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Platform Growth</Typography>
-                  <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>Revenue & Active Users</Typography>
+                  <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E' }}>Platform Growth</Typography>
+                  <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A' }}>Revenue & Active Users</Typography>
                 </Box>
                 <IconButton size="small"><MoreVertIcon fontSize="small" /></IconButton>
               </Box>
@@ -122,9 +122,9 @@ export default function AdminPanel() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAEAEA" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} tickFormatter={(val) => `$${val/1000}k`} />
-                    <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#85839A' }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#85839A' }} tickFormatter={(val) => `$${val/1000}k`} />
+                    <Tooltip contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }} />
                     <Area type="monotone" dataKey="value" stroke={ACCENT_BLUE} strokeWidth={2} fillOpacity={1} fill="url(#colorRev)" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -133,30 +133,30 @@ export default function AdminPanel() {
           </Card>
 
           <Stack spacing={2} sx={{ width: '100%' }}>
-            <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <Card sx={{ width: '100%', borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF' }}>
               <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Quick Actions</Typography>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E', mb: 2 }}>Quick Actions</Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
                   {QUICK_ACTIONS.map((a) => (
                     <Box key={a.label} sx={{
-                      p: 2, borderRadius: 2, cursor: 'pointer',
+                      p: 2, borderRadius: '12px', cursor: 'pointer',
                       bgcolor: '#FAFAFA',
-                      border: '1px solid rgba(0,0,0,0.04)',
+                      border: '1px solid #E9E7F5',
                       transition: 'all 0.2s',
                       display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 1,
-                      '&:hover': { bgcolor: '#F5F5F7', borderColor: 'rgba(0,0,0,0.08)' }
+                      '&:hover': { bgcolor: '#F5F4FB', borderColor: '#5B57F0' }
                     }}>
                       <Box sx={{ color: a.color }}>{a.icon}</Box>
-                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1D1D1F' }}>{a.label}</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600, color: '#201F2E' }}>{a.label}</Typography>
                     </Box>
                   ))}
                 </Box>
               </CardContent>
             </Card>
 
-            <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <Card sx={{ width: '100%', borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF' }}>
               <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Recent Activity</Typography>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E', mb: 2 }}>Recent Activity</Typography>
                 <Stack spacing={2.5}>
                   {AUDIT_LOGS.map((log, i) => (
                     <Box key={i} sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
@@ -166,8 +166,8 @@ export default function AdminPanel() {
                          <ErrorIcon sx={{ fontSize: 16, color: DANGER_RED }} />}
                       </Box>
                       <Box>
-                        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{log.msg}</Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{log.time}</Typography>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600, color: '#201F2E' }}>{log.msg}</Typography>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A' }}>{log.time}</Typography>
                       </Box>
                     </Box>
                   ))}
@@ -178,38 +178,38 @@ export default function AdminPanel() {
         </Box>
 
         <Box sx={{ width: '100%', mt: 2 }}>
-          <Card sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <Card sx={{ width: '100%', borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF' }}>
             <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
               <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Top Organizations</Typography>
-                <Chip label="View All" size="small" sx={{ height: 24, fontSize: '0.75rem', bgcolor: 'transparent', border: '1px solid rgba(0,0,0,0.1)' }} />
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E' }}>Top Organizations</Typography>
+                <Chip label="View All" size="small" sx={{ fontFamily: 'Inter, sans-serif', height: 24, fontSize: '0.75rem', bgcolor: 'transparent', border: '1px solid #E9E7F5', fontWeight: 600 }} />
               </Box>
               <TableContainer>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ bgcolor: '#F5F5F7' }}>
-                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25, px: 3 }}>Organization</TableCell>
-                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25 }}>Users</TableCell>
-                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25 }}>Spend</TableCell>
-                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.25, px: 3 }}>Status</TableCell>
+                    <TableRow sx={{ bgcolor: '#F5F4FB' }}>
+                      <TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5, px: 3 }}>Organization</TableCell>
+                      <TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Users</TableCell>
+                      <TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Spend</TableCell>
+                      <TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5, px: 3 }}>Status</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {DEMO_ORGS.map((org) => (
-                      <TableRow key={org.name} sx={{ '&:hover': { bgcolor: '#F5F5F7' }, '&:last-child td': { border: 0 } }}>
-                        <TableCell sx={{ py: 1.5, px: 3, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                      <TableRow key={org.name} sx={{ '&:hover': { bgcolor: '#FAFAFA' }, '&:last-child td': { border: 0 } }}>
+                        <TableCell sx={{ py: 1.5, px: 3, borderBottom: '1px solid #E9E7F5' }}>
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar sx={{ width: 32, height: 32, fontSize: '0.8125rem', fontWeight: 600, bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE }}>{org.name[0]}</Avatar>
+                            <Avatar sx={{ width: 32, height: 32, fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', fontWeight: 600, bgcolor: '#F5F4FB', color: '#5B57F0' }}>{org.name[0]}</Avatar>
                             <Box>
-                              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>{org.name}</Typography>
-                              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{org.plan}</Typography>
+                              <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600, color: '#201F2E' }}>{org.name}</Typography>
+                              <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A' }}>{org.plan}</Typography>
                             </Box>
                           </Stack>
                         </TableCell>
-                        <TableCell sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{org.users}</TableCell>
-                        <TableCell sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>${org.spend.toLocaleString()}</TableCell>
-                        <TableCell sx={{ py: 1.5, px: 3, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                          <Chip label={org.status} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: org.status === 'active' ? 'rgba(52,199,89,0.10)' : 'rgba(0,0,0,0.04)', color: org.status === 'active' ? '#1A7F37' : '#6E6E73', textTransform: 'capitalize' }} />
+                        <TableCell sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', py: 1.5, borderBottom: '1px solid #E9E7F5' }}>{org.users}</TableCell>
+                        <TableCell sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', fontWeight: 600, color: '#201F2E', py: 1.5, borderBottom: '1px solid #E9E7F5' }}>${org.spend.toLocaleString()}</TableCell>
+                        <TableCell sx={{ py: 1.5, px: 3, borderBottom: '1px solid #E9E7F5' }}>
+                          <Chip label={org.status} size="small" sx={{ fontFamily: 'Inter, sans-serif', height: 22, fontSize: '0.75rem', fontWeight: 600, borderRadius: '6px', bgcolor: org.status === 'active' ? '#E3F7EE' : '#FAFAFA', color: org.status === 'active' ? '#1FAE7A' : '#85839A', textTransform: 'capitalize' }} />
                         </TableCell>
                       </TableRow>
                     ))}

@@ -1,6 +1,8 @@
 // AI360 VS Code Extension – Backend API & Agentic Engine Client
 import axios, { AxiosInstance } from 'axios';
+import * as vscode from 'vscode';
 import { AuthManager } from '../auth/AuthManager';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 
 export interface PromptOptimizationResult {
   originalScore: number;
@@ -43,93 +45,255 @@ export class ApiClient {
     });
   }
 
+  private getGeminiKey(): string {
+    const config = vscode.workspace.getConfiguration('ai360');
+    return config.get<string>('geminiApiKey') || '';
+  }
+
+  private getGenAI(): GoogleGenerativeAI | null {
+    const key = this.getGeminiKey();
+    if (!key) return null;
+    return new GoogleGenerativeAI(key);
+  }
+
+  // --- File System Operations Tool Execution ---
+  private async executeFileOperation(callName: string, args: any): Promise<string> {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || workspaceFolders.length === 0) {
+      return JSON.stringify({ error: "No workspace folder open." });
+    }
+    const rootPath = workspaceFolders[0].uri;
+    
+    try {
+      if (callName === 'createFile' || callName === 'editFile') {
+        const filePath = args.filePath;
+        const content = args.content;
+        const fileUri = vscode.Uri.joinPath(rootPath, filePath);
+        
+        const action = callName === 'createFile' ? 'Create' : 'Edit';
+        const userChoice = await vscode.window.showWarningMessage(
+          `AI Agent wants to ${action} file: ${filePath}`, 
+          { modal: true }, 
+          'Allow', 'Deny'
+        );
+        
+        if (userChoice === 'Allow') {
+          const encoder = new TextEncoder();
+          await vscode.workspace.fs.writeFile(fileUri, encoder.encode(content));
+          return JSON.stringify({ success: true, message: `File ${filePath} successfully ${callName === 'createFile' ? 'created' : 'updated'}.` });
+        } else {
+          return JSON.stringify({ error: `User denied permission to ${action} file ${filePath}.` });
+        }
+      } 
+      else if (callName === 'deleteFile') {
+        const filePath = args.filePath;
+        const fileUri = vscode.Uri.joinPath(rootPath, filePath);
+        
+        const userChoice = await vscode.window.showWarningMessage(
+          `AI Agent wants to DELETE file: ${filePath}`, 
+          { modal: true }, 
+          'Allow Delete', 'Deny'
+        );
+        
+        if (userChoice === 'Allow Delete') {
+          await vscode.workspace.fs.delete(fileUri, { useTrash: true });
+          return JSON.stringify({ success: true, message: `File ${filePath} successfully deleted.` });
+        } else {
+          return JSON.stringify({ error: `User denied permission to delete file ${filePath}.` });
+        }
+      }
+      return JSON.stringify({ error: `Unknown function call: ${callName}` });
+    } catch (error: any) {
+      return JSON.stringify({ error: error.message });
+    }
+  }
+
   public async sendAgentChat(
     messages: Array<{ role: string; content: string }>,
     model: string,
     workspaceContext?: { activeFile?: string; fileContent?: string; selectedText?: string }
-  ): Promise<{ content: string; estimatedCostUSD: number; totalTokens: number }> {
+  ): Promise<{ content: string; estimatedCostUSD: number; totalTokens: number; inputTokens: number; outputTokens: number }> {
+    const genAI = this.getGenAI();
+    
+    if (!genAI) {
+      vscode.window.showWarningMessage('AI360: Gemini API key not found in settings. Please configure ai360.geminiApiKey.');
+      return { content: 'Error: Please configure your Gemini API Key in VS Code Settings (`ai360.geminiApiKey`) to use AI features.', estimatedCostUSD: 0, totalTokens: 0, inputTokens: 0, outputTokens: 0 };
+    }
+
     try {
-      const response = await this.client.post('/chat/agent', {
-        messages,
-        model,
-        context: workspaceContext
+      const geminiModelName = model.startsWith('gemini') ? model : 'gemini-1.5-pro';
+      
+      const fileTools: any = [{
+        functionDeclarations: [
+          {
+            name: "createFile",
+            description: "Creates a new file in the workspace.",
+            parameters: {
+              type: SchemaType.OBJECT,
+              properties: {
+                filePath: { type: SchemaType.STRING, description: "Relative path to the file to create." },
+                content: { type: SchemaType.STRING, description: "Content of the file." }
+              },
+              required: ["filePath", "content"]
+            }
+          },
+          {
+            name: "editFile",
+            description: "Edits an existing file in the workspace by completely replacing its contents.",
+            parameters: {
+              type: SchemaType.OBJECT,
+              properties: {
+                filePath: { type: SchemaType.STRING, description: "Relative path to the file to edit." },
+                content: { type: SchemaType.STRING, description: "New content of the file." }
+              },
+              required: ["filePath", "content"]
+            }
+          },
+          {
+            name: "deleteFile",
+            description: "Deletes a file from the workspace.",
+            parameters: {
+              type: SchemaType.OBJECT,
+              properties: {
+                filePath: { type: SchemaType.STRING, description: "Relative path to the file to delete." }
+              },
+              required: ["filePath"]
+            }
+          }
+        ]
+      }];
+
+      const geminiModel = genAI.getGenerativeModel({ 
+        model: geminiModelName,
+        tools: fileTools
       });
-      return response.data.data || response.data;
+      
+      let systemInstruction = "You are AI360 Copilot, an expert AI assistant and principal software architect. IMPORTANT: If the user asks you to create, edit, or delete a file, YOU MUST USE THE PROVIDED FUNCTION CALLING TOOLS (`createFile`, `editFile`, `deleteFile`). DO NOT JUST OUTPUT MARKDOWN CODE BLOCKS. YOU MUST CALL THE TOOL.";
+      if (workspaceContext) {
+        systemInstruction += `\nWorkspace Context:\nActive File: ${workspaceContext.activeFile || 'None'}\n`;
+        if (workspaceContext.selectedText) {
+          systemInstruction += `Selected Text:\n\`\`\`\n${workspaceContext.selectedText}\n\`\`\`\n`;
+        }
+      }
+
+      const lastMessage = messages.pop();
+      const history = messages.map(msg => ({
+        role: msg.role === 'ai' || msg.role === 'model' ? 'model' : 'user',
+        parts: [{ text: msg.content }]
+      }));
+
+      const promptText = `System Context: ${systemInstruction}\n\nUser Request: ${lastMessage?.content}`;
+      const chat = geminiModel.startChat({ history });
+      
+      let result = await chat.sendMessage(promptText);
+      let functionCalls = result.response.functionCalls();
+      let responseText = '';
+      try { responseText = result.response.text(); } catch(e) {}
+      
+      let inputTokens = result.response.usageMetadata?.promptTokenCount || Math.round(promptText.length / 3.8);
+      let outputTokens = result.response.usageMetadata?.candidatesTokenCount || Math.round(responseText.length / 3.8);
+
+      // Handle function calling loop
+      if (functionCalls && functionCalls.length > 0) {
+        const call = functionCalls[0];
+        const functionResponseString = await this.executeFileOperation(call.name, call.args);
+        
+        // Send function response back to Gemini to get final output
+        result = await chat.sendMessage([{
+          functionResponse: {
+            name: call.name,
+            response: { result: functionResponseString }
+          }
+        }]);
+        
+        try { responseText = result.response.text(); } catch(e) {}
+        inputTokens += result.response.usageMetadata?.promptTokenCount || 0;
+        outputTokens += result.response.usageMetadata?.candidatesTokenCount || Math.round(responseText.length / 3.8);
+      }
+
+      const totalTokens = inputTokens + outputTokens;
+      const estimatedCostUSD = (totalTokens / 1000) * 0.000075;
+      return { content: responseText, estimatedCostUSD, totalTokens, inputTokens, outputTokens };
     } catch (error: any) {
-      console.warn('Backend server offline or unreachable, utilizing embedded Agentic engine:', error.message);
-      return this.simulateAgenticResponse(messages, model, workspaceContext);
+      console.error('Gemini API Error:', error);
+      return { content: `Error from Gemini API: ${error.message}`, estimatedCostUSD: 0, totalTokens: 0, inputTokens: 0, outputTokens: 0 };
+    }
+  }
+
+  public async sendTelemetry(prompt: string, score: number, inputTokens: number, outputTokens: number, totalTokens: number, model: string): Promise<void> {
+    try {
+      await this.client.post('/telemetry/usage', {
+        prompt_text: prompt,
+        prompt_score: score,
+        input_tokens: inputTokens,
+        output_tokens: outputTokens,
+        total_tokens: totalTokens,
+        model: model
+      });
+    } catch (error) {
+      console.error('Failed to send telemetry:', error);
     }
   }
 
   public async optimizePrompt(promptText: string): Promise<PromptOptimizationResult> {
-    try {
-      const res = await this.client.post('/prompt/optimize', { prompt: promptText });
-      if (res.data && res.data.data) return res.data.data;
-      if (res.data && res.data.optimized_prompt) {
-        return {
-          originalScore: Math.round(res.data.original_score?.overall || 58),
-          newScore: Math.round(Math.min(99, (res.data.original_score?.overall || 58) + 25)),
-          clarity: Math.round(res.data.original_score?.clarity || 90),
-          context: Math.round(res.data.original_score?.context || 88),
-          specificity: Math.round(res.data.original_score?.specificity || 92),
-          structure: Math.round(res.data.original_score?.structure || 90),
-          optimizedPrompt: res.data.optimized_prompt,
-          tokenSavingsPercent: Math.round(res.data.estimated_improvement || 25),
-          suggestions: res.data.original_score?.suggestions || ['Optimized using Gemini Flash via AI360 backend']
-        };
-      }
-    } catch (error) {
-      console.warn('Using fallback prompt optimization engine');
+    const genAI = this.getGenAI();
+    if (!genAI) {
+      return this.fallbackOptimizePrompt(promptText);
     }
 
-    const words = promptText.trim().split(/\s+/).length;
-    const isDetailed = words > 15 && (promptText.includes('return') || promptText.includes('format'));
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+      const analysisPrompt = `You are an expert prompt engineer. Analyze the following user prompt, score it, and provide an optimized version that is more effective for an AI coding assistant.
+      
+User Prompt:
+"${promptText}"
 
-    const originalScore = isDetailed ? 74 : 58;
-    const newScore = Math.min(96, originalScore + 26);
+Return a JSON object with this exact structure:
+{
+  "originalScore": (number 1-100),
+  "newScore": (number 1-100),
+  "clarity": (number 1-100),
+  "context": (number 1-100),
+  "specificity": (number 1-100),
+  "structure": (number 1-100),
+  "optimizedPrompt": "(string) the much better prompt",
+  "tokenSavingsPercent": (number),
+  "suggestions": ["suggestion 1", "suggestion 2"]
+}
+Only output the valid JSON object, no markdown formatting like \`\`\`json.`;
 
-    const optimizedPrompt = `### Role & Context\nYou are an expert principal software architect and full-stack engineer. Analyze the provided workspace codebase and execute precise modifications.\n\n### Objective\n${promptText.trim()}\n\n### Technical Constraints\n1. Enforce rigorous strict TypeScript and modular architectural boundaries.\n2. Ensure zero breaking changes to public APIs and handle all potential error edge cases cleanly.\n3. Return executable code blocks formatted with explicit target file paths (e.g. \`\`\`typescript file="src/path.ts"\`\`\`) for automated editor application.`;
+      const result = await model.generateContent(analysisPrompt);
+      const text = await result.response.text();
+      const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      return JSON.parse(cleanJson) as PromptOptimizationResult;
+    } catch (error) {
+      console.error('Failed to optimize with Gemini, using fallback', error);
+      return this.fallbackOptimizePrompt(promptText);
+    }
+  }
 
+  private fallbackOptimizePrompt(promptText: string): PromptOptimizationResult {
     return {
-      originalScore,
-      newScore,
+      originalScore: 58,
+      newScore: 84,
       clarity: 92,
       context: 88,
       specificity: 95,
       structure: 90,
-      optimizedPrompt,
+      optimizedPrompt: `### Context\nYou are an expert architect.\n\n### Objective\n${promptText}\n\n### Output\nReturn executable code.`,
       tokenSavingsPercent: 28,
-      suggestions: [
-        'Added explicit architectural role definition to eliminate generic boilerplate answers.',
-        'Enforced strict syntax constraint formatting for direct automated workspace code application.',
-        'Structured context parameters to prevent AI model hallucination and retry loops.'
-      ]
+      suggestions: ['Added architectural role', 'Enforced syntax constraints']
     };
   }
 
   public async evaluateModelRouting(taskOrPrompt: string): Promise<{ taskType: string; recommendedModel: string; reasoning: string; estimatedCostPer1kTokens: number; latencyMs: number; costSavingsPercent: number }> {
-    try {
-      const res = await this.client.post('/recommendations/model-routing', { task_or_prompt: taskOrPrompt });
-      if (res.data) {
-        return {
-          taskType: res.data.task_type || 'Summarization',
-          recommendedModel: res.data.recommended_model || 'Gemini 1.5 Flash',
-          reasoning: res.data.reasoning || 'Ultra-fast latency and disruptive cost-efficiency.',
-          estimatedCostPer1kTokens: res.data.estimated_cost_per_1k_tokens ?? 0.05,
-          latencyMs: res.data.latency_ms ?? 280,
-          costSavingsPercent: res.data.cost_savings_percent ?? 78
-        };
-      }
-    } catch (e) {
-      /* fallback */
-    }
     return {
-      taskType: 'Summarization',
-      recommendedModel: 'Gemini 1.5 Flash',
-      reasoning: 'Gemini Flash provides industry-leading ultra-fast latency and disruptive cost-efficiency for standard workflow tasks.',
-      estimatedCostPer1kTokens: 0.05,
-      latencyMs: 280,
-      costSavingsPercent: 78
+      taskType: 'Dynamically Routed Task',
+      recommendedModel: 'Gemini 3.5 Flash',
+      reasoning: 'Gemini 3.5 Flash is highly capable and cost-effective for this task via the direct API.',
+      estimatedCostPer1kTokens: 0.075,
+      latencyMs: 350,
+      costSavingsPercent: 85
     };
   }
 
@@ -149,84 +313,23 @@ export class ApiClient {
         }));
       }
     } catch (e) {
-      /* fallback */
+      // Fallback
     }
-
     return [
       {
         id: 'rec-1',
-        title: 'Switch routine unit test generation to Gemini 1.5 Flash',
+        title: 'Gemini API is Active',
         category: 'finops_savings',
-        impact: '-65% Cost Reduction',
-        description: 'Your recent testing prompts utilize Claude 3.5 Sonnet ($3/1M input). Switching test generation tasks to Gemini 1.5 Flash preserves accuracy while saving up to $14.50 weekly.',
-        actionText: 'Apply Model Switch',
-        actionCommand: 'switch_model_gemini_flash'
-      },
-      {
-        id: 'rec-2',
-        title: 'Enable Workspace Prompt Caching',
-        category: 'model_efficiency',
-        impact: '4.2x Faster Response',
-        description: 'You repeatedly include the same imports and interface declarations across sessions. Enabling Prompt Caching reduces token redundancy by 78%.',
-        actionText: 'Enable Caching',
-        actionCommand: 'enable_prompt_caching'
-      },
-      {
-        id: 'rec-3',
-        title: 'Adopt Structured System Constraints',
-        category: 'prompt_architecture',
-        impact: '+34% Prompt Score',
-        description: 'Using explicit output formatting directives cuts down conversational clarification turns by half, conserving token budget.',
-        actionText: 'Open Prompt Studio',
-        actionCommand: 'open_prompt_studio'
-      },
-      {
-        id: 'rec-4',
-        title: 'Automated Secrets Masking Active',
-        category: 'security',
-        impact: 'Enterprise Protected',
-        description: 'AI360 automatically intercepts and sanitizes local API keys, JWT tokens, and credentials before transmitting workspace context to LLM providers.',
-        actionText: 'View Security Rules',
-        actionCommand: 'view_security'
+        impact: 'Live AI API',
+        description: 'You are natively connected to Gemini API for real AI reasoning capabilities.',
+        actionText: 'Great!',
+        actionCommand: ''
       }
     ];
   }
 
-  private async simulateAgenticResponse(
-    messages: Array<{ role: string; content: string }>,
-    model: string,
-    context?: { activeFile?: string; fileContent?: string; selectedText?: string }
-  ): Promise<{ content: string; estimatedCostUSD: number; totalTokens: number }> {
-    const lastMsg = (messages[messages.length - 1]?.content || '').toLowerCase();
-    const activeFile = context?.activeFile || 'src/example.ts';
-    let reply = '';
-
-    if (lastMsg.includes('refactor') || lastMsg.includes('improve') || lastMsg.includes('optimize') || context?.selectedText) {
-      reply = `I have analyzed your code structure in **\`${activeFile}\`** and engineered an optimized refactoring with improved error handling, strict type precision, and modular structure:\n\n\`\`\`typescript file="${activeFile}"\n// Refactored via AI360 Agent (${model})\nexport async function processDataRobust(input: Record<string, unknown>, timeoutMs = 5000): Promise<void> {\n  if (!input || Object.keys(input).length === 0) {\n    throw new Error("Invalid input payload: parameters cannot be empty.");\n  }\n\n  const controller = new AbortController();\n  const timer = setTimeout(() => controller.abort(), timeoutMs);\n\n  try {\n    console.log("Executing high-performance processing workflow...", input);\n    await new Promise(resolve => setTimeout(resolve, 300));\n  } catch (err: unknown) {\n    console.error("Pipeline failure:", err instanceof Error ? err.message : String(err));\n    throw err;\n  } finally {\n    clearTimeout(timer);\n  }\n}\n\`\`\`\n\n**Next Steps:** Use the **Apply** button on the code block above to directly insert this refactoring into your active editor.`;
-    } else if (lastMsg.includes('explain') || lastMsg.includes('what') || lastMsg.includes('how')) {
-      reply = `### Codebase Architecture Analysis\n\nIn your active workspace context **\`${activeFile}\`**:\n\n1. **Execution Flow:** The code utilizes asynchronous TypeScript patterns and modular exports.\n2. **Performance Profile:** Memory footprint is compact with efficient object garbage collection.\n3. **FinOps & Security Audit:** No API key leakages or memory recursion loops detected.\n\nLet me know if you want to generate automated unit tests or refactor functions for higher performance.`;
-    } else if (lastMsg.includes('create') || lastMsg.includes('build') || lastMsg.includes('component') || lastMsg.includes('file')) {
-      const newPath = 'src/components/AIAssistantCard.tsx';
-      reply = `I have implemented the component with reactive state styling and modular architecture. Here is the code:\n\n\`\`\`typescript file="${newPath}"\nimport React, { useState } from 'react';\n\nexport interface IAIAssistantProps {\n  title: string;\n  tokenBalance: number;\n  onOptimize: () => void;\n}\n\nexport const AIAssistantCard: React.FC<IAIAssistantProps> = ({ title, tokenBalance, onOptimize }) => {\n  const [isOptimizing, setIsOptimizing] = useState(false);\n\n  const handleClick = async () => {\n    setIsOptimizing(true);\n    await onOptimize();\n    setIsOptimizing(false);\n  };\n\n  return (\n    <div className="p-4 bg-slate-900 border border-purple-500/30 rounded-xl shadow-lg text-white font-sans">\n      <div className="flex justify-between items-center mb-2">\n        <h3 className="font-bold text-base text-purple-400">{title}</h3>\n        <span className="text-xs px-2 py-1 bg-purple-500/20 rounded-full text-purple-300">\n          {tokenBalance.toLocaleString()} tokens remaining\n        </span>\n      </div>\n      <p className="text-sm text-slate-300 mb-4">\n        Real-time telemetry and prompt optimization enabled.\n      </p>\n      <button\n        onClick={handleClick}\n        disabled={isOptimizing}\n        className="w-full py-2 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 rounded-lg font-semibold text-sm transition shadow-md"\n      >\n        {isOptimizing ? 'Optimizing...' : 'Optimize Workspace Prompt'}\n      </button>\n    </div>\n  );\n};\n\`\`\`\n\nClick **Save** on the header above to create this file in your workspace directory.`;
-    } else {
-      reply = `Hello! I am your **AI360 Copilot** powered by **${model}**. I provide:\n\n- **Workspace Coding:** Read, edit, and apply code directly to files in your directory.\n- **Prompt Optimization:** Score and structure instructions to reduce token usage.\n- **FinOps Telemetry:** Real-time cost and token tracking for your enterprise session.\n- **Intelligent Recommendations:** Advice on model selection and architectural efficiency.\n\nHow can I assist your engineering tasks today?`;
-    }
-
-    const words = (messages.reduce((acc, m) => acc + m.content.length, 0) + reply.length) / 4;
-    const totalTokens = Math.max(350, Math.round(words));
-    const estimatedCostUSD = (totalTokens / 1000) * 0.0035;
-
-    return { content: reply, estimatedCostUSD, totalTokens };
-  }
-
-  public async getPromptCoach(promptText: string, model: string = 'gemini-1.5-flash'): Promise<any> {
-    try {
-      const res = await this.client.post('/prompt/coach', { prompt: promptText, model });
-      return res.data.data || res.data;
-    } catch (e) {
-      console.warn('Fallback prompt coach offline');
-      return null;
-    }
+  public async getPromptCoach(promptText: string, model: string = 'gemini-3.5-flash'): Promise<any> {
+    return null;
   }
 
   public async getCloudPromptHistory(category?: string): Promise<any[]> {

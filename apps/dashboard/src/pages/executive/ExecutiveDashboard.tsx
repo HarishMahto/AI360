@@ -65,7 +65,8 @@ const DEMO_FORECAST_DATA = [
 export default function ExecutiveDashboard() {
   const { data: serverData } = useExecutiveDashboard();
   const { data: maturityData } = useMaturityScore();
-  const olsForecast = useOLSRegression().data!;
+  const { data: olsData } = useOLSRegression();
+  const olsForecast = olsData || { nextMonthForecast: 0, trendDirection: 'stable', isSignificant: false };
   const { data: deptData } = useDepartmentAnalytics();
   const { data: forecastApiData } = useForecast();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -95,7 +96,8 @@ export default function ExecutiveDashboard() {
   const adoptionPct: number = totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 88;
 
   // Single source of truth for every ROI/net-value figure shown on this page (Overview KPI, ROI tab, FinOps tab).
-  const roi = useROICalculator(totalHoursSaved, 50, stats.total_spend_usd ?? 280000).data!;
+  const { data: roiData } = useROICalculator(totalHoursSaved, 50, stats.total_spend_usd ?? 280000);
+  const roi = roiData || { netROIPercentage: 0, businessValueGenerated: 0, netROI: 0 };
 
   // /analytics/department returns either a bare array or { department, rankings }; normalize once here
   // so all 3 consumers below (overview widget, roi-spend table, rankings tab) get a real array.
@@ -145,121 +147,121 @@ export default function ExecutiveDashboard() {
     <Box className="page-enter" sx={{ px: { xs: 1, md: 1.5 }, pt: { xs: 1, md: 1.5 }, width: '100%', bgcolor: '#F0F5F3', minHeight: '100vh', overflow: 'hidden' }}>
       
       {/* HEADER (Square workspace container) */}
-      <Box sx={{ background: 'linear-gradient(135deg, rgba(44,122,123,0.08) 0%, rgba(56,161,105,0.05) 100%)', borderRadius: 0, p: 2.5, mb: 3, border: '1px solid rgba(43,108,93,0.14)', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 3 }}>
+      <Box sx={{ background: '#FFFFFF', borderRadius: '22px', p: 3, mb: 3, border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 3 }}>
         <Stack direction="row" spacing={3} alignItems="center">
-          <Avatar sx={{ width: 64, height: 64, bgcolor: 'rgba(44,122,123,0.10)', color: '#2C7A7B', border: '1px solid rgba(43,108,93,0.16)' }}>
+          <Avatar sx={{ width: 64, height: 64, bgcolor: '#F5F4FB', color: '#5B57F0' }}>
             <AIIcon sx={{ fontSize: 32 }} />
           </Avatar>
           <Box>
             <Stack direction="row" spacing={1.5} alignItems="center" mb={0.5}>
-              <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#1A2F29' }}>
+              <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 600, color: '#201F2E' }}>
                 Executive Command Center
               </Typography>
-              <Chip label="Organization View" size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(44,122,123,0.10)', color: '#2C7A7B' }} />
+              <Chip label="Organization View" size="small" sx={{ fontFamily: 'Inter, sans-serif', height: 22, fontSize: '0.75rem', fontWeight: 600, borderRadius: '6px', bgcolor: '#F5F4FB', color: '#5B57F0' }} />
             </Stack>
-            <Typography sx={{ fontSize: '0.8125rem', color: '#4A655D' }}>
+            <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', color: '#85839A' }}>
               Org spend, ROI value, enterprise time saved, and department rankings.
             </Typography>
           </Box>
         </Stack>
 
-        <Card sx={{ borderRadius: 0, border: '1px solid rgba(43,108,93,0.14)', boxShadow: '0 1px 3px rgba(43,108,93,0.04)', minWidth: 200 }}>
+        <Card sx={{ borderRadius: '16px', border: '1px solid #E9E7F5', boxShadow: 'none', minWidth: 200, bgcolor: '#FAFAFA' }}>
           <CardContent sx={{ p: 2, '&:last-child': { pb: 2 }, textAlign: 'center' }}>
-            <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#4A655D', mb: 0.5 }}>
+            <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#85839A', mb: 0.5 }}>
               AI Maturity Index
             </Typography>
-            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums', color: '#1A2F29' }}>
-              {stats.maturity_index} <Typography component="span" sx={{ fontSize: '1rem', color: '#4A655D', fontWeight: 500 }}>/ 100</Typography>
+            <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1.75rem', fontWeight: 600, color: '#201F2E' }}>
+              {stats.maturity_index} <Typography component="span" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', color: '#85839A', fontWeight: 500 }}>/ 100</Typography>
             </Typography>
-            <Chip label="Stage 4 (Advanced)" size="small" sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600, borderRadius: 1, bgcolor: 'rgba(56,161,105,0.10)', color: '#276749', mt: 1 }} />
+            <Chip label="Stage 4 (Advanced)" size="small" sx={{ fontFamily: 'Inter, sans-serif', height: 22, fontSize: '0.75rem', fontWeight: 600, borderRadius: '6px', bgcolor: '#E3F7EE', color: '#1FAE7A', mt: 1 }} />
           </CardContent>
         </Card>
       </Box>
 
         {/* KPIs */}
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(5, 1fr)' }, gap: 2, mb: 4, width: '100%' }}>
-          <Card onClick={() => setSelectedDrilldown('spend')} sx={{ width: '100%', borderRadius: 0, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+          <Card onClick={() => setSelectedDrilldown('spend')} sx={{ width: '100%', borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 6px 24px rgba(32, 31, 46, 0.05)', borderColor: '#D1CFE3' } }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#85839A' }}>
                   Total Org Spend
                 </Typography>
-                <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
+                <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#F5F4FB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5B57F0' }}>
                   <AttachMoney fontSize="small" />
                 </Box>
               </Box>
-              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
+              <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1.75rem', fontWeight: 600, color: '#201F2E' }}>
                 ${(stats.total_spend_usd / 1000).toFixed(0)}k YTD
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>+8% budget alignment</Typography>
+              <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A', mt: 0.5 }}>+8% budget alignment</Typography>
             </CardContent>
           </Card>
 
-          <Card onClick={() => setSelectedDrilldown('spend')} sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #0D9488', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+          <Card onClick={() => setSelectedDrilldown('spend')} sx={{ width: '100%', borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 6px 24px rgba(32, 31, 46, 0.05)', borderColor: '#D1CFE3' } }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#85839A' }}>
                   AI ROI Value
                 </Typography>
-                <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(13,148,136,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0D9488' }}>
+                <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#E3F7EE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1FAE7A' }}>
                   <TrendingUp fontSize="small" />
                 </Box>
               </Box>
-              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: SUCCESS_GREEN, fontVariantNumeric: 'tabular-nums' }}>
+              <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1.75rem', fontWeight: 600, color: '#1FAE7A' }}>
                 {roi.netROIPercentage}% ROI
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: SUCCESS_GREEN, mt: 0.5 }}>${(roi.businessValueGenerated / 1_000_000).toFixed(2)}M Net Value</Typography>
+              <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#1FAE7A', mt: 0.5 }}>${(roi.businessValueGenerated / 1_000_000).toFixed(2)}M Net Value</Typography>
             </CardContent>
           </Card>
 
-          <Card onClick={() => setSelectedDrilldown('hours')} sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #D97706', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+          <Card onClick={() => setSelectedDrilldown('hours')} sx={{ width: '100%', borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 6px 24px rgba(32, 31, 46, 0.05)', borderColor: '#D1CFE3' } }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#85839A' }}>
                   Time Saved
                 </Typography>
-                <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(217,119,6,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706' }}>
+                <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#FCF0DE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E8A23D' }}>
                   <Savings fontSize="small" />
                 </Box>
               </Box>
-              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
+              <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1.75rem', fontWeight: 600, color: '#201F2E' }}>
                 {totalHoursSaved.toLocaleString()}h
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>Equivalent to {Math.round(totalHoursSaved / 8).toLocaleString()} days</Typography>
+              <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A', mt: 0.5 }}>Equivalent to {Math.round(totalHoursSaved / 8).toLocaleString()} days</Typography>
             </CardContent>
           </Card>
 
-          <Card onClick={() => setSelectedDrilldown('rankings')} sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #7C3AED', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+          <Card onClick={() => setSelectedDrilldown('rankings')} sx={{ width: '100%', borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 6px 24px rgba(32, 31, 46, 0.05)', borderColor: '#D1CFE3' } }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#85839A' }}>
                   Active Users
                 </Typography>
-                <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7C3AED' }}>
+                <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#F5F4FB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5B57F0' }}>
                   <Groups fontSize="small" />
                 </Box>
               </Box>
-              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.03em', color: '#1D1D1F', fontVariantNumeric: 'tabular-nums' }}>
+              <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1.75rem', fontWeight: 600, color: '#201F2E' }}>
                 {activeUsers.toLocaleString()}
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>{adoptionPct}% org adoption</Typography>
+              <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A', mt: 0.5 }}>{adoptionPct}% org adoption</Typography>
             </CardContent>
           </Card>
 
-          <Card onClick={() => setSelectedDrilldown('recommendations')} sx={{ width: '100%', borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', borderTop: '3px solid #2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)', borderColor: 'rgba(0,0,0,0.14)' } }}>
+          <Card onClick={() => setSelectedDrilldown('recommendations')} sx={{ width: '100%', borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { boxShadow: '0 6px 24px rgba(32, 31, 46, 0.05)', borderColor: '#D1CFE3' } }}>
             <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#85839A' }}>
                   Next Investment
                 </Typography>
-                <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
+                <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#F5F4FB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5B57F0' }}>
                   <Lightbulb fontSize="small" />
                 </Box>
               </Box>
-              <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em', color: ACCENT_BLUE, pt: 1, pb: 0.5 }}>
+              <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#5B57F0', pt: 1, pb: 0.5 }}>
                 Sales Prompts
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>+35% growth opportunity</Typography>
+              <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A' }}>+35% growth opportunity</Typography>
             </CardContent>
           </Card>
         </Box>
@@ -270,11 +272,11 @@ export default function ExecutiveDashboard() {
           {activeTab === 0 && (
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' }, gap: 2, width: '100%' }}>
               <Box sx={{ width: '100%' }}>
-                <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
+                <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', height: '100%', bgcolor: '#FFFFFF' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Box sx={{ mb: 3 }}>
-                      <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Spend vs Value Created</Typography>
-                      <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>Trailing 7-month correlation</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E' }}>Spend vs Value Created</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A' }}>Trailing 7-month correlation</Typography>
                     </Box>
                     <Box sx={{ height: 320, width: '100%' }}>
                       <ResponsiveContainer>
@@ -303,30 +305,30 @@ export default function ExecutiveDashboard() {
               </Box>
 
               <Box sx={{ width: '100%' }}>
-                <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
+                <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', height: '100%', bgcolor: '#FFFFFF' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                      <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Department Rankings</Typography>
-                      <Button size="small" variant="text" sx={{ color: ACCENT_BLUE, textTransform: 'none', fontSize: '0.8125rem' }} onClick={() => setSearchParams({ tab: 'rankings' })}>View All</Button>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E' }}>Department Rankings</Typography>
+                      <Button size="small" variant="text" sx={{ fontFamily: 'Inter, sans-serif', color: '#5B57F0', textTransform: 'none', fontSize: '0.85rem', fontWeight: 600 }} onClick={() => setSearchParams({ tab: 'rankings' })}>View All</Button>
                     </Stack>
-                    <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mb: 3 }}>Ranked by adoption & efficiency</Typography>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', mb: 3 }}>Ranked by adoption & efficiency</Typography>
 
                     <Stack spacing={2}>
                       {deptRankings.slice(0, 4).map((d: any, idx: number) => {
                         const rank = d.rank ?? idx + 1;
                         const adoptionLabel = d.adoption ?? (typeof d.adoption_pct === 'number' ? `${d.adoption_pct}%` : '—');
                         return (
-                          <Box key={d.dept || rank} sx={{ p: 2, borderRadius: 2, border: '1px solid rgba(0,0,0,0.06)', bgcolor: '#F5F5F7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Box key={d.dept || rank} sx={{ p: 2, borderRadius: '12px', border: '1px solid #E9E7F5', bgcolor: '#F5F4FB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Stack direction="row" spacing={2} alignItems="center">
-                              <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#AEAEB2', width: 20 }}>{rank}</Typography>
+                              <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1rem', fontWeight: 600, color: '#85839A', width: 20 }}>{rank}</Typography>
                               <Box>
-                                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>{d.dept}</Typography>
-                                <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{d.users} Users • {adoptionLabel} Adoption</Typography>
+                                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600, color: '#201F2E' }}>{d.dept}</Typography>
+                                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A' }}>{d.users} Users • {adoptionLabel} Adoption</Typography>
                               </Box>
                             </Stack>
                             <Box sx={{ textAlign: 'right' }}>
-                              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: SUCCESS_GREEN }}>{d.roi ?? '—'} ROI</Typography>
-                              <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{(d.hoursSaved ?? 0).toLocaleString()}h</Typography>
+                              <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', fontWeight: 600, color: '#1FAE7A' }}>{d.roi ?? '—'} ROI</Typography>
+                              <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A' }}>{(d.hoursSaved ?? 0).toLocaleString()}h</Typography>
                             </Box>
                           </Box>
                         );
@@ -337,10 +339,10 @@ export default function ExecutiveDashboard() {
               </Box>
 
               <Box sx={{ width: '100%' }}>
-                <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
+                <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', height: '100%', bgcolor: '#FFFFFF' }}>
                   <CardContent sx={{ p: 3 }}>
-                    <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>Forward Budget Forecast</Typography>
-                    <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mb: 3 }}>Projected future AI spend</Typography>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E', mb: 0.5 }}>Forward Budget Forecast</Typography>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', mb: 3 }}>Projected future AI spend</Typography>
                     <Box sx={{ height: 320 }}>
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={forecastApiData?.forecastData || DEMO_FORECAST_DATA} margin={{ left: -20, bottom: 0 }}>
@@ -358,24 +360,24 @@ export default function ExecutiveDashboard() {
               </Box>
 
               <Box sx={{ width: '100%' }}>
-                <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
+                <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', height: '100%', bgcolor: '#FFFFFF' }}>
                   <CardContent sx={{ p: 3 }}>
-                    <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 0.5 }}>Investment Recommendations</Typography>
-                    <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mb: 3 }}>Strategic AI guidance</Typography>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E', mb: 0.5 }}>Investment Recommendations</Typography>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', mb: 3 }}>Strategic AI guidance</Typography>
                     <Stack spacing={2}>
-                      <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(0,102,204,0.04)', borderLeft: `3px solid ${ACCENT_BLUE}` }}>
-                        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: ACCENT_BLUE, mb: 0.5 }}>
+                      <Box sx={{ p: 2, borderRadius: '12px', bgcolor: '#F5F4FB', borderLeft: `3px solid #5B57F0` }}>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600, color: '#5B57F0', mb: 0.5 }}>
                           Invest $50K in Sales Team Prompts
                         </Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A' }}>
                           Increasing adoption to 88% will generate an estimated +$320K in annual deal velocity value.
                         </Typography>
                       </Box>
-                      <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(52,199,89,0.04)', borderLeft: `3px solid ${SUCCESS_GREEN}` }}>
-                        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: SUCCESS_GREEN, mb: 0.5 }}>
+                      <Box sx={{ p: 2, borderRadius: '12px', bgcolor: '#E3F7EE', borderLeft: `3px solid #1FAE7A` }}>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600, color: '#1FAE7A', mb: 0.5 }}>
                           Migrate 40% Summarization to Gemini 1.5 Flash
                         </Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A' }}>
                           Switching from GPT-4o will cut annual cost by $35,000 with 0 quality drop.
                         </Typography>
                       </Box>
@@ -395,11 +397,11 @@ export default function ExecutiveDashboard() {
 
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '4fr 8fr' }, gap: 2, width: '100%' }}>
                 <Box sx={{ width: '100%' }}>
-                  <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
+                  <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', height: '100%', bgcolor: '#FFFFFF' }}>
                     <CardContent sx={{ p: 4 }}>
-                      <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6E6E73' }}>TOTAL ORG ROI</Typography>
-                      <Typography sx={{ fontSize: '3rem', fontWeight: 700, letterSpacing: '-0.03em', color: SUCCESS_GREEN, my: 1 }}>{roi.netROIPercentage}%</Typography>
-                      <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', lineHeight: 1.6 }}>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#85839A' }}>TOTAL ORG ROI</Typography>
+                      <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '3rem', fontWeight: 600, color: '#1FAE7A', my: 1 }}>{roi.netROIPercentage}%</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', lineHeight: 1.6 }}>
                         For every $1.00 spent on AI API access, the organization generates ${(roi.businessValueGenerated / (roi.aiCostIncurred || 1)).toFixed(2)} in equivalent manual developer & analyst time saved.
                       </Typography>
                     </CardContent>
@@ -407,9 +409,9 @@ export default function ExecutiveDashboard() {
                 </Box>
 
                 <Box ref={spendSectionRef} sx={{ width: '100%' }}>
-                  <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: '100%' }}>
+                  <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', height: '100%', bgcolor: '#FFFFFF' }}>
                     <CardContent sx={{ p: 3 }}>
-                      <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 2 }}>Provider-Level Spend Breakdown</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E', mb: 2 }}>Provider-Level Spend Breakdown</Typography>
                       <Box sx={{ height: 200, width: '100%' }}>
                         <ResponsiveContainer>
                           <PieChart>
@@ -434,7 +436,7 @@ export default function ExecutiveDashboard() {
                         {spendByProviderData.map((entry: any) => (
                           <Box key={entry.name} sx={{ display: 'flex', alignItems: 'center' }}>
                             <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: entry.color, mr: 1 }} />
-                            <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73' }}>{entry.name}</Typography>
+                            <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A' }}>{entry.name}</Typography>
                           </Box>
                         ))}
                       </Stack>
@@ -443,25 +445,25 @@ export default function ExecutiveDashboard() {
                 </Box>
 
                 <Box ref={hoursSectionRef} sx={{ width: '100%', gridColumn: { md: '1 / -1' } }}>
-                  <TableContainer component={Paper} elevation={0} sx={{ minHeight: 400, borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', width: '100%' }}>
+                  <TableContainer component={Paper} elevation={0} sx={{ minHeight: 400, borderRadius: '22px', border: '1px solid #E9E7F5', width: '100%', bgcolor: '#FFFFFF' }}>
                     <Table sx={{ width: '100%' }}>
                       <TableHead>
-                        <TableRow sx={{ bgcolor: '#F5F5F7' }}>
-                          <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Department</TableCell>
-                          <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>YTD Spend</TableCell>
-                          <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Time Saved</TableCell>
-                          <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Value Generated</TableCell>
-                          <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Net ROI</TableCell>
+                        <TableRow sx={{ bgcolor: '#F5F4FB' }}>
+                          <TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Department</TableCell>
+                          <TableCell align="center" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>YTD Spend</TableCell>
+                          <TableCell align="center" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Time Saved</TableCell>
+                          <TableCell align="right" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Value Generated</TableCell>
+                          <TableCell align="right" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Net ROI</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {deptRankings.map((row: any) => (
-                          <TableRow key={row.dept} sx={{ '&:hover': { bgcolor: '#F5F5F7' }, '&:last-child td': { border: 0 } }}>
-                            <TableCell sx={{ fontSize: '0.8125rem', fontWeight: 500, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{row.dept}</TableCell>
-                            <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{row.spend ?? '—'}</TableCell>
-                            <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{(row.hoursSaved ?? 0).toLocaleString()}h</TableCell>
-                            <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: SUCCESS_GREEN, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>${((row.hoursSaved ?? 0) * 50).toLocaleString()}</TableCell>
-                            <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: ACCENT_BLUE, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{row.roi ?? '—'}</TableCell>
+                          <TableRow key={row.dept} sx={{ '&:hover': { bgcolor: '#FAFAFA' }, '&:last-child td': { border: 0 } }}>
+                            <TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 500, color: '#201F2E', py: 1.5, borderBottom: '1px solid #E9E7F5' }}>{row.dept}</TableCell>
+                            <TableCell align="center" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', color: '#201F2E', py: 1.5, borderBottom: '1px solid #E9E7F5' }}>{row.spend ?? '—'}</TableCell>
+                            <TableCell align="center" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', color: '#201F2E', py: 1.5, borderBottom: '1px solid #E9E7F5' }}>{(row.hoursSaved ?? 0).toLocaleString()}h</TableCell>
+                            <TableCell align="right" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', fontWeight: 600, color: '#1FAE7A', py: 1.5, borderBottom: '1px solid #E9E7F5' }}>${((row.hoursSaved ?? 0) * 50).toLocaleString()}</TableCell>
+                            <TableCell align="right" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', fontWeight: 600, color: '#5B57F0', py: 1.5, borderBottom: '1px solid #E9E7F5' }}>{row.roi ?? '—'}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -475,20 +477,20 @@ export default function ExecutiveDashboard() {
           {activeTab === 2 && (
             <Box sx={{ width: '100%' }}>
               <Box sx={{ mb: 3 }}>
-                <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>Department Rankings</Typography>
-                <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>Full enterprise ranking by adoption, efficiency, and maturity.</Typography>
+                <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E' }}>Department Rankings</Typography>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', mt: 0.5 }}>Full enterprise ranking by adoption, efficiency, and maturity.</Typography>
               </Box>
 
-              <TableContainer component={Paper} elevation={0} sx={{ minHeight: 400, borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', width: '100%' }}>
+              <TableContainer component={Paper} elevation={0} sx={{ minHeight: 400, borderRadius: '22px', border: '1px solid #E9E7F5', width: '100%', bgcolor: '#FFFFFF' }}>
                 <Table sx={{ width: '100%' }}>
                   <TableHead>
-                    <TableRow sx={{ bgcolor: '#F5F5F7' }}>
-                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Rank & Dept</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Users</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Adoption</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Efficiency</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>Maturity</TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', borderBottom: '1px solid rgba(0,0,0,0.08)', py: 1.5 }}>ROI</TableCell>
+                    <TableRow sx={{ bgcolor: '#F5F4FB' }}>
+                      <TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Rank & Dept</TableCell>
+                      <TableCell align="center" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Users</TableCell>
+                      <TableCell align="center" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Adoption</TableCell>
+                      <TableCell align="center" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Efficiency</TableCell>
+                      <TableCell align="center" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>Maturity</TableCell>
+                      <TableCell align="right" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', borderBottom: '1px solid #E9E7F5', py: 1.5 }}>ROI</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -497,24 +499,24 @@ export default function ExecutiveDashboard() {
                       const adoptionLabel = d.adoption ?? (typeof d.adoption_pct === 'number' ? `${d.adoption_pct}%` : '—');
                       const maturityLabel = d.maturity_stage ?? d.maturity ?? '—';
                       return (
-                        <TableRow key={d.dept || rank} sx={{ '&:hover': { bgcolor: '#F5F5F7' }, '&:last-child td': { border: 0 } }}>
-                          <TableCell sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                        <TableRow key={d.dept || rank} sx={{ '&:hover': { bgcolor: '#FAFAFA' }, '&:last-child td': { border: 0 } }}>
+                          <TableCell sx={{ py: 1.5, borderBottom: '1px solid #E9E7F5' }}>
                             <Stack direction="row" spacing={2} alignItems="center">
-                              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#AEAEB2', width: 20 }}>{rank}</Typography>
-                              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1D1D1F' }}>{d.dept}</Typography>
+                              <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', fontWeight: 600, color: '#85839A', width: 20 }}>{rank}</Typography>
+                              <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600, color: '#201F2E' }}>{d.dept}</Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{d.users}</TableCell>
-                          <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                            <Chip label={adoptionLabel} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE }} />
+                          <TableCell align="center" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', py: 1.5, borderBottom: '1px solid #E9E7F5' }}>{d.users}</TableCell>
+                          <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid #E9E7F5' }}>
+                            <Chip label={adoptionLabel} size="small" sx={{ fontFamily: 'Inter, sans-serif', height: 22, fontSize: '0.75rem', fontWeight: 600, borderRadius: '6px', bgcolor: '#F5F4FB', color: '#5B57F0' }} />
                           </TableCell>
-                          <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                            <Chip label={`${d.efficiency}/100`} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: 'rgba(52,199,89,0.10)', color: '#1A7F37' }} />
+                          <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid #E9E7F5' }}>
+                            <Chip label={`${d.efficiency}/100`} size="small" sx={{ fontFamily: 'Inter, sans-serif', height: 22, fontSize: '0.75rem', fontWeight: 600, borderRadius: '6px', bgcolor: '#E3F7EE', color: '#1FAE7A' }} />
                           </TableCell>
-                          <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                            <Chip label={maturityLabel} size="small" sx={{ height: 22, fontSize: '0.67rem', fontWeight: 600, borderRadius: 1.5, bgcolor: '#EAEAEA', color: '#1D1D1F' }} />
+                          <TableCell align="center" sx={{ py: 1.5, borderBottom: '1px solid #E9E7F5' }}>
+                            <Chip label={maturityLabel} size="small" sx={{ fontFamily: 'Inter, sans-serif', height: 22, fontSize: '0.75rem', fontWeight: 600, borderRadius: '6px', bgcolor: '#FAFAFA', color: '#201F2E' }} />
                           </TableCell>
-                          <TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: SUCCESS_GREEN, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>{d.roi ?? '—'}</TableCell>
+                          <TableCell align="right" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', fontWeight: 600, color: '#1FAE7A', py: 1.5, borderBottom: '1px solid #E9E7F5' }}>{d.roi ?? '—'}</TableCell>
                         </TableRow>
                       );
                     })}
@@ -527,24 +529,24 @@ export default function ExecutiveDashboard() {
           {activeTab === 3 && (
             <Box sx={{ width: '100%' }}>
               <Box sx={{ mb: 3 }}>
-                <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>Forward Budget Forecast</Typography>
-                <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>12-month forward-looking budget projections.</Typography>
+                <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E' }}>Forward Budget Forecast</Typography>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', mt: 0.5 }}>12-month forward-looking budget projections.</Typography>
               </Box>
 
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '8fr 4fr' }, gap: 2, width: '100%' }}>
                 <Box sx={{ width: '100%' }}>
-                  <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: 360, width: '100%' }}>
+                  <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', height: 360, width: '100%', bgcolor: '#FFFFFF' }}>
                     <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-                      <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 3 }}>Quarterly Budget Projection (2026)</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E', mb: 3 }}>Quarterly Budget Projection (2026)</Typography>
                       <Box sx={{ flexGrow: 1, minHeight: 0, width: '100%' }}>
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={forecastApiData?.forecastData || DEMO_FORECAST_DATA} margin={{ left: -20, bottom: 0 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAEAEA" />
-                            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} dy={10} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6E6E73' }} tickFormatter={(val) => `$${val/1000}k`} />
+                            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#85839A' }} dy={10} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#85839A' }} tickFormatter={(val) => `$${val/1000}k`} />
                             <Tooltip contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }} />
-                            <Bar dataKey="budget" name="Allocated Budget" fill="#EAEAEA" radius={[4, 4, 0, 0]} barSize={24} />
-                            <Bar dataKey="projected" name="Projected Spend" fill={ACCENT_BLUE} radius={[4, 4, 0, 0]} barSize={24} />
+                            <Bar dataKey="budget" name="Allocated Budget" fill="#F5F4FB" radius={[4, 4, 0, 0]} barSize={24} />
+                            <Bar dataKey="projected" name="Projected Spend" fill="#5B57F0" radius={[4, 4, 0, 0]} barSize={24} />
                           </BarChart>
                         </ResponsiveContainer>
                       </Box>
@@ -553,21 +555,21 @@ export default function ExecutiveDashboard() {
                 </Box>
 
                 <Box sx={{ width: '100%' }}>
-                  <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', height: 360, width: '100%' }}>
+                  <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', height: 360, width: '100%', bgcolor: '#FFFFFF' }}>
                     <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                      <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 3 }}>Forecast Scenarios</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E', mb: 3 }}>Forecast Scenarios</Typography>
                       <Stack spacing={2}>
-                        <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#F5F5F7' }}>
-                          <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>Conservative Growth (+10%)</Typography>
-                          <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>Projected Spend: $520,000</Typography>
+                        <Box sx={{ p: 2, borderRadius: '12px', bgcolor: '#FAFAFA' }}>
+                          <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600, color: '#201F2E' }}>Conservative Growth (+10%)</Typography>
+                          <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.75rem', color: '#85839A', mt: 0.5 }}>Projected Spend: $520,000</Typography>
                         </Box>
-                        <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(0,102,204,0.04)', borderLeft: `3px solid ${ACCENT_BLUE}` }}>
-                          <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: ACCENT_BLUE }}>Expected Growth (+18%)</Typography>
-                          <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>Projected Spend: $560,000</Typography>
+                        <Box sx={{ p: 2, borderRadius: '12px', bgcolor: '#F5F4FB', borderLeft: `3px solid #5B57F0` }}>
+                          <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600, color: '#5B57F0' }}>Expected Growth (+18%)</Typography>
+                          <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.75rem', color: '#85839A', mt: 0.5 }}>Projected Spend: $560,000</Typography>
                         </Box>
-                        <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#F5F5F7' }}>
-                          <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1D1D1F' }}>Aggressive Scale (+30%)</Typography>
-                          <Typography sx={{ fontSize: '0.75rem', color: '#6E6E73', mt: 0.5 }}>Projected Spend: $630,000</Typography>
+                        <Box sx={{ p: 2, borderRadius: '12px', bgcolor: '#FAFAFA' }}>
+                          <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600, color: '#201F2E' }}>Aggressive Scale (+30%)</Typography>
+                          <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.75rem', color: '#85839A', mt: 0.5 }}>Projected Spend: $630,000</Typography>
                         </Box>
                       </Stack>
                     </CardContent>
@@ -580,23 +582,23 @@ export default function ExecutiveDashboard() {
           {activeTab === 4 && (
             <Box sx={{ width: '100%' }}>
               <Box sx={{ mb: 3 }}>
-                <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>Executive Recommendations</Typography>
-                <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>Intelligence engine recommendations for executive leadership.</Typography>
+                <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E' }}>Executive Recommendations</Typography>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', mt: 0.5 }}>Intelligence engine recommendations for executive leadership.</Typography>
               </Box>
 
               <Stack spacing={3} sx={{ width: '100%' }}>
-                <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', width: '100%' }}>
+                <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', width: '100%', bgcolor: '#FFFFFF' }}>
                   <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
                     <Stack direction="row" spacing={2} alignItems="flex-start">
-                      <Avatar sx={{ bgcolor: 'rgba(0,102,204,0.08)', color: ACCENT_BLUE }}>
+                      <Avatar sx={{ bgcolor: '#F5F4FB', color: '#5B57F0' }}>
                         <Lightbulb />
                       </Avatar>
                       <Box sx={{ flex: 1 }}>
-                        <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Expand Sales Department Prompt Enablement Program</Typography>
-                        <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', my: 1.5, lineHeight: 1.5 }}>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E' }}>Expand Sales Department Prompt Enablement Program</Typography>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', my: 1.5, lineHeight: 1.5 }}>
                           Sales team adoption is currently at 65% (vs 94% in Engineering). Investing $50K in targeted prompt templates and sales enablement coaching will lift adoption to 88%, adding an estimated $320,000 in accelerated deal closure velocity.
                         </Typography>
-                        <Button variant="contained" size="small" disableElevation sx={{ bgcolor: ACCENT_BLUE, textTransform: 'none', borderRadius: 2 }} onClick={handleApproveInitiative}>
+                        <Button variant="contained" size="small" disableElevation sx={{ fontFamily: 'Inter, sans-serif', bgcolor: '#E6E6FA', color: '#111827', textTransform: 'none', borderRadius: '8px', fontWeight: 600 }} onClick={handleApproveInitiative}>
                           {approvedRecs.has('sales-prompts') ? 'Approved!' : 'Approve $50K Initiative'}
                         </Button>
                       </Box>
@@ -604,18 +606,18 @@ export default function ExecutiveDashboard() {
                   </CardContent>
                 </Card>
 
-                <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', width: '100%' }}>
+                <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', width: '100%', bgcolor: '#FFFFFF' }}>
                   <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
                     <Stack direction="row" spacing={2} alignItems="flex-start">
-                      <Avatar sx={{ bgcolor: 'rgba(52,199,89,0.10)', color: SUCCESS_GREEN }}>
+                      <Avatar sx={{ bgcolor: '#E3F7EE', color: '#1FAE7A' }}>
                         <Savings />
                       </Avatar>
                       <Box sx={{ flex: 1 }}>
-                        <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>Enforce Auto-Model Switching for General Summarization</Typography>
-                        <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', my: 1.5, lineHeight: 1.5 }}>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E' }}>Enforce Auto-Model Switching for General Summarization</Typography>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', my: 1.5, lineHeight: 1.5 }}>
                           Currently, 40% of document summarization requests use high-cost models. Enforcing auto-switch to faster models for summarization tasks will reduce annual API spend by $35,000.
                         </Typography>
-                        <Button variant="outlined" size="small" sx={{ borderColor: 'rgba(0,0,0,0.12)', color: '#1D1D1F', textTransform: 'none', borderRadius: 2 }} onClick={handleEnableAutoSwitching}>
+                        <Button variant="outlined" size="small" sx={{ fontFamily: 'Inter, sans-serif', borderColor: '#E9E7F5', color: '#201F2E', textTransform: 'none', borderRadius: '8px', fontWeight: 600 }} onClick={handleEnableAutoSwitching}>
                           {approvedRecs.has('auto-switch') ? 'Enabled!' : 'Enable Auto-Switching'}
                         </Button>
                       </Box>
@@ -629,48 +631,48 @@ export default function ExecutiveDashboard() {
           {activeTab === 5 && (
             <Box sx={{ width: '100%' }}>
               <Box sx={{ mb: 4 }}>
-                <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>FinOps & ROI Engine</Typography>
-                <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5 }}>Quantifies financial impact via exact value modeling and OLS forecasting.</Typography>
+                <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E' }}>FinOps & ROI Engine</Typography>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', mt: 0.5 }}>Quantifies financial impact via exact value modeling and OLS forecasting.</Typography>
               </Box>
 
-              <Card sx={{ borderRadius: 3.5, border: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', mb: 4, width: '100%' }}>
+              <Card sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', mb: 4, width: '100%', bgcolor: '#FFFFFF' }}>
                 <CardContent sx={{ p: 3 }}>
                   <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} spacing={3} mb={3}>
                     <Box>
-                      <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F' }}>ROI Computation Model</Typography>
-                      <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73' }}>Attribution equating hours saved to financial ROI.</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E' }}>ROI Computation Model</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A' }}>Attribution equating hours saved to financial ROI.</Typography>
                     </Box>
-                    <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: '#F5F5F7' }}>
-                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1D1D1F', fontFamily: 'monospace' }}>
+                    <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: '#F5F4FB' }}>
+                      <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.75rem', fontWeight: 600, color: '#201F2E' }}>
                         Value = Hours × Rate | ROI = (Value - Cost) / Cost
                       </Typography>
                     </Box>
                   </Stack>
 
                   <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(4, 1fr)' }, gap: 2, width: '100%' }}>
-                    <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#FAFAFA', border: '1px solid rgba(0,0,0,0.04)', width: '100%' }}>
-                      <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', textTransform: 'uppercase' }}>Hours Saved</Typography>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F', mt: 0.5 }}>{roi.hoursSaved.toLocaleString()} hrs</Typography>
+                    <Box sx={{ p: 2, borderRadius: '12px', bgcolor: '#FAFAFA', border: '1px solid #E9E7F5', width: '100%' }}>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', textTransform: 'uppercase' }}>Hours Saved</Typography>
+                      <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', mt: 0.5 }}>{roi.hoursSaved.toLocaleString()} hrs</Typography>
                     </Box>
-                    <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#FAFAFA', border: '1px solid rgba(0,0,0,0.04)', width: '100%' }}>
-                      <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#6E6E73', textTransform: 'uppercase' }}>Hourly Rate</Typography>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F', mt: 0.5 }}>${roi.hourlyCostRate.toFixed(2)} / hr</Typography>
+                    <Box sx={{ p: 2, borderRadius: '12px', bgcolor: '#FAFAFA', border: '1px solid #E9E7F5', width: '100%' }}>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A', textTransform: 'uppercase' }}>Hourly Rate</Typography>
+                      <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', mt: 0.5 }}>${roi.hourlyCostRate.toFixed(2)} / hr</Typography>
                     </Box>
-                    <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(52,199,89,0.04)', border: '1px solid rgba(52,199,89,0.1)', width: '100%' }}>
-                      <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: SUCCESS_GREEN, textTransform: 'uppercase' }}>Value Generated</Typography>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: SUCCESS_GREEN, mt: 0.5 }}>${roi.businessValueGenerated.toLocaleString()}</Typography>
+                    <Box sx={{ p: 2, borderRadius: '12px', bgcolor: '#E3F7EE', border: '1px solid #1FAE7A', width: '100%' }}>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#1FAE7A', textTransform: 'uppercase' }}>Value Generated</Typography>
+                      <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1.25rem', fontWeight: 600, color: '#1FAE7A', mt: 0.5 }}>${roi.businessValueGenerated.toLocaleString()}</Typography>
                     </Box>
-                    <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(0,102,204,0.04)', border: '1px solid rgba(0,102,204,0.1)', width: '100%' }}>
-                      <Typography sx={{ fontSize: '0.67rem', fontWeight: 600, color: ACCENT_BLUE, textTransform: 'uppercase' }}>Net ROI</Typography>
-                      <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: ACCENT_BLUE, mt: 0.5 }}>{roi.netROIPercentage}%</Typography>
+                    <Box sx={{ p: 2, borderRadius: '12px', bgcolor: '#F5F4FB', border: '1px solid #5B57F0', width: '100%' }}>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#5B57F0', textTransform: 'uppercase' }}>Net ROI</Typography>
+                      <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1.25rem', fontWeight: 600, color: '#5B57F0', mt: 0.5 }}>{roi.netROIPercentage}%</Typography>
                     </Box>
                   </Box>
                 </CardContent>
               </Card>
 
               <Box sx={{ mb: 4, width: '100%' }}>
-                <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#1D1D1F' }}>AI Maturity Score & Ladder</Typography>
-                <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', mt: 0.5, mb: 3 }}>Tracks organizational AI evolution toward autonomous execution.</Typography>
+                <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E' }}>AI Maturity Score & Ladder</Typography>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', mt: 0.5, mb: 3 }}>Tracks organizational AI evolution toward autonomous execution.</Typography>
                 
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, width: '100%' }}>
                   {maturityLadder.map((mat: any, idx: number) => {
@@ -681,23 +683,24 @@ export default function ExecutiveDashboard() {
                     return (
                       <Box key={idx} sx={{ width: '100%' }}>
                         <Card sx={{ 
-                          borderRadius: 3.5, 
-                          border: isActive ? `1px solid ${ACCENT_BLUE}` : '1px solid rgba(0,0,0,0.08)', 
-                          boxShadow: isActive ? '0 4px 16px rgba(0,102,204,0.15)' : 'none', 
+                          borderRadius: '22px', 
+                          border: isActive ? `1px solid #5B57F0` : '1px solid #E9E7F5', 
+                          boxShadow: isActive ? '0 4px 20px rgba(91, 87, 240, 0.15)' : 'none', 
                           height: '100%',
-                          width: '100%'
+                          width: '100%',
+                          bgcolor: '#FFFFFF'
                         }}>
                           <CardContent sx={{ p: 3, display: 'flex', flexDirection: 'column', height: '100%' }}>
                             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-                              <Avatar sx={{ width: 32, height: 32, bgcolor: isActive ? ACCENT_BLUE : '#F5F5F7', color: isActive ? '#FFF' : '#6E6E73', fontSize: '0.8125rem', fontWeight: 700 }}>
+                              <Avatar sx={{ width: 32, height: 32, bgcolor: isActive ? '#5B57F0' : '#FAFAFA', color: isActive ? '#FFF' : '#85839A', fontSize: '0.85rem', fontWeight: 700 }}>
                                 L{levelNumber}
                               </Avatar>
                               {isActive && (
-                                <Chip label="CURRENT" size="small" sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600, borderRadius: 1, bgcolor: 'rgba(0,102,204,0.1)', color: ACCENT_BLUE }} />
+                                <Chip label="CURRENT" size="small" sx={{ fontFamily: 'Inter, sans-serif', height: 22, fontSize: '0.75rem', fontWeight: 600, borderRadius: '6px', bgcolor: '#F5F4FB', color: '#5B57F0' }} />
                               )}
                             </Stack>
-                            <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1D1D1F', mb: 1 }}>{levelName}</Typography>
-                            <Typography sx={{ fontSize: '0.8125rem', color: '#6E6E73', flexGrow: 1 }}>{mat.description}</Typography>
+                            <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 600, color: '#201F2E', mb: 1 }}>{levelName}</Typography>
+                            <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', flexGrow: 1 }}>{mat.description}</Typography>
                           </CardContent>
                         </Card>
                       </Box>

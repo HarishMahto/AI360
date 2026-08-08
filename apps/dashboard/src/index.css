@@ -319,3 +319,21 @@ body, #root {
   0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px currentColor; }
   50%       { opacity: 0.6; transform: scale(0.85); box-shadow: 0 0 16px currentColor; }
 }
+
+/* ─── 3D Moving Gradient for Topbar ──────────────────────────────────────────── */
+@keyframes navGradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.nav-3d-gradient {
+  background: linear-gradient(270deg, #916496, #ab82b0, #734c78, #b895bd, #916496) !important;
+  background-size: 600% 600% !important;
+  animation: navGradientMove 10s ease infinite !important;
+  box-shadow: 0px 10px 25px -5px rgba(145, 100, 150, 0.4), 
+              0px 8px 10px -6px rgba(145, 100, 150, 0.2), 
+              inset 0px -4px 0px rgba(0,0,0,0.2), 
+              inset 0px 2px 0px rgba(255,255,255,0.4) !important;
+  border-bottom: none !important;
+}

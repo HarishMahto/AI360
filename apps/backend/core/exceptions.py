@@ -38,26 +38,33 @@ class PromptRejectedError(AI360Exception):
 def register_exception_handlers(app: FastAPI) -> None:
     """Register all custom exception handlers on the FastAPI app."""
 
+    def add_cors(response: JSONResponse) -> JSONResponse:
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        return response
+
     @app.exception_handler(AI360Exception)
     async def ai360_exception_handler(request: Request, exc: AI360Exception):
         logger.error(f"AI360Exception: {exc.message}")
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.message, "code": exc.code})
+        return add_cors(JSONResponse(status_code=exc.status_code, content={"detail": exc.message, "code": exc.code}))
 
     @app.exception_handler(StarletteHTTPException)
     async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+        return add_cors(JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}))
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError):
         errors = [{"field": ".".join(str(l) for l in err["loc"]), "message": err["msg"]} for err in exc.errors()]
-        return JSONResponse(status_code=422, content={"detail": "Validation error", "errors": errors})
+        return add_cors(JSONResponse(status_code=422, content={"detail": "Validation error", "errors": errors}))
 
     @app.exception_handler(FirebaseError)
     async def firebase_exception_handler(request: Request, exc: FirebaseError):
         logger.error(f"Firebase error: {exc}")
-        return JSONResponse(status_code=503, content={"detail": "Firebase service error", "code": "FIREBASE_ERROR"})
+        return add_cors(JSONResponse(status_code=503, content={"detail": "Firebase service error", "code": "FIREBASE_ERROR"}))
 
     @app.exception_handler(Exception)
     async def generic_exception_handler(request: Request, exc: Exception):
         logger.exception(f"Unhandled exception: {exc}")
-        return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+        return add_cors(JSONResponse(status_code=500, content={"detail": "Internal server error"}))

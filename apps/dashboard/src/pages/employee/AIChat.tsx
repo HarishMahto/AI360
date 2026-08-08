@@ -94,32 +94,39 @@ export default function AIChat() {
     setMessages(prev => [...prev, userMsg]);
     setInput('');
 
+    const chatPayload = {
+      messages: [...messages, userMsg].map((m) => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.text || "",
+      })),
+      model: selectedModel,
+    };
+
     sendChatMutation.mutate(
-      { message: userMsg.text, model: selectedModel },
+      chatPayload,
       {
         onSuccess: (response: any) => {
           setMessages(prev => [
             ...prev,
             {
               id: Date.now() + 1,
-              text: response?.reply || response?.text || `[${selectedModel.toUpperCase()}] Response: Successfully generated high-accuracy output for task (${analysis.classification}).`,
+              text: response?.content || `[${selectedModel.toUpperCase()}] Response: Connected, but no content returned.`,
               sender: 'ai',
-              model: selectedModel,
-              tokens: analysis.metadataOnly.tokenCount,
-              cost: '$0.0004'
+              model: response?.model || selectedModel,
+              tokens: response?.total_tokens || analysis.metadataOnly.tokenCount,
+              cost: response?.estimated_cost_usd != null ? `$${Number(response.estimated_cost_usd).toFixed(4)}` : '$0.0004'
             }
           ]);
         },
-        onError: () => {
+        onError: (err: any) => {
           setMessages(prev => [
             ...prev,
             {
               id: Date.now() + 1,
-              text: `[${selectedModel.toUpperCase()}] Model Response: "Successfully processed prompt payload (${analysis.classification}). Routing recommendation: ${rec.recommendedModel}."`,
+              text: `Error connecting to API: ${err.message || 'Unknown error'}.`,
               sender: 'ai',
               model: selectedModel,
-              tokens: analysis.metadataOnly.tokenCount,
-              cost: '$0.0003'
+              tokens: 0,
             }
           ]);
         }
@@ -132,7 +139,7 @@ export default function AIChat() {
   const chatHistory = Array.isArray(historyData) ? historyData : historyData?.data || historyData?.items || [];
 
   return (
-    <Box className="page-enter page-content" sx={{ display: 'flex', height: 'calc(100vh - 200px)', width: '100%', gap: 2, p: { xs: 1, md: 1.5 }, bgcolor: '#F4F6FA' }}>
+    <Box className="page-enter page-content" sx={{ display: 'flex', height: 'calc(100vh - 90px)', width: '100%', gap: 2, p: { xs: 1, md: 1.5 }, bgcolor: '#F4F6FA' }}>
       <Box sx={{ width: 280, display: 'flex', flexDirection: 'column', bgcolor: '#FFFFFF', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)' }}>
         <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(31,90,166,0.09)' }}>
           <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1D2E', letterSpacing: '-0.01em' }}>History</Typography>
@@ -150,8 +157,10 @@ export default function AIChat() {
                 <ListItemText
                   primary={item.prompt ? (item.prompt.length > 42 ? `${item.prompt.slice(0, 42)}…` : item.prompt) : (item.title || item.topic || 'Session')}
                   secondary={item.timestamp ? new Date(item.timestamp).toLocaleString() : (item.date || item.createdAt || 'Recent')}
-                  primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: 500, color: '#1A1D2E' }}
-                  secondaryTypographyProps={{ fontSize: '0.75rem', color: '#4B5563' }}
+                  sx={{
+                    '& .MuiListItemText-primary': { fontSize: '0.8125rem', fontWeight: 500, color: '#1A1D2E' },
+                    '& .MuiListItemText-secondary': { fontSize: '0.75rem', color: '#4B5563' }
+                  }}
                 />
               </ListItem>
             ))
@@ -183,7 +192,7 @@ export default function AIChat() {
         <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
           {messages.map((msg, index) => (
             <Box key={msg.id} sx={{ display: 'flex', gap: 2, flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row', animation: 'fadeUp 0.3s ease both', animationDelay: `${index * 0.05}s` }}>
-              <Box sx={{ p: 2, borderRadius: 3, bgcolor: msg.sender === 'user' ? 'rgba(31,90,166,0.08)' : '#FFFFFF', border: msg.sender === 'user' ? '1px solid rgba(31,90,166,0.15)' : '1px solid rgba(31,90,166,0.09)', color: '#1A1D2E', maxWidth: '80%' }}>
+              <Box sx={{ p: 2, borderRadius: 3, bgcolor: msg.sender === 'user' ? '#E6E6FA' : '#FFFFFF', border: msg.sender === 'user' ? '1px solid #D8D8F6' : '1px solid rgba(31,90,166,0.09)', color: '#1A1D2E', maxWidth: '80%' }}>
                 <Typography sx={{ fontSize: '0.875rem' }}>{msg.text}</Typography>
                 <Stack direction="row" spacing={1} mt={1}>
                   <Chip label={msg.model} size="small" sx={{ height: 20, borderRadius: '5px', fontSize: '10px', fontWeight: 700 }} />
@@ -205,12 +214,12 @@ export default function AIChat() {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={handleSend} disabled={!input.trim() || sendChatMutation.isPending} sx={{ color: BRAND_COLOR }}>
-                    {sendChatMutation.isPending ? <CircularProgress size={20} /> : <Send />}
+                  <IconButton onClick={handleSend} disabled={!input.trim() || sendChatMutation.isPending} sx={{ bgcolor: input.trim() ? '#E6E6FA' : 'transparent', color: input.trim() ? '#111827' : '#9CA3AF', borderRadius: '8px', p: 1, '&:hover': { bgcolor: input.trim() ? '#D8D8F6' : 'transparent' } }}>
+                    {sendChatMutation.isPending ? <CircularProgress size={20} /> : <Send fontSize="small" />}
                   </IconButton>
                 </InputAdornment>
               ),
-              sx: { borderRadius: 2.5, bgcolor: '#F0F4F8' }
+              sx: { borderRadius: 2.5, bgcolor: '#FAFAFD', '&.Mui-focused': { '& fieldset': { borderColor: '#E6E6FA !important', borderWidth: '1px' } } }
             }}
           />
         </Box>

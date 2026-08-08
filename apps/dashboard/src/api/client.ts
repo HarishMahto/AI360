@@ -28,6 +28,7 @@ apiClient.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('ai360_token');
+      localStorage.removeItem('ai360_demo_role');
       window.location.href = '/login';
     }
     return Promise.reject(error);

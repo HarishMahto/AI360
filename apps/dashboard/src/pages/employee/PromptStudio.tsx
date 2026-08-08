@@ -73,7 +73,7 @@ export default function PromptStudio() {
                 />
                 <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                   <Button variant="outlined" sx={{ borderColor: 'rgba(31,90,166,0.09)', color: '#1A1D2E' }} onClick={() => setPrompt('')}>Clear</Button>
-                  <Button variant="contained" sx={{ bgcolor: BRAND_COLOR }} onClick={handleScoreAndCoach}>Analyze</Button>
+                  <Button variant="contained" sx={{ bgcolor: '#E6E6FA', color: '#111827' }} onClick={handleScoreAndCoach}>Analyze</Button>
                 </Box>
 
                 {privacyAnalysis.containsSensitiveData && (
@@ -91,7 +91,7 @@ export default function PromptStudio() {
                   <Typography sx={{ fontSize: '0.8125rem', p: 1.5, bgcolor: '#FFFFFF', borderRadius: 2, border: '1px solid rgba(31,90,166,0.09)', mb: 2 }}>
                     {analysisResult.optimizedPrompt}
                   </Typography>
-                  <Button variant="contained" size="small" onClick={handleApplyOptimization} sx={{ bgcolor: BRAND_COLOR }}>Use Optimized</Button>
+                  <Button variant="contained" size="small" onClick={handleApplyOptimization} sx={{ bgcolor: '#E6E6FA', color: '#111827' }}>Use Optimized</Button>
                 </Box>
               </CardContent>
             </Card>

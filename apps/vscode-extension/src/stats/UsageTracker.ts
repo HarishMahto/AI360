@@ -24,8 +24,8 @@ export interface DailyUsageStats {
 
 export const MODEL_PRICING: Record<string, { inputPer1k: number; outputPer1k: number; label: string }> = {
   'claude-3-5-sonnet-20241022': { inputPer1k: 0.003, outputPer1k: 0.015, label: 'Claude 3.5 Sonnet (Anthropic)' },
-  'gemini-1.5-pro': { inputPer1k: 0.00125, outputPer1k: 0.005, label: 'Gemini 1.5 Pro (Google)' },
-  'gemini-1.5-flash': { inputPer1k: 0.000075, outputPer1k: 0.0003, label: 'Gemini 1.5 Flash (Google)' },
+  'gemini-3.5-pro': { inputPer1k: 0.00125, outputPer1k: 0.005, label: 'Gemini 1.5 Pro (Google)' },
+  'gemini-3.5-flash': { inputPer1k: 0.000075, outputPer1k: 0.0003, label: 'Gemini 1.5 Flash (Google)' },
   'gpt-4o': { inputPer1k: 0.005, outputPer1k: 0.015, label: 'GPT-4o (OpenAI)' },
   'gpt-4o-mini': { inputPer1k: 0.00015, outputPer1k: 0.0006, label: 'GPT-4o Mini (OpenAI)' },
 };
@@ -59,12 +59,12 @@ export class UsageTracker {
       requests: 18,
       byModel: {
         'claude-3-5-sonnet-20241022': { tokens: 8200, costUSD: 0.0345, requests: 9 },
-        'gemini-1.5-flash': { tokens: 4120, costUSD: 0.0015, requests: 6 },
+        'gemini-3.5-flash': { tokens: 4120, costUSD: 0.0015, requests: 6 },
         'gpt-4o-mini': { tokens: 2500, costUSD: 0.0122, requests: 3 }
       },
       records: [
         { timestamp: '09:15 AM', model: 'claude-3-5-sonnet-20241022', inputTokens: 1200, outputTokens: 800, totalTokens: 2000, costUSD: 0.0156, requestType: 'agent_code' },
-        { timestamp: '10:40 AM', model: 'gemini-1.5-flash', inputTokens: 850, outputTokens: 420, totalTokens: 1270, costUSD: 0.0004, requestType: 'optimize' },
+        { timestamp: '10:40 AM', model: 'gemini-3.5-flash', inputTokens: 850, outputTokens: 420, totalTokens: 1270, costUSD: 0.0004, requestType: 'optimize' },
         { timestamp: '11:20 AM', model: 'claude-3-5-sonnet-20241022', inputTokens: 2100, outputTokens: 1400, totalTokens: 3500, costUSD: 0.0273, requestType: 'refactor' }
       ]
     };

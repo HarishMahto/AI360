@@ -160,9 +160,10 @@ export const appTheme = createTheme({
           '&:hover': { boxShadow: '0 4px 14px rgba(44,122,123,0.28)' },
         },
         containedPrimary: {
-          background: palette.accent,
-          boxShadow: '0 1px 4px rgba(44,122,123,0.25)',
-          '&:hover': { background: palette.accentHover },
+          background: '#E6E6FA',
+          color: '#111827',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+          '&:hover': { background: '#D8D8F6' },
         },
         outlined: {
           borderColor: palette.border,

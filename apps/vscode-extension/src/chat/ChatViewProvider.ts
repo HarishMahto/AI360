@@ -8,8 +8,8 @@ import { marked } from 'marked';
 
 export const SUPPORTED_MODELS = [
   { id: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet', tier: 'Pro / Coding' },
-  { id: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro', tier: 'Pro / Reasoning' },
-  { id: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash', tier: 'Fast & Low Cost' },
+  { id: 'gemini-3.5-pro', label: 'Gemini 3.5 Pro', tier: 'Pro / Reasoning' },
+  { id: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash', tier: 'Fast & Low Cost' },
   { id: 'gpt-4o', label: 'GPT-4o', tier: 'Omni / General' },
   { id: 'gpt-4o-mini', label: 'GPT-4o Mini', tier: 'Efficient' },
 ];
@@ -254,7 +254,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       content: sanitizedText,
       id: userMsgId,
       htmlContent: this.renderMarkdownWithAgentTools(sanitizedText),
-      meta: { maskedCount, maskedTypes, score: optResult.newScore }
+      meta: { maskedCount, maskedTypes, score: optResult.originalScore }
     };
     this.messages.push(userMsg);
     this._postMessage({ type: 'addMessage', message: userMsg, optimizedContent: optResult.optimizedPrompt });
@@ -283,8 +283,10 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
         content: response.content,
         id: aiMsgId,
         htmlContent: aiHtml,
-        meta: { cost: record.costUSD, tokens: record.totalTokens, model: this.selectedModel }
+        meta: { cost: record.costUSD, tokens: record.totalTokens, model: this.selectedModel, inputTokens: response.inputTokens, outputTokens: response.outputTokens }
       };
+
+      this.apiClient.sendTelemetry(finalPromptToSend, optResult.originalScore, response.inputTokens, response.outputTokens, response.totalTokens, this.selectedModel).catch(e => console.error(e));
 
       this.messages.push(aiMsg);
       this._postMessage({ type: 'addMessage', message: aiMsg, meta: aiMsg.meta });
@@ -407,7 +409,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
   private async _handleRecommendationAction(command?: string): Promise<void> {
     if (!command) return;
     if (command === 'switch_model_gemini_flash') {
-      this.selectedModel = 'gemini-1.5-flash';
+      this.selectedModel = 'gemini-3.5-flash';
       this._postMessage({ type: 'updateModel', model: this.selectedModel });
       vscode.window.showInformationMessage('AI360: Switched model to Gemini 1.5 Flash.');
     } else {
@@ -423,25 +425,17 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       const displayFile = filepath ? `${filepath}` : `${lang.toUpperCase()}`;
 
       return `
-        <div class="code-box">
-          <div class="code-header">
-            <span class="file-tag">${displayFile}</span>
-            <div class="code-actions">
-              <button onclick="applyCodeToWorkspace('${encodedCode}', '${filepath}')" class="btn btn-emerald btn-xs">
-                Apply
-              </button>
-              ${filepath ? `
-              <button onclick="writeFileToWorkspace('${encodedCode}', '${filepath}')" class="btn btn-primary btn-xs">
-                Save
-              </button>` : ''}
-              <button onclick="copyCodeText('${encodedCode}')" class="btn btn-secondary btn-xs">
-                Copy
-              </button>
-            </div>
-          </div>
-          <pre class="code-content"><code>${safeCode}</code></pre>
-        </div>
-      `;
+<div class="code-box">
+  <div class="code-header">
+    <span class="file-tag">${displayFile}</span>
+    <div class="code-actions">
+      <button onclick="applyCodeToWorkspace('${encodedCode}', '${filepath}')" class="btn btn-emerald btn-xs">Apply</button>
+      ${filepath ? `<button onclick="writeFileToWorkspace('${encodedCode}', '${filepath}')" class="btn btn-primary btn-xs">Save</button>` : ''}
+      <button onclick="copyCodeText('${encodedCode}')" class="btn btn-secondary btn-xs">Copy</button>
+    </div>
+  </div>
+  <pre class="code-content"><code>${safeCode}</code></pre>
+</div>`;
     });
 
     try {
@@ -719,9 +713,6 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       </div>
 
       <div class="chat-input-box">
-        <select class="model-selector" id="model-select" onchange="onModelChanged()">
-          ${SUPPORTED_MODELS.map(m => `<option value="${m.id}">${m.label} — [${m.tier}]</option>`).join('')}
-        </select>
         <div class="textarea-wrapper">
           <textarea id="prompt-input" placeholder="Ask AI360 to read, refactor, or edit code... (Enter to send)" oninput="onInputTyping()"></textarea>
           <div class="input-actions">
@@ -729,7 +720,12 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
               <button class="action-pill" onclick="addFileContext()" title="Attach workspace file context">+ Attach File</button>
               <button class="action-pill danger" onclick="clearHistory()" title="Clear chat session">Clear</button>
             </div>
-            <button class="btn btn-primary btn-xs" id="send-btn" onclick="sendMessage()">Send</button>
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <select class="model-selector" id="model-select" onchange="onModelChanged()" style="width: auto; height: 22px; max-width: 130px; font-size: 10px; padding: 2px 4px;">
+                ${SUPPORTED_MODELS.map(m => `<option value="${m.id}">${m.label}</option>`).join('')}
+              </select>
+              <button class="btn btn-primary btn-xs" id="send-btn" onclick="sendMessage()">Send</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1084,6 +1080,19 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       if (optimizedContent && msg.role === 'user') {
         inner += '<div style="margin-top: 4px; padding: 4px; background: rgba(0,212,170,0.08); border-radius: 3px; font-size: 10px; color: #00D4AA;">Optimized: ' + optimizedContent.slice(0, 100) + '...</div>';
       }
+      
+      if (msg.role === 'user' && msg.meta && msg.meta.score) {
+          inner += '<div style="margin-top: 4px; font-size: 9.5px; color: var(--text-muted);">Prompt Score: <strong style="color: #00D4AA;">' + (msg.meta.score / 10).toFixed(1) + '/10</strong></div>';
+      }
+      
+      if (msg.role === 'assistant' && msg.meta && msg.meta.inputTokens !== undefined) {
+          inner += '<div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 9px; color: var(--text-muted); display: flex; gap: 8px;">' +
+                   '<span>Input Tokens: <strong style="color: #9cdcfe;">' + msg.meta.inputTokens + '</strong></span>' +
+                   '<span>Output Tokens: <strong style="color: #ce9178;">' + msg.meta.outputTokens + '</strong></span>' +
+                   '<span>Total: <strong>' + msg.meta.tokens + '</strong></span>' +
+                   '</div>';
+      }
+      
       bubble.innerHTML = inner;
 
       div.appendChild(avatar);

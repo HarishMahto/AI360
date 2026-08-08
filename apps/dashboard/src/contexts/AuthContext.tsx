@@ -42,64 +42,44 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
-const DEMO_PROFILES: Record<UserRole, AuthUser> = {
-  EMPLOYEE: {
-    uid: 'demo-emp-123',
-    email: 'employee@ai360.io',
-    displayName: 'Sarah Jenkins',
-    photoURL: 'https://i.pravatar.cc/150?u=sarah',
-    role: 'EMPLOYEE',
-    organizationId: 'org-demo',
-    departmentId: 'dept-engineering',
-    teamId: 'team-frontend'
-  },
-  MANAGER: {
-    uid: 'demo-mgr-456',
-    email: 'manager@ai360.io',
-    displayName: 'Marcus Chen',
-    photoURL: 'https://i.pravatar.cc/150?u=marcus',
-    role: 'MANAGER',
-    organizationId: 'org-demo',
-    departmentId: 'dept-engineering',
-    teamId: 'team-lead'
-  },
-  EXECUTIVE: {
-    uid: 'demo-exec-789',
-    email: 'executive@ai360.io',
-    displayName: 'Elena Rodriguez',
-    photoURL: 'https://i.pravatar.cc/150?u=elena',
-    role: 'EXECUTIVE',
-    organizationId: 'org-demo',
-    departmentId: 'dept-executive',
-    teamId: null
-  },
-  ADMIN: {
-    uid: 'demo-admin-999',
-    email: 'admin@ai360.io',
-    displayName: 'David Kim (Super Admin)',
-    photoURL: 'https://i.pravatar.cc/150?u=david',
-    role: 'ADMIN',
-    organizationId: 'org-demo',
-    departmentId: null,
-    teamId: null
-  }
-};
+
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
-    const cachedRole = localStorage.getItem('ai360_demo_role') as UserRole | null;
-    return cachedRole ? DEMO_PROFILES[cachedRole] : null;
+    const demoRole = localStorage.getItem('ai360_demo_role') as UserRole | null;
+    if (demoRole) {
+      return {
+        uid: 'demo-uid',
+        email: `${demoRole.toLowerCase()}@ai360.io`,
+        displayName: `Demo ${demoRole}`,
+        photoURL: null,
+        role: demoRole,
+        organizationId: 'demo-org',
+        departmentId: null,
+        teamId: null,
+      };
+    }
+    return null;
   });
   const [accessToken, setAccessToken] = useState<string | null>(() => localStorage.getItem('ai360_token'));
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loginAsDemoUser = (targetRole: UserRole) => {
-    const profile = DEMO_PROFILES[targetRole];
-    setAuthUser(profile);
-    setAccessToken(`demo-token-${targetRole.toLowerCase()}`);
+    const demoUser: AuthUser = {
+      uid: 'demo-uid',
+      email: `${targetRole.toLowerCase()}@ai360.io`,
+      displayName: `Demo ${targetRole}`,
+      photoURL: null,
+      role: targetRole,
+      organizationId: 'demo-org',
+      departmentId: null,
+      teamId: null,
+    };
+    setAuthUser(demoUser);
+    setAccessToken('demo-token');
     localStorage.setItem('ai360_demo_role', targetRole);
-    localStorage.setItem('ai360_token', `demo-token-${targetRole.toLowerCase()}`);
+    localStorage.setItem('ai360_token', 'demo-token');
   };
 
   const exchangeToken = async (fbUser: FirebaseUser, fallbackRole: UserRole = 'EMPLOYEE'): Promise<void> => {
@@ -129,7 +109,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       setFirebaseUser(fbUser);
       if (fbUser) {
-        await exchangeToken(fbUser);
+        try {
+          await exchangeToken(fbUser);
+        } catch (err) {
+          console.error("Failed to exchange token with backend:", err);
+        }
       }
       setIsLoading(false);
     });

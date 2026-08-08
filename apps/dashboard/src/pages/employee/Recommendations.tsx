@@ -31,7 +31,7 @@ export default function Recommendations() {
                 <Typography sx={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#9CA3AF', mb: 1 }}>{row.signal}</Typography>
                 <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>{row.recommendation}</Typography>
                 <Typography sx={{ fontSize: '0.8125rem', color: row.color, fontWeight: 500, mb: 2 }}>{row.savings}</Typography>
-                <Button variant="contained" size="small" sx={{ bgcolor: BRAND_COLOR, mt: 'auto', alignSelf: 'flex-start' }}>Apply</Button>
+                <Button variant="contained" size="small" sx={{ bgcolor: '#E6E6FA', color: '#111827', mt: 'auto', alignSelf: 'flex-start' }}>Apply</Button>
               </CardContent>
             </Card>
           ))}

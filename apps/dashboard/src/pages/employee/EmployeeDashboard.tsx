@@ -205,159 +205,221 @@ export default function EmployeeDashboard() {
         
         {/* Tab Content */}
         {activeTab === 0 && (
-          <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
-            {/* ── Stat Cards Row ── */}
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(6, 1fr)' }, gap: 1.5, mb: 2, width: '100%' }}>
-              {[
-                {
-                  label: 'Todays Prompts', value: todayPrompts.toString(), sub: '+12% vs average',
-                  subColor: '#059669', accent: '#1F5AA6',
-                  icon: <TrendingUp sx={{ fontSize: 18, color: '#1F5AA6' }} />, iconBg: 'rgba(31,90,166,0.08)',
-                },
-                {
-                  label: 'Todays Cost', value: `$${todayCost}`, sub: '72% saved via optimization',
-                  subColor: '#059669', accent: '#0284C7',
-                  icon: <MonetizationOn sx={{ fontSize: 18, color: '#0284C7' }} />, iconBg: 'rgba(2,132,199,0.08)',
-                },
-                {
-                  label: 'Prompt Quality', value: `${avgScore}/100`, sub: 'Clarity, Context & Specificity',
-                  subColor: '#6B7280', accent: '#D97706',
-                  icon: <WorkspacePremium sx={{ fontSize: 18, color: '#D97706' }} />, iconBg: 'rgba(217,119,6,0.08)',
-                },
-                {
-                  label: 'Hours Saved', value: `${totalHoursSaved}h`, sub: 'Equivalent to 35% boost',
-                  subColor: '#1F5AA6', accent: '#7C3AED',
-                  icon: <AccessTime sx={{ fontSize: 18, color: '#7C3AED' }} />, iconBg: 'rgba(124,58,237,0.08)',
-                },
-                {
-                  label: 'Mid-Day Snapshot', value: midDay.prompts.toString(), sub: `${midDay.cost} · ${midDay.hoursSaved}h saved`,
-                  subColor: '#059669', accent: '#059669',
-                  icon: <Speed sx={{ fontSize: 18, color: '#059669' }} />, iconBg: 'rgba(5,150,105,0.08)',
-                },
-                {
-                  label: 'End-of-Day', value: endOfDay.prompts.toString(), sub: `${endOfDay.hoursSaved}h saved today`,
-                  subColor: '#1F5AA6', accent: '#0284C7',
-                  icon: <History sx={{ fontSize: 18, color: '#0284C7' }} />, iconBg: 'rgba(2,132,199,0.08)',
-                },
-              ].map((stat, i) => (
-                <Box
-                  key={i}
-                  sx={{
-                    bgcolor: '#FFFFFF',
-                    borderRadius: '12px',
-                    border: '1px solid #E5E7EB',
-                    p: 2.5,
-                    position: 'relative',
-                    overflow: 'hidden',
-                    transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
-                    cursor: 'default',
-                    borderTop: `3px solid ${stat.accent}`,
-                    '&:hover': {
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.07)',
-                      borderColor: '#D1D5DB',
-                    },
-                  }}
-                >
-                  <Box sx={{ width: 32, height: 32, borderRadius: '8px', bgcolor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.75 }}>
-                    {stat.icon}
-                  </Box>
-                  <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', mb: 0.5 }}>{stat.label}</Typography>
-                  <Typography sx={{ fontSize: '1.625rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#111827', fontVariantNumeric: 'tabular-nums', lineHeight: 1.15, mb: 0.375 }}>{stat.value}</Typography>
-                  <Typography sx={{ fontSize: '0.72rem', color: stat.subColor, fontWeight: 500 }}>{stat.sub}</Typography>
-                </Box>
-              ))}
-            </Box>
-
-            {/* ── Productivity Trend & Session Summary ── */}
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' }, gap: 1.5, width: '100%' }}>
-              {/* Productivity Trend */}
-              <Box sx={{ bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', p: 3, height: '100%' }}>
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
-                  <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#111827' }}>Productivity Trend</Typography>
-                  <Chip label="This Week" size="small" sx={{ bgcolor: '#F3F4F6', color: '#6B7280', fontSize: '0.7rem', fontWeight: 500, border: 'none' }} />
-                </Stack>
-                <Box sx={{ height: 300, width: '100%' }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={[
-                      { day: 'Mon', hours: 2.1 },
-                      { day: 'Tue', hours: 2.8 },
-                      { day: 'Wed', hours: 2.4 },
-                      { day: 'Thu', hours: 3.1 },
-                      { day: 'Fri', hours: 2.8 },
-                      { day: 'Sat', hours: 1.0 },
-                      { day: 'Sun', hours: 0.5 }
-                    ]}>
-                      <defs>
-                        <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#1F5AA6" stopOpacity={0.15} />
-                          <stop offset="95%" stopColor="#1F5AA6" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#F3F4F6" />
-                      <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dy={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dx={-10} />
-                      <Tooltip
-                        contentStyle={{
-                          borderRadius: '8px',
-                          background: '#FFFFFF',
-                          border: '1px solid #E5E7EB',
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                          fontSize: '0.8125rem',
-                          color: '#111827',
-                        }}
-                        labelStyle={{ color: '#6B7280', fontWeight: 600, marginBottom: 2 }}
-                      />
-                      <Area type="monotone" dataKey="hours" stroke="#1F5AA6" strokeWidth={2} fillOpacity={1} fill="url(#colorHours)" dot={false} activeDot={{ r: 5, fill: '#1F5AA6', strokeWidth: 2, stroke: '#fff' }} />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </Box>
-              </Box>
-
-              {/* Session Summary */}
-              <Box sx={{ bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', p: 3, height: '100%' }}>
-                <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: '#111827', mb: 3 }}>Session Summary</Typography>
-                <TableContainer sx={{ borderRadius: '8px', border: '1px solid #F3F4F6', overflow: 'hidden' }}>
-                  <Table>
-                    <TableHead>
-                      <TableRow sx={{ bgcolor: '#F9FAFB' }}>
-                        {['Period', 'Prompts', 'Cost', 'Saved'].map((h, hi) => (
-                          <TableCell key={h} align={hi === 0 ? 'left' : hi === 3 ? 'right' : 'center'}
-                            sx={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', borderBottom: '1px solid #F3F4F6', py: 1.25, px: 2 }}>
-                            {h}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {(sessionSummaryData?.snapshots || [
-                        { period: 'Mid-day', prompts: 34, tokens: '—', cost: '$1.32', hoursSaved: 2.3 },
-                        { period: 'End-of-day', prompts: 43, tokens: '8,300', cost: '$1.80', hoursSaved: 2.8 }
-                      ]).map((snap: any, i: number) => (
-                        <TableRow key={i} sx={{ '&:hover': { bgcolor: '#F9FAFB' }, transition: 'background 0.15s ease', ...(i === 1 ? { '&:last-child td': { border: 0 } } : {}) }}>
-                          <TableCell sx={{ fontSize: '0.8125rem', py: 1.5, px: 2, borderBottom: '1px solid #F3F4F6', color: '#374151', fontWeight: 500 }}>
-                            {snap.period}
-                          </TableCell>
-                          <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, px: 2, borderBottom: '1px solid #F3F4F6', color: '#111827', fontWeight: 600 }}>{snap.prompts}</TableCell>
-                          <TableCell align="center" sx={{ fontSize: '0.8125rem', py: 1.5, px: 2, borderBottom: '1px solid #F3F4F6', color: '#374151' }}>{typeof snap.cost === 'string' ? snap.cost : `$${snap.cost}`}</TableCell>
-                          <TableCell align="right" sx={{ py: 1.5, px: 2, borderBottom: '1px solid #F3F4F6' }}>
-                            <Chip label={`${snap.hoursSaved}h`} size="small" sx={{ bgcolor: 'rgba(5,150,105,0.08)', color: '#059669', fontWeight: 600, fontSize: '0.72rem', height: 20 }} />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                <Box sx={{ mt: 2.5, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.25 }}>
-                  {[
-                    { label: 'Total Prompts', value: `${endOfDay.prompts}`, color: '#1F5AA6', bg: 'rgba(31,90,166,0.06)' },
-                    { label: 'Total Saved', value: `${endOfDay.hoursSaved}h`, color: '#059669', bg: 'rgba(5,150,105,0.06)' },
-                  ].map((q, qi) => (
-                    <Box key={qi} sx={{ p: 1.5, borderRadius: '8px', bgcolor: q.bg, textAlign: 'center' }}>
-                      <Typography sx={{ fontSize: '1.0625rem', fontWeight: 700, color: q.color, letterSpacing: '-0.02em' }}>{q.value}</Typography>
-                      <Typography sx={{ fontSize: '0.67rem', color: '#6B7280', fontWeight: 500, mt: 0.25 }}>{q.label}</Typography>
+          <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%', position: 'relative', bgcolor: '#F5F4FB', minHeight: 'calc(100vh - 64px)', borderTopLeftRadius: 24, p: { xs: 2, md: 3 }, overflow: 'hidden' }}>
+            {/* Ambient Background Blobs */}
+            <Box sx={{ position: 'absolute', top: -100, left: -100, width: 400, height: 400, bgcolor: '#5B57F0', opacity: 0.35, filter: 'blur(100px)', borderRadius: '50%', pointerEvents: 'none', zIndex: 0 }} />
+            <Box sx={{ position: 'absolute', bottom: -50, right: -50, width: 500, height: 500, bgcolor: '#1FAE7A', opacity: 0.35, filter: 'blur(120px)', borderRadius: '50%', pointerEvents: 'none', zIndex: 0 }} />
+            
+            <Box sx={{ position: 'relative', zIndex: 1 }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(12, 1fr)' }, gridAutoRows: 'minmax(120px, auto)', gap: 2.5, width: '100%' }}>
+                
+                {/* 1. Hero Card: Today's Prompts (Wide) */}
+                <Box sx={{ 
+                  gridColumn: { xs: 'span 1', md: 'span 8' }, 
+                  bgcolor: '#FFFFFF', borderRadius: '22px', border: '1px solid #E9E7F5', p: 3, 
+                  display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                  boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)'
+                }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box>
+                      <Stack direction="row" alignItems="center" spacing={1} mb={1.5}>
+                        <Box sx={{ width: 32, height: 32, borderRadius: '10px', bgcolor: '#EDECFE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <TrendingUp sx={{ fontSize: 18, color: '#5B57F0' }} />
+                        </Box>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 700, color: '#201F2E' }}>Total Prompts Today</Typography>
+                      </Stack>
+                      <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '3.25rem', fontWeight: 600, color: '#201F2E', lineHeight: 1 }}>{todayPrompts}</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', color: '#5B57F0', fontWeight: 600, mt: 1 }}>+12% vs average</Typography>
                     </Box>
-                  ))}
+                    <Box sx={{ width: 120, height: 60 }}>
+                       <ResponsiveContainer width="100%" height="100%">
+                         <AreaChart data={[
+                            { val: 20 }, { val: 25 }, { val: 22 }, { val: 35 }, { val: 30 }, { val: 45 }, { val: todayPrompts }
+                         ]}>
+                           <defs>
+                              <linearGradient id="sparkline" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#5B57F0" stopOpacity={0.2} />
+                                <stop offset="95%" stopColor="#5B57F0" stopOpacity={0} />
+                              </linearGradient>
+                           </defs>
+                           <Area type="monotone" dataKey="val" stroke="#5B57F0" strokeWidth={2} fill="url(#sparkline)" dot={false} />
+                         </AreaChart>
+                       </ResponsiveContainer>
+                    </Box>
+                  </Box>
                 </Box>
+
+                {/* 2. Radial Gauge: Prompt Quality */}
+                <Box sx={{ 
+                  gridColumn: { xs: 'span 1', md: 'span 4' }, 
+                  bgcolor: '#FFFFFF', borderRadius: '22px', border: '1px solid #E9E7F5', p: 3,
+                  boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <Stack direction="row" alignItems="center" spacing={1} mb={2} alignSelf="center">
+                    <Box sx={{ width: 32, height: 32, borderRadius: '10px', bgcolor: '#FCF0DE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <WorkspacePremium sx={{ fontSize: 18, color: '#E8A23D' }} />
+                    </Box>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 700, color: '#201F2E' }}>Quality Score</Typography>
+                  </Stack>
+                  <Box sx={{ position: 'relative', display: 'inline-flex', mt: 1 }}>
+                    <CircularProgress variant="determinate" value={100} size={100} thickness={4} sx={{ color: '#FCF0DE' }} />
+                    <CircularProgress variant="determinate" value={avgScore} size={100} thickness={4} sx={{ color: '#E8A23D', position: 'absolute', left: 0, '& .MuiCircularProgress-circle': { strokeLinecap: 'round' } }} />
+                    <Box sx={{ top: 0, left: 0, bottom: 0, right: 0, position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                      <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 600, color: '#201F2E', lineHeight: 1 }}>{avgScore}</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.65rem', color: '#85839A', mt: 0.5 }}>/ 100</Typography>
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* 3. Cost Card */}
+                <Box sx={{ 
+                  gridColumn: { xs: 'span 1', md: 'span 3' }, 
+                  bgcolor: '#FFFFFF', borderRadius: '22px', border: '1px solid #E9E7F5', p: 3,
+                  boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)'
+                }}>
+                  <Stack direction="row" alignItems="center" spacing={1} mb={1.5}>
+                    <Box sx={{ width: 32, height: 32, borderRadius: '10px', bgcolor: '#FFEDE8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <MonetizationOn sx={{ fontSize: 18, color: '#FF6F59' }} />
+                    </Box>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', fontWeight: 700, color: '#201F2E' }}>Total API Cost</Typography>
+                  </Stack>
+                  <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '2.25rem', fontWeight: 600, color: '#201F2E' }}>${todayCost}</Typography>
+                  <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#1FAE7A', fontWeight: 600, mt: 0.5 }}>72% saved</Typography>
+                </Box>
+
+                {/* 4. Hours Saved Card */}
+                <Box sx={{ 
+                  gridColumn: { xs: 'span 1', md: 'span 3' }, 
+                  bgcolor: '#FFFFFF', borderRadius: '22px', border: '1px solid #E9E7F5', p: 3,
+                  boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)'
+                }}>
+                  <Stack direction="row" alignItems="center" spacing={1} mb={1.5}>
+                    <Box sx={{ width: 32, height: 32, borderRadius: '10px', bgcolor: '#E7F4FC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <AccessTime sx={{ fontSize: 18, color: '#3A9BDC' }} />
+                    </Box>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', fontWeight: 700, color: '#201F2E' }}>Time Saved</Typography>
+                  </Stack>
+                  <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '2.25rem', fontWeight: 600, color: '#201F2E' }}>{totalHoursSaved}h</Typography>
+                  <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', fontWeight: 600, mt: 0.5 }}>35% boost</Typography>
+                </Box>
+
+                {/* 5. Mid-Day Snapshot */}
+                <Box sx={{ 
+                  gridColumn: { xs: 'span 1', md: 'span 3' }, 
+                  bgcolor: '#FFFFFF', borderRadius: '22px', border: '1px solid #E9E7F5', p: 3,
+                  boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)'
+                }}>
+                  <Stack direction="row" alignItems="center" spacing={1} mb={1.5}>
+                    <Box sx={{ width: 32, height: 32, borderRadius: '10px', bgcolor: '#F6EAFA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Speed sx={{ fontSize: 18, color: '#A84FC7' }} />
+                    </Box>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', fontWeight: 700, color: '#201F2E' }}>Mid-Day Snapshot</Typography>
+                  </Stack>
+                  <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '2.25rem', fontWeight: 600, color: '#201F2E' }}>{midDay.prompts} <Typography component="span" sx={{ fontSize: '1rem', color: '#85839A', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>Prompts</Typography></Typography>
+                  <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', fontWeight: 600, mt: 0.5 }}>{midDay.cost} · {midDay.hoursSaved}h saved</Typography>
+                </Box>
+
+                {/* 6. End of Day Snapshot */}
+                <Box sx={{ 
+                  gridColumn: { xs: 'span 1', md: 'span 3' }, 
+                  bgcolor: '#FFFFFF', borderRadius: '22px', border: '1px solid #E9E7F5', p: 3,
+                  boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)'
+                }}>
+                  <Stack direction="row" alignItems="center" spacing={1} mb={1.5}>
+                    <Box sx={{ width: 32, height: 32, borderRadius: '10px', bgcolor: '#F6EAFA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <History sx={{ fontSize: 18, color: '#A84FC7' }} />
+                    </Box>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', fontWeight: 700, color: '#201F2E' }}>End of Day Snapshot</Typography>
+                  </Stack>
+                  <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '2.25rem', fontWeight: 600, color: '#201F2E' }}>{endOfDay.prompts} <Typography component="span" sx={{ fontSize: '1rem', color: '#85839A', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>Prompts</Typography></Typography>
+                  <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A', fontWeight: 600, mt: 0.5 }}>{endOfDay.hoursSaved}h saved</Typography>
+                </Box>
+
+                {/* 7. Trend Chart */}
+                <Box sx={{ 
+                  gridColumn: { xs: 'span 1', md: 'span 7' }, 
+                  bgcolor: '#FFFFFF', borderRadius: '22px', border: '1px solid #E9E7F5', p: 3,
+                  boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', height: 380, display: 'flex', flexDirection: 'column'
+                }}>
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
+                    <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E' }}>Productivity Trend</Typography>
+                    <Chip label="This Week" size="small" sx={{ bgcolor: '#EFEEFA', color: '#5B57F0', fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 500, border: 'none', borderRadius: '8px' }} />
+                  </Stack>
+                  <Box sx={{ flexGrow: 1, width: '100%' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={[
+                        { day: 'Mon', hours: 2.1 },
+                        { day: 'Tue', hours: 2.8 },
+                        { day: 'Wed', hours: 2.4 },
+                        { day: 'Thu', hours: 3.1 },
+                        { day: 'Fri', hours: 2.8 },
+                        { day: 'Sat', hours: 1.0 },
+                        { day: 'Sun', hours: 0.5 }
+                      ]} margin={{ top: 10, right: 0, left: -25, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorHoursNew" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#3A9BDC" stopOpacity={0.25} />
+                            <stop offset="95%" stopColor="#3A9BDC" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E9E7F5" />
+                        <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fill: '#85839A' }} dy={15} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fill: '#85839A' }} />
+                        <Tooltip
+                          contentStyle={{
+                            borderRadius: '12px',
+                            background: '#FFFFFF',
+                            border: '1px solid #E9E7F5',
+                            boxShadow: '0 4px 20px rgba(32, 31, 46, 0.08)',
+                            fontFamily: 'IBM Plex Mono, monospace',
+                            fontSize: '0.85rem',
+                            color: '#201F2E',
+                          }}
+                          labelStyle={{ fontFamily: 'Inter, sans-serif', color: '#85839A', fontWeight: 600, marginBottom: 4 }}
+                        />
+                        <Area type="monotone" dataKey="hours" stroke="#3A9BDC" strokeWidth={3} fillOpacity={1} fill="url(#colorHoursNew)" activeDot={{ r: 6, fill: '#3A9BDC', strokeWidth: 3, stroke: '#fff' }} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </Box>
+
+                {/* 8. Session Summary Panel */}
+                <Box sx={{ 
+                  gridColumn: { xs: 'span 1', md: 'span 5' }, 
+                  bgcolor: '#FFFFFF', borderRadius: '22px', border: '1px solid #E9E7F5', p: 3,
+                  boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', display: 'flex', flexDirection: 'column'
+                }}>
+                  <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', mb: 3 }}>Session Summary</Typography>
+                  <Stack spacing={2} sx={{ flexGrow: 1 }}>
+                    {(sessionSummaryData?.snapshots || [
+                      { period: 'Mid-day', prompts: 34, tokens: '—', cost: '$1.32', hoursSaved: 2.3 },
+                      { period: 'End-of-day', prompts: 43, tokens: '8,300', cost: '$1.80', hoursSaved: 2.8 }
+                    ]).map((snap: any, i: number) => (
+                      <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, borderRadius: '14px', border: '1px solid #E9E7F5', bgcolor: '#FAFAFD' }}>
+                        <Box>
+                          <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', fontWeight: 600, color: '#201F2E' }}>{snap.period}</Typography>
+                          <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A', mt: 0.5 }}>{snap.prompts} prompts · {typeof snap.cost === 'string' ? snap.cost : `$${snap.cost}`}</Typography>
+                        </Box>
+                        <Box sx={{ textAlign: 'right' }}>
+                          <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', fontWeight: 600, color: '#1FAE7A', bgcolor: '#E3F7EE', px: 1.5, py: 0.5, borderRadius: '6px' }}>{snap.hoursSaved}h saved</Typography>
+                        </Box>
+                      </Box>
+                    ))}
+                  </Stack>
+                  <Box sx={{ mt: 3, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                    {[
+                      { label: 'Total Prompts', value: `${endOfDay.prompts}`, color: '#5B57F0', bg: '#EDECFE' },
+                      { label: 'Total Saved', value: `${endOfDay.hoursSaved}h`, color: '#1FAE7A', bg: '#E3F7EE' },
+                    ].map((q, qi) => (
+                      <Box key={qi} sx={{ p: 2, borderRadius: '14px', bgcolor: q.bg, textAlign: 'center' }}>
+                        <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '1.25rem', fontWeight: 600, color: q.color }}>{q.value}</Typography>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: '#85839A', fontWeight: 500, mt: 0.5 }}>{q.label}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+
               </Box>
             </Box>
           </Box>
@@ -368,9 +430,9 @@ export default function EmployeeDashboard() {
             <Box
               sx={{
                 bgcolor: '#FFFFFF',
-                borderRadius: '12px',
-                border: '1px solid #E5E7EB',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                borderRadius: '22px',
+                border: '1px solid #E9E7F5',
+                boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)',
                 display: 'flex',
                 flexDirection: 'column',
                 height: 660,
@@ -380,7 +442,7 @@ export default function EmployeeDashboard() {
               {/* ── Header ── */}
               <Box sx={{ px: 3, py: 2, borderBottom: '1px solid #F3F4F6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: '#FAFAFA' }}>
                 <Box>
-                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#111827', lineHeight: 1.3 }}>AI Chat Workspace</Typography>
+                  <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', lineHeight: 1.3 }}>AI Chat Workspace</Typography>
                   <Stack direction="row" alignItems="center" spacing={0.75} mt={0.25}>
                     <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#059669' }} />
                     <Typography sx={{ fontSize: '0.7rem', color: '#6B7280' }}>Gateway Active</Typography>
@@ -397,9 +459,9 @@ export default function EmployeeDashboard() {
                       color: '#374151',
                       bgcolor: '#FFFFFF',
                       minWidth: 180,
-                      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E5E7EB' },
+                      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E9E7F5', borderRadius: '8px' },
                       '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D1D5DB' },
-                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1F5AA6', borderWidth: '1px' },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#5B57F0', borderWidth: '1px' },
                     }}
                   >
                     <MenuItem value="gpt-4o-mini" sx={{ fontSize: '0.8125rem' }}>GPT-4o Mini</MenuItem>
@@ -426,40 +488,40 @@ export default function EmployeeDashboard() {
                     <Box sx={{
                       width: 30, height: 30, borderRadius: '8px', flexShrink: 0,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      bgcolor: msg.sender === 'user' ? '#1F5AA6' : '#F3F4F6',
-                      border: msg.sender === 'ai' ? '1px solid #E5E7EB' : 'none',
+                      bgcolor: msg.sender === 'user' ? '#E6E6FA' : '#F5F4FB',
+                      border: msg.sender === 'ai' ? '1px solid #E9E7F5' : 'none',
                     }}>
                       {msg.sender === 'user'
-                        ? <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: '#fff', letterSpacing: '0.02em' }}>YOU</Typography>
-                        : <Typography sx={{ fontSize: '0.6rem', fontWeight: 700, color: '#1F5AA6', letterSpacing: '0.02em' }}>AI</Typography>
+                        ? <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.65rem', fontWeight: 700, color: '#111827', letterSpacing: '0.02em' }}>YOU</Typography>
+                        : <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.6rem', fontWeight: 700, color: '#5B57F0', letterSpacing: '0.02em' }}>AI</Typography>
                       }
                     </Box>
                     {/* Bubble */}
                     <Box sx={{
                       maxWidth: '76%',
-                      p: 1.75,
-                      borderRadius: msg.sender === 'user' ? '12px 3px 12px 12px' : '3px 12px 12px 12px',
-                      bgcolor: msg.sender === 'user' ? '#1F5AA6' : '#FFFFFF',
-                      border: msg.sender === 'ai' ? '1px solid #E5E7EB' : 'none',
-                      boxShadow: msg.sender === 'ai' ? '0 1px 3px rgba(0,0,0,0.04)' : 'none',
+                      p: 2,
+                      borderRadius: msg.sender === 'user' ? '18px 4px 18px 18px' : '4px 18px 18px 18px',
+                      bgcolor: msg.sender === 'user' ? '#E6E6FA' : '#FFFFFF',
+                      border: msg.sender === 'ai' ? '1px solid #E9E7F5' : 'none',
+                      boxShadow: msg.sender === 'ai' ? '0 4px 20px rgba(32, 31, 46, 0.02)' : 'none',
                     }}>
-                      <Typography sx={{ fontSize: '0.875rem', color: msg.sender === 'user' ? '#FFFFFF' : '#1F2937', lineHeight: 1.6 }}>{msg.text}</Typography>
-                      <Stack direction="row" spacing={0.75} mt={1} flexWrap="wrap" useFlexGap>
-                        <Chip label={msg.model} size="small" sx={{ height: 18, fontSize: '0.62rem', fontWeight: 500, bgcolor: msg.sender === 'user' ? 'rgba(255,255,255,0.2)' : '#F3F4F6', color: msg.sender === 'user' ? '#fff' : '#6B7280', border: 'none' }} />
-                        {msg.score && <Chip label={`Score ${msg.score}/100`} size="small" sx={{ height: 18, fontSize: '0.62rem', fontWeight: 600, bgcolor: 'rgba(5,150,105,0.1)', color: '#059669', border: 'none' }} />}
-                        {msg.cost && <Typography sx={{ fontSize: '0.62rem', color: msg.sender === 'user' ? 'rgba(255,255,255,0.7)' : '#9CA3AF', alignSelf: 'center' }}>{msg.cost}</Typography>}
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', color: msg.sender === 'user' ? '#111827' : '#201F2E', lineHeight: 1.6 }}>{msg.text}</Typography>
+                      <Stack direction="row" spacing={0.75} mt={1.5} flexWrap="wrap" useFlexGap>
+                        <Chip label={msg.model} size="small" sx={{ fontFamily: 'IBM Plex Mono, monospace', height: 20, fontSize: '0.65rem', fontWeight: 500, bgcolor: msg.sender === 'user' ? 'rgba(17,24,39,0.1)' : '#F5F4FB', color: msg.sender === 'user' ? '#111827' : '#85839A', border: 'none', borderRadius: '6px' }} />
+                        {msg.score && <Chip label={`Score ${msg.score}/100`} size="small" sx={{ fontFamily: 'IBM Plex Mono, monospace', height: 20, fontSize: '0.65rem', fontWeight: 600, bgcolor: '#E3F7EE', color: '#1FAE7A', border: 'none', borderRadius: '6px' }} />}
+                        {msg.cost && <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.65rem', color: msg.sender === 'user' ? 'rgba(17,24,39,0.7)' : '#85839A', alignSelf: 'center', ml: 1 }}>{msg.cost}</Typography>}
                       </Stack>
                     </Box>
                   </Box>
                 ))}
                 {sendChatMutation.isPending && (
                   <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
-                    <Box sx={{ width: 30, height: 30, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#F3F4F6', border: '1px solid #E5E7EB' }}>
-                      <Typography sx={{ fontSize: '0.6rem', fontWeight: 700, color: '#1F5AA6' }}>AI</Typography>
+                    <Box sx={{ width: 30, height: 30, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#F5F4FB', border: '1px solid #E9E7F5' }}>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.6rem', fontWeight: 700, color: '#5B57F0' }}>AI</Typography>
                     </Box>
-                    <Box sx={{ p: 1.75, borderRadius: '3px 12px 12px 12px', bgcolor: '#FFFFFF', border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <CircularProgress size={12} sx={{ color: '#1F5AA6' }} />
-                      <Typography sx={{ fontSize: '0.8rem', color: '#9CA3AF' }}>Processing your request...</Typography>
+                    <Box sx={{ p: 2, borderRadius: '4px 18px 18px 18px', bgcolor: '#FFFFFF', border: '1px solid #E9E7F5', display: 'flex', alignItems: 'center', gap: 1.5, boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)' }}>
+                      <CircularProgress size={14} sx={{ color: '#5B57F0' }} />
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#85839A' }}>Processing your request...</Typography>
                     </Box>
                   </Box>
                 )}
@@ -477,14 +539,15 @@ export default function EmployeeDashboard() {
                     size="small"
                     InputProps={{
                       sx: {
-                        borderRadius: '8px',
-                        fontSize: '0.875rem',
-                        bgcolor: '#F9FAFB',
-                        color: '#111827',
-                        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E5E7EB' },
+                        borderRadius: '12px',
+                        fontSize: '0.9rem',
+                        fontFamily: 'Inter, sans-serif',
+                        bgcolor: '#FAFAFD',
+                        color: '#201F2E',
+                        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E9E7F5' },
                         '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D1D5DB' },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1F5AA6', borderWidth: '1px' },
-                        '& input::placeholder': { color: '#9CA3AF', opacity: 1 },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#E6E6FA', borderWidth: '1px' },
+                        '& input::placeholder': { color: '#85839A', opacity: 1 },
                       }
                     }}
                   />
@@ -492,13 +555,13 @@ export default function EmployeeDashboard() {
                     onClick={handleSendChatMessage}
                     disabled={!chatInput.trim() || sendChatMutation.isPending}
                     sx={{
-                      width: 38, height: 38, borderRadius: '8px',
-                      bgcolor: chatInput.trim() ? '#1F5AA6' : '#F3F4F6',
-                      color: chatInput.trim() ? '#fff' : '#9CA3AF',
+                      width: 40, height: 40, borderRadius: '10px',
+                      bgcolor: chatInput.trim() ? '#E6E6FA' : '#F5F4FB',
+                      color: chatInput.trim() ? '#111827' : '#85839A',
                       transition: 'all 0.15s ease',
                       flexShrink: 0,
-                      '&:hover': { bgcolor: chatInput.trim() ? '#1A4F96' : '#E9EAEB' },
-                      '&.Mui-disabled': { bgcolor: '#F3F4F6', color: '#D1D5DB' },
+                      '&:hover': { bgcolor: chatInput.trim() ? '#D8D8F6' : '#E9E7F5' },
+                      '&.Mui-disabled': { bgcolor: '#F5F4FB', color: '#D1D5DB' },
                     }}
                   >
                     {sendChatMutation.isPending ? <CircularProgress size={16} sx={{ color: '#9CA3AF' }} /> : <Send sx={{ fontSize: 16 }} />}
@@ -516,40 +579,40 @@ export default function EmployeeDashboard() {
           <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, width: '100%' }}>
               <Box sx={{ width: '100%' }}>
-                <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
-                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Prompt Coach</Typography>
-                  <TextField fullWidth value={vaguePrompt} onChange={(e) => setVaguePrompt(e.target.value)} placeholder="Enter vague prompt..." sx={{ mb: 2 }} />
-                  <Button variant="outlined" onClick={handleRunCoachDemo} disabled={promptCoachQuery.isFetching} sx={{ mb: 3, borderColor: 'rgba(31,90,166,0.2)', color: '#1A1D2E', '&:hover': { borderColor: 'rgba(31,90,166,0.3)', bgcolor: '#F0F4F8' } }}>
+                <Box sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
+                  <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', mb: 3 }}>Prompt Coach</Typography>
+                  <TextField fullWidth value={vaguePrompt} onChange={(e) => setVaguePrompt(e.target.value)} placeholder="Enter vague prompt..." sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px', fontFamily: 'Inter, sans-serif' } }} />
+                  <Button variant="outlined" onClick={handleRunCoachDemo} disabled={promptCoachQuery.isFetching} sx={{ mb: 3, borderRadius: '12px', borderColor: '#E9E7F5', color: '#111827', '&:hover': { borderColor: '#E6E6FA', bgcolor: '#E6E6FA', color: '#111827' } }}>
                     {promptCoachQuery.isFetching ? <CircularProgress size={18} sx={{ mr: 1 }} /> : null}Optimize Prompt
                   </Button>
                   {coachingResult && (
-                    <Box sx={{ p: 2.5, borderRadius: '12px', bgcolor: 'rgba(31,90,166,0.05)', borderLeft: `3px solid ${BRAND_COLOR}` }}>
+                    <Box sx={{ p: 2.5, borderRadius: '16px', bgcolor: '#F5F4FB', borderLeft: '4px solid #5B57F0' }}>
                       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
-                        <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1A1D2E' }}>Suggestion</Typography>
-                        <Chip label={`Score: ${coachingResult.scoreOutOf100}/100`} size="small" sx={{ bgcolor: 'rgba(5,150,105,0.10)', color: '#059669', fontWeight: 600 }} />
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', fontWeight: 700, color: '#201F2E' }}>Suggestion</Typography>
+                        <Chip label={`Score: ${coachingResult.scoreOutOf100}/100`} size="small" sx={{ fontFamily: 'IBM Plex Mono, monospace', bgcolor: '#E3F7EE', color: '#1FAE7A', fontWeight: 600 }} />
                       </Stack>
-                      <Typography sx={{ fontSize: '0.875rem', color: '#4B5563', mb: 2 }}>{coachingResult.suggestion}</Typography>
-                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1A1D2E', mb: 1 }}>Original</Typography>
-                      <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', p: 1.5, mb: 2, bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)' }}>{coachingResult.originalPrompt}</Typography>
-                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1A1D2E', mb: 1 }}>Optimized</Typography>
-                      <Typography sx={{ fontSize: '0.875rem', color: '#1A1D2E', p: 1.5, bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)' }}>{coachingResult.optimizedPrompt}</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', color: '#4B5563', mb: 2 }}>{coachingResult.suggestion}</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#201F2E', mb: 1 }}>Original</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#4B5563', p: 1.5, mb: 2, bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E9E7F5' }}>{coachingResult.originalPrompt}</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#201F2E', mb: 1 }}>Optimized</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', color: '#201F2E', p: 1.5, bgcolor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E9E7F5' }}>{coachingResult.optimizedPrompt}</Typography>
                     </Box>
                   )}
-                </Card>
+                </Box>
               </Box>
               <Box sx={{ width: '100%' }}>
-                <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
-                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Token Optimizer</Typography>
-                  <TableContainer sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', mb: 3 }}>
+                <Box sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
+                  <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', mb: 3 }}>Token Optimizer</Typography>
+                  <TableContainer sx={{ borderRadius: '16px', border: '1px solid #E9E7F5', mb: 4 }}>
                     <Table>
                       <TableBody>
-                        <TableRow><TableCell sx={{ fontSize: '0.8125rem' }}>Original</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem' }}>{coachingResult?.tokenOptimizer.currentTokens ?? 650} tokens</TableCell></TableRow>
-                        <TableRow><TableCell sx={{ fontSize: '0.8125rem' }}>Optimized</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem' }}>{coachingResult?.tokenOptimizer.optimizedTokens ?? 180} tokens</TableCell></TableRow>
-                        <TableRow sx={{ bgcolor: '#F0F4F8' }}><TableCell sx={{ fontSize: '0.8125rem', fontWeight: 600 }}>Savings</TableCell><TableCell align="right" sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#059669' }}>{coachingResult?.tokenOptimizer.savingsPercent ?? 72}%</TableCell></TableRow>
+                        <TableRow><TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem' }}>Original</TableCell><TableCell align="right" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem' }}>{coachingResult?.tokenOptimizer.currentTokens ?? 650} tokens</TableCell></TableRow>
+                        <TableRow><TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem' }}>Optimized</TableCell><TableCell align="right" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem' }}>{coachingResult?.tokenOptimizer.optimizedTokens ?? 180} tokens</TableCell></TableRow>
+                        <TableRow sx={{ bgcolor: '#FAFAFD' }}><TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', fontWeight: 600 }}>Savings</TableCell><TableCell align="right" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', fontWeight: 600, color: '#1FAE7A' }}>{coachingResult?.tokenOptimizer.savingsPercent ?? 72}%</TableCell></TableRow>
                       </TableBody>
                     </Table>
                   </TableContainer>
-                  <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E', mb: 1.5 }}>Quality Score Breakdown</Typography>
+                  <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', fontWeight: 700, color: '#201F2E', mb: 2 }}>Quality Score Breakdown</Typography>
                   <Stack spacing={1.5}>
                     {[
                       { label: 'Clarity', val: coachingResult?.dimensions.clarity ? Math.round(coachingResult.dimensions.clarity * 5) : 85 },
@@ -559,15 +622,15 @@ export default function EmployeeDashboard() {
                       { label: 'Use of Examples', val: coachingResult?.dimensions.useOfExamples ? Math.round(coachingResult.dimensions.useOfExamples * 5) : 80 },
                     ].map((dim, i) => (
                       <Box key={i}>
-                        <Stack direction="row" justifyContent="space-between" mb={0.5}>
-                          <Typography sx={{ fontSize: '0.75rem', color: '#4B5563' }}>{dim.label}</Typography>
-                          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#1A1D2E' }}>{dim.val}%</Typography>
+                        <Stack direction="row" justifyContent="space-between" mb={0.75}>
+                          <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', color: '#4B5563' }}>{dim.label}</Typography>
+                          <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.8rem', fontWeight: 600, color: '#201F2E' }}>{dim.val}%</Typography>
                         </Stack>
-                        <LinearProgress variant="determinate" value={dim.val} sx={{ height: 4, borderRadius: 2, bgcolor: '#F0F4F8', '& .MuiLinearProgress-bar': { bgcolor: BRAND_COLOR } }} />
+                        <LinearProgress variant="determinate" value={dim.val} sx={{ height: 6, borderRadius: 3, bgcolor: '#F5F4FB', '& .MuiLinearProgress-bar': { bgcolor: '#5B57F0', borderRadius: 3 } }} />
                       </Box>
                     ))}
                   </Stack>
-                </Card>
+                </Box>
               </Box>
             </Box>
           </Box>
@@ -575,46 +638,46 @@ export default function EmployeeDashboard() {
 
         {activeTab === 3 && (
           <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
-            <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, width: '100%' }}>
-              <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Model Recommendations</Typography>
-              <TableContainer sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', width: '100%' }}>
+            <Box sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF', p: 3, width: '100%' }}>
+              <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', mb: 3 }}>Model Recommendations</Typography>
+              <TableContainer sx={{ borderRadius: '16px', border: '1px solid #E9E7F5', width: '100%' }}>
                 <Table sx={{ width: '100%' }}>
                   <TableHead>
-                    <TableRow sx={{ bgcolor: '#F0F4F8' }}>
-                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#4B5563' }}>Context</TableCell>
-                      <TableCell sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#4B5563' }}>Recommendation</TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#4B5563' }}>Savings</TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.67rem', fontWeight: 600, color: '#4B5563' }}>Actions</TableCell>
+                    <TableRow sx={{ bgcolor: '#FAFAFD' }}>
+                      <TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A' }}>Context</TableCell>
+                      <TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A' }}>Recommendation</TableCell>
+                      <TableCell align="right" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A' }}>Savings</TableCell>
+                      <TableCell align="right" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', fontWeight: 600, color: '#85839A' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {(modelRecsData || [{ signal: 'Summarization', recommendation: 'Gemini 1.5 Flash', estimatedSaving: '70% cheaper' }])
                       .filter((_: any, idx: number) => !dismissedRecs.has(idx))
                       .map((rec: any, idx: number) => (
-                      <TableRow key={idx} sx={{ '&:hover': { bgcolor: '#F4F6FA' } }}>
-                        <TableCell sx={{ fontSize: '0.8125rem', color: '#1A1D2E' }}>{rec.signal}</TableCell>
-                        <TableCell><Chip label={rec.recommendation} size="small" sx={{ bgcolor: 'rgba(31,90,166,0.10)', color: BRAND_COLOR, fontWeight: 500 }} /></TableCell>
-                        <TableCell align="right" sx={{ fontSize: '0.8125rem', color: '#059669', fontWeight: 600 }}>{rec.estimatedSaving}</TableCell>
+                      <TableRow key={idx} sx={{ '&:hover': { bgcolor: '#F5F4FB' } }}>
+                        <TableCell sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#201F2E', fontWeight: 500 }}>{rec.signal}</TableCell>
+                        <TableCell><Chip label={rec.recommendation} size="small" sx={{ fontFamily: 'IBM Plex Mono, monospace', bgcolor: '#F5F4FB', color: '#5B57F0', fontWeight: 600, borderRadius: '6px' }} /></TableCell>
+                        <TableCell align="right" sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#1FAE7A', fontWeight: 600 }}>{rec.estimatedSaving}</TableCell>
                         <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
-                          <Button size="small" variant="contained" onClick={() => { setSelectedModel(rec.targetModel || 'gemini-1.5-flash'); setSnackbar({ open: true, message: `Switched active model to ${rec.recommendation}`, severity: 'success' }); }} sx={{ mr: 1, bgcolor: BRAND_COLOR }}>Apply</Button>
-                          <Button size="small" variant="outlined" onClick={() => setDismissedRecs(prev => new Set(prev).add(idx))} sx={{ color: '#1A1D2E', borderColor: 'rgba(31,90,166,0.2)' }}>Dismiss</Button>
+                          <Button size="small" variant="contained" onClick={() => { setSelectedModel(rec.targetModel || 'gemini-1.5-flash'); setSnackbar({ open: true, message: `Switched active model to ${rec.recommendation}`, severity: 'success' }); }} sx={{ mr: 1, bgcolor: '#E6E6FA', color: '#111827', borderRadius: '8px', boxShadow: 'none', '&:hover': { bgcolor: '#D8D8F6', boxShadow: 'none' } }}>Apply</Button>
+                          <Button size="small" variant="outlined" onClick={() => setDismissedRecs(prev => new Set(prev).add(idx))} sx={{ color: '#201F2E', borderColor: '#E9E7F5', borderRadius: '8px', '&:hover': { borderColor: '#E6E6FA', bgcolor: '#F5F4FB', color: '#111827' } }}>Dismiss</Button>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </TableContainer>
-            </Card>
+            </Box>
           </Box>
         )}
 
         {activeTab === 4 && (
           <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
             <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-              <TextField size="small" placeholder="Search prompts..." value={searchHistory} onChange={(e) => setSearchHistory(e.target.value)} sx={{ width: { xs: '100%', sm: 300 } }} />
-              <Button variant="contained" sx={{ bgcolor: BRAND_COLOR }} onClick={() => { setPublishTitle(''); setPublishCategory('Coding'); setPublishContent(chatInput || ''); setPublishDialogOpen(true); }}>Publish to Marketplace</Button>
+              <TextField size="small" placeholder="Search prompts..." value={searchHistory} onChange={(e) => setSearchHistory(e.target.value)} sx={{ width: { xs: '100%', sm: 300 }, '& .MuiOutlinedInput-root': { borderRadius: '12px', fontFamily: 'Inter, sans-serif' } }} />
+              <Button variant="contained" sx={{ bgcolor: '#E6E6FA', color: '#111827', borderRadius: '10px', boxShadow: 'none', '&:hover': { bgcolor: '#D8D8F6', boxShadow: 'none' } }} onClick={() => { setPublishTitle(''); setPublishCategory('Coding'); setPublishContent(chatInput || ''); setPublishDialogOpen(true); }}>Publish to Marketplace</Button>
             </Box>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)' }, gap: 2, width: '100%' }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)' }, gap: 3, width: '100%' }}>
               {(marketplaceData || promptsList).filter((p: any) => {
                 const term = searchHistory.toLowerCase();
                 const title = p.title?.toLowerCase() || '';
@@ -623,18 +686,18 @@ export default function EmployeeDashboard() {
                 return title.includes(term) || content.includes(term) || author.includes(term);
               }).map((p: any) => (
                 <Box key={p.id} sx={{ width: '100%' }}>
-                  <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%', display: 'flex', flexDirection: 'column', width: '100%' }}>
-                    <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 0.5 }}>{p.title}</Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mb: 0.5 }}>By {p.authorTeam || p.author}</Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#D97706', mb: 1.5 }}>{p.starDisplay || '★★★★★'}</Typography>
-                    <Typography sx={{ fontSize: '0.8125rem', color: '#1A1D2E', mb: 2, flexGrow: 1, fontStyle: 'italic' }}>"{p.promptTemplate || p.content}"</Typography>
+                  <Box sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF', p: 3, height: '100%', display: 'flex', flexDirection: 'column', width: '100%' }}>
+                    <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.15rem', fontWeight: 600, color: '#201F2E', mb: 0.5 }}>{p.title}</Typography>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', color: '#85839A', mb: 0.5 }}>By {p.authorTeam || p.author}</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#E8A23D', mb: 2, letterSpacing: '0.1em' }}>{p.starDisplay || '★★★★★'}</Typography>
+                    <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#4B5563', mb: 3, flexGrow: 1, fontStyle: 'italic', lineHeight: 1.6 }}>"{p.promptTemplate || p.content}"</Typography>
                     <Stack direction="row" spacing={2} sx={{ mt: 'auto', alignItems: 'center' }}>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#4B5563' }}>Uses: {p.usedByCount || p.uses}</Typography>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#059669' }}>{p.hoursSaved}h saved</Typography>
+                      <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.75rem', color: '#85839A' }}>Uses: {p.usedByCount || p.uses}</Typography>
+                      <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.75rem', color: '#1FAE7A', fontWeight: 600, bgcolor: '#E3F7EE', px: 1, py: 0.25, borderRadius: '4px' }}>{p.hoursSaved}h saved</Typography>
                       <Box sx={{ flexGrow: 1 }} />
-                      <Button size="small" variant="outlined" onClick={() => setChatInput(p.promptTemplate || p.content || '')}>Use</Button>
+                      <Button size="small" variant="outlined" onClick={() => setChatInput(p.promptTemplate || p.content || '')} sx={{ borderRadius: '8px', color: '#111827', borderColor: '#E9E7F5', '&:hover': { borderColor: '#E6E6FA', bgcolor: '#F5F4FB', color: '#111827' } }}>Use</Button>
                     </Stack>
-                  </Card>
+                  </Box>
                 </Box>
               ))}
             </Box>
@@ -645,38 +708,38 @@ export default function EmployeeDashboard() {
           <Box sx={{ animation: 'fadeUp 0.4s ease both', width: '100%' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, width: '100%' }}>
               <Box sx={{ width: '100%' }}>
-                <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
-                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Learning Coach</Typography>
+                <Box sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
+                  <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', mb: 3 }}>Learning Coach</Typography>
                   <Stack spacing={2}>
                     {(learningCoachData?.tips || [{ tip: 'Use concrete examples', description: 'Include sample input/output pairs.' }]).map((item: any, idx: number) => (
-                      <Box key={idx} sx={{ p: 2, borderRadius: '12px', bgcolor: '#F0F4F8', borderLeft: `3px solid ${BRAND_COLOR}` }}>
-                        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E' }}>{item.tip}</Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#4B5563', mt: 0.5, mb: item.targetWeakness ? 1 : 0 }}>{item.description}</Typography>
-                        {item.targetWeakness && <Chip label={item.targetWeakness} size="small" sx={{ bgcolor: 'rgba(217,119,6,0.1)', color: '#D97706', fontWeight: 600, fontSize: '0.7rem' }} />}
+                      <Box key={idx} sx={{ p: 2.5, borderRadius: '16px', bgcolor: '#F5F4FB', borderLeft: '4px solid #5B57F0' }}>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', fontWeight: 700, color: '#201F2E' }}>{item.tip}</Typography>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#4B5563', mt: 0.5, mb: item.targetWeakness ? 1.5 : 0 }}>{item.description}</Typography>
+                        {item.targetWeakness && <Chip label={item.targetWeakness} size="small" sx={{ fontFamily: 'IBM Plex Mono, monospace', bgcolor: '#FCF0DE', color: '#E8A23D', fontWeight: 600, fontSize: '0.75rem', borderRadius: '6px' }} />}
                       </Box>
                     ))}
                   </Stack>
-                </Card>
+                </Box>
               </Box>
               <Box sx={{ width: '100%' }}>
-                <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
-                  <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Achievements</Typography>
+                <Box sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF', p: 3, height: '100%' }}>
+                  <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', mb: 3 }}>Achievements</Typography>
                   <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, width: '100%' }}>
                     {[
-                      { title: 'Prompt Master', desc: 'Maintained 80+ score', earned: (serverData?.average_score ?? 84) >= 80 },
-                      { title: 'Token Optimizer', desc: 'Saved 50k tokens', earned: (serverData?.tokens_saved ?? 60000) >= 50000 },
-                      { title: 'Daily Achiever', desc: '30+ prompts today', earned: (serverData?.today_prompts ?? 43) >= 30 },
-                      { title: 'AI Power User', desc: 'Saved 2+ hours', earned: (serverData?.hours_saved ?? 2.8) >= 2 }
+                      { title: 'Prompt Master', desc: 'Maintained 80+ score', earned: (serverData?.average_score ?? 84) >= 80, color: '#5B57F0', bg: '#EDECFE' },
+                      { title: 'Token Optimizer', desc: 'Saved 50k tokens', earned: (serverData?.tokens_saved ?? 60000) >= 50000, color: '#1FAE7A', bg: '#E3F7EE' },
+                      { title: 'Daily Achiever', desc: '30+ prompts today', earned: (serverData?.today_prompts ?? 43) >= 30, color: '#FF6F59', bg: '#FFEDE8' },
+                      { title: 'AI Power User', desc: 'Saved 2+ hours', earned: (serverData?.hours_saved ?? 2.8) >= 2, color: '#3A9BDC', bg: '#E7F4FC' }
                     ].map((badge, idx) => (
                       <Box key={idx} sx={{ width: '100%' }}>
-                        <Box sx={{ p: 2, borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', opacity: badge.earned ? 1 : 0.5 }}>
-                          <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1A1D2E' }}>{badge.title}</Typography>
-                          <Typography sx={{ fontSize: '0.75rem', color: '#4B5563' }}>{badge.desc}</Typography>
+                        <Box sx={{ p: 2, borderRadius: '16px', border: '1px solid', borderColor: badge.earned ? 'transparent' : '#E9E7F5', bgcolor: badge.earned ? badge.bg : '#FAFAFD', opacity: badge.earned ? 1 : 0.6 }}>
+                          <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', fontWeight: 700, color: badge.earned ? badge.color : '#85839A' }}>{badge.title}</Typography>
+                          <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', color: '#4B5563', mt: 0.5 }}>{badge.desc}</Typography>
                         </Box>
                       </Box>
                     ))}
                   </Box>
-                </Card>
+                </Box>
               </Box>
             </Box>
           </Box>
@@ -684,40 +747,40 @@ export default function EmployeeDashboard() {
 
         {activeTab === 6 && (
           <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
-            <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3 }}>
-              <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Privacy Guard</Typography>
-              <TextField fullWidth multiline rows={3} value={testPrivacyPrompt} onChange={(e) => setTestPrivacyPrompt(e.target.value)} sx={{ mb: 2 }} />
-              <Box sx={{ p: 2, borderRadius: '12px', bgcolor: privacyAnalysis.privacyAnalysis.containsSensitiveData ? 'rgba(220,38,38,0.1)' : 'rgba(5,150,105,0.1)' }}>
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: privacyAnalysis.privacyAnalysis.containsSensitiveData ? '#DC2626' : '#059669' }}>
+            <Box sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF', p: 3 }}>
+              <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', mb: 3 }}>Privacy Guard</Typography>
+              <TextField fullWidth multiline rows={3} value={testPrivacyPrompt} onChange={(e) => setTestPrivacyPrompt(e.target.value)} sx={{ mb: 3, '& .MuiOutlinedInput-root': { borderRadius: '12px', fontFamily: 'Inter, sans-serif' } }} />
+              <Box sx={{ p: 2.5, borderRadius: '16px', bgcolor: privacyAnalysis.privacyAnalysis.containsSensitiveData ? '#FFF2F2' : '#E3F7EE' }}>
+                <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', fontWeight: 700, color: privacyAnalysis.privacyAnalysis.containsSensitiveData ? '#DC2626' : '#059669' }}>
                   {privacyAnalysis.privacyAnalysis.containsSensitiveData ? 'Sensitive Data Detected' : 'Safe to Send'}
                 </Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: '#1A1D2E', mt: 1, fontFamily: 'monospace' }}>
+                <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.85rem', color: '#201F2E', mt: 1 }}>
                   {privacyAnalysis.privacyAnalysis.maskedPrompt}
                 </Typography>
               </Box>
-            </Card>
+            </Box>
           </Box>
         )}
 
         {activeTab === 7 && (
           <Box sx={{ animation: 'fadeUp 0.4s ease both' }}>
-            <Card sx={{ borderRadius: '12px', border: '1px solid rgba(31,90,166,0.09)', boxShadow: '0 1px 4px rgba(31,90,166,0.05)', bgcolor: '#FFFFFF', p: 3 }}>
-              <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E', mb: 2 }}>Prompt History</Typography>
-              <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-                <TextField size="small" placeholder="Search history..." value={historyQuery} onChange={(e) => setHistoryQuery(e.target.value)} sx={{ width: { xs: '100%', sm: 300 } }} />
-                <Button variant={historyFavoriteOnly ? 'contained' : 'outlined'} sx={historyFavoriteOnly ? { bgcolor: BRAND_COLOR } : {}} onClick={() => setHistoryFavoriteOnly(!historyFavoriteOnly)}>Favorites</Button>
+            <Box sx={{ borderRadius: '22px', border: '1px solid #E9E7F5', boxShadow: '0 4px 20px rgba(32, 31, 46, 0.02)', bgcolor: '#FFFFFF', p: 3 }}>
+              <Typography sx={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem', fontWeight: 600, color: '#201F2E', mb: 3 }}>Prompt History</Typography>
+              <Box sx={{ mb: 4, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+                <TextField size="small" placeholder="Search history..." value={historyQuery} onChange={(e) => setHistoryQuery(e.target.value)} sx={{ width: { xs: '100%', sm: 300 }, '& .MuiOutlinedInput-root': { borderRadius: '12px', fontFamily: 'Inter, sans-serif' } }} />
+                <Button variant={historyFavoriteOnly ? 'contained' : 'outlined'} sx={historyFavoriteOnly ? { bgcolor: '#E8A23D', color: '#fff', boxShadow: 'none', '&:hover': { bgcolor: '#D97706', boxShadow: 'none' }, borderRadius: '10px' } : { borderColor: '#E9E7F5', color: '#201F2E', borderRadius: '10px', '&:hover': { borderColor: '#E8A23D' } }} onClick={() => setHistoryFavoriteOnly(!historyFavoriteOnly)}>Favorites</Button>
               </Box>
               <List>
                 {(promptHistoryData || []).map((p: any, idx: number) => (
                   <React.Fragment key={p.id}>
-                    <ListItem sx={{ py: 2, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 1 }}>
-                        <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: '#1A1D2E' }}>{p.title}</Typography>
+                    <ListItem sx={{ py: 3, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 1.5 }}>
+                        <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', fontWeight: 700, color: '#201F2E' }}>{p.title}</Typography>
                         <Box>
-                          <IconButton size="small" onClick={() => setChatInput(p.promptText)}><ContentCopy fontSize="small" /></IconButton>
+                          <IconButton size="small" onClick={() => setChatInput(p.promptText)} sx={{ color: '#85839A', '&:hover': { color: '#5B57F0', bgcolor: '#F5F4FB' } }}><ContentCopy fontSize="small" /></IconButton>
                           <IconButton
                             size="small"
-                            sx={{ color: p.isFavorite ? '#D97706' : 'inherit' }}
+                            sx={{ color: p.isFavorite ? '#E8A23D' : '#85839A', '&:hover': { color: '#E8A23D', bgcolor: '#FCF0DE' } }}
                             onClick={() => toggleFavoriteMutation.mutate(p.id, {
                               onError: () => setSnackbar({ open: true, message: 'Could not update favorite.', severity: 'error' })
                             })}
@@ -726,6 +789,7 @@ export default function EmployeeDashboard() {
                           </IconButton>
                           <IconButton
                             size="small"
+                            sx={{ color: '#85839A', '&:hover': { color: '#5B57F0', bgcolor: '#F5F4FB' } }}
                             onClick={async () => {
                               try {
                                 await navigator.clipboard.writeText(p.promptText);
@@ -739,18 +803,18 @@ export default function EmployeeDashboard() {
                           </IconButton>
                         </Box>
                       </Box>
-                      <Typography sx={{ fontSize: '0.8125rem', color: '#4B5563', mb: 1 }}>"{p.promptText}"</Typography>
-                      <Stack direction="row" spacing={1}>
-                        <Chip label={p.category} size="small" sx={{ fontSize: '0.7rem' }} />
-                        <Chip label={`Score: ${p.promptScore}`} size="small" sx={{ fontSize: '0.7rem', bgcolor: 'rgba(5,150,105,0.1)', color: '#059669' }} />
-                        <Typography sx={{ fontSize: '0.75rem', color: '#9CA3AF', mt: 0.5 }}>{new Date(p.createdAt).toLocaleDateString()}</Typography>
+                      <Typography sx={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: '#4B5563', mb: 2, fontStyle: 'italic', lineHeight: 1.6 }}>"{p.promptText}"</Typography>
+                      <Stack direction="row" spacing={1.5}>
+                        <Chip label={p.category} size="small" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.75rem', bgcolor: '#F5F4FB', color: '#5B57F0', borderRadius: '6px' }} />
+                        <Chip label={`Score: ${p.promptScore}`} size="small" sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.75rem', bgcolor: '#E3F7EE', color: '#1FAE7A', borderRadius: '6px' }} />
+                        <Typography sx={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.75rem', color: '#85839A', alignSelf: 'center' }}>{new Date(p.createdAt).toLocaleDateString()}</Typography>
                       </Stack>
                     </ListItem>
-                    {idx < (promptHistoryData || []).length - 1 && <Divider />}
+                    {idx < (promptHistoryData || []).length - 1 && <Divider sx={{ borderColor: '#E9E7F5' }} />}
                   </React.Fragment>
                 ))}
               </List>
-            </Card>
+            </Box>
           </Box>
         )}
 
@@ -775,7 +839,7 @@ export default function EmployeeDashboard() {
           <Button onClick={() => setPublishDialogOpen(false)}>Cancel</Button>
           <Button
             variant="contained"
-            sx={{ bgcolor: BRAND_COLOR }}
+            sx={{ bgcolor: '#E6E6FA', color: '#111827' }}
             disabled={!publishTitle.trim() || !publishContent.trim() || saveThenPublishMutation.isPending}
             onClick={() => saveThenPublishMutation.mutate(
               { title: publishTitle, promptText: publishContent, category: publishCategory.toUpperCase() },

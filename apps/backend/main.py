@@ -24,6 +24,7 @@ from domains.finops.router import router as finops_router
 from domains.forecast.router import router as forecast_router
 from domains.reports.router import router as reports_router
 from domains.notifications.router import router as notifications_router
+from domains.telemetry.router import router as telemetry_router
 from domains.analytics.service import AnalyticsService
 
 # ─── Logging ──────────────────────────────────────────────────────────────────
@@ -123,6 +124,7 @@ app.include_router(finops_router)
 app.include_router(forecast_router)
 app.include_router(reports_router)
 app.include_router(notifications_router)
+app.include_router(telemetry_router)
 
 
 # ─── Health Check ─────────────────────────────────────────────────────────────
